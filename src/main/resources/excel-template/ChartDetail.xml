@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+ <!--was: <?xml version="1.0" encoding="ISO-8859-1"?>--> 
+<workbook>
+    <worksheet name="工作表2">
+        
+        <section startRow="0" endRow="1" />
+        
+        <loop startRow="1" endRow="1" items="rows" var="scrappedDetail" varType="com.advantech.model.ScrappedDetail">
+            <section startRow="1" endRow="1">
+            </section>
+            <loopbreakcondition>
+                <rowcheck offset="0">
+                    <cellcheck offset="0"></cellcheck>
+                </rowcheck>
+            </loopbreakcondition>
+        </loop>
+    </worksheet>
+</workbook>
