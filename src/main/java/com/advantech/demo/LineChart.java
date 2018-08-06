@@ -3,8 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.helper;
+package com.advantech.demo;
 
+import com.advantech.helper.ChartUtils;
+import com.advantech.helper.Serie;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;

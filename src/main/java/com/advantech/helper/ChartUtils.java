@@ -20,6 +20,8 @@ import java.util.List;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.DateTickUnitType;
@@ -50,6 +52,7 @@ import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.ui.TextAnchor;
+import org.jfree.util.ShapeUtilities;
 
 /**
  *
@@ -58,7 +61,7 @@ import org.jfree.chart.ui.TextAnchor;
 public class ChartUtils {
 
     private static final String NO_DATA_MSG = "数据加载失败";
-    private static final Font FONT = new Font("宋体", Font.PLAIN, 12);
+    private static final Font FONT = new Font("微軟正黑體", Font.PLAIN, 20);
     public static Color[] CHART_COLORS = {
         new Color(31, 129, 188), new Color(92, 92, 97), new Color(144, 237, 125), new Color(255, 188, 117),
         new Color(153, 158, 255), new Color(255, 117, 153), new Color(253, 236, 109), new Color(128, 133, 232),
@@ -124,6 +127,7 @@ public class ChartUtils {
 
     /**
      * 必须设置文本抗锯齿
+     *
      * @param chart
      */
     public static void setAntiAlias(JFreeChart chart) {
@@ -132,6 +136,7 @@ public class ChartUtils {
 
     /**
      * 设置图例无边框，默认黑色边框
+     *
      * @param chart
      */
     public static void setLegendEmptyBorder(JFreeChart chart) {
@@ -140,9 +145,10 @@ public class ChartUtils {
 
     /**
      * 创建类别数据集合
+     *
      * @param series
      * @param categories
-     * @return 
+     * @return
      */
     public static DefaultCategoryDataset createDefaultCategoryDataset(List<Serie> series, String[] categories) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
@@ -167,9 +173,10 @@ public class ChartUtils {
 
     /**
      * 创建饼图数据集合
+     *
      * @param categories
      * @param datas
-     * @return 
+     * @return
      */
     public static DefaultPieDataset createDefaultPieDataset(String[] categories, Object[] datas) {
         DefaultPieDataset dataset = new DefaultPieDataset();
@@ -224,17 +231,23 @@ public class ChartUtils {
         setLineRender(plot, isShowDataLabels, false);
     }
 
+    public static void setLineRender(CategoryPlot plot, boolean isShowDataLabels, boolean isShapesVisible) {
+        setLineRender(plot, null, isShowDataLabels, isShapesVisible);
+    }
+
     /**
      * 设置折线图样式
      *
      * @param plot
+     * @param specRenderIndex
      * @param isShowDataLabels 是否显示数据标签
      * @param isShapesVisible
      */
-    public static void setLineRender(CategoryPlot plot, boolean isShowDataLabels, boolean isShapesVisible) {
+    public static void setLineRender(CategoryPlot plot, Integer specRenderIndex, boolean isShowDataLabels, boolean isShapesVisible) {
         plot.setNoDataMessage(NO_DATA_MSG);
         plot.setInsets(new RectangleInsets(10, 10, 0, 10), false);
-        LineAndShapeRenderer renderer = (LineAndShapeRenderer) plot.getRenderer();
+
+        LineAndShapeRenderer renderer = (LineAndShapeRenderer) (specRenderIndex == null ? plot.getRenderer() : plot.getRenderer(specRenderIndex));
 
         renderer.setDefaultStroke(new BasicStroke(1.5F));
         if (isShowDataLabels) {
@@ -242,8 +255,11 @@ public class ChartUtils {
             renderer.setDefaultItemLabelGenerator(new StandardCategoryItemLabelGenerator(StandardCategoryItemLabelGenerator.DEFAULT_LABEL_FORMAT_STRING,
                     NumberFormat.getInstance()));
             renderer.setDefaultPositiveItemLabelPosition(new ItemLabelPosition(ItemLabelAnchor.OUTSIDE1, TextAnchor.BOTTOM_CENTER));// weizhi
+            Font smallFont = new Font("微軟正黑體", Font.PLAIN, 14);
+            renderer.setDefaultItemLabelFont(smallFont);
         }
         renderer.setDefaultShapesVisible(isShapesVisible);// 数据点绘制形状
+        renderer.setSeriesShape(0, ShapeUtilities.createDiamond(1F));
         setXAixs(plot);
         setYAixs(plot);
     }
@@ -323,22 +339,29 @@ public class ChartUtils {
      * 设置柱状图渲染
      *
      * @param plot
+     * @param specRenderIndex
      * @param isShowDataLabels
      */
-    public static void setBarRenderer(CategoryPlot plot, boolean isShowDataLabels) {
+    public static void setBarRenderer(CategoryPlot plot, Integer specRenderIndex, boolean isShowDataLabels) {
 
         plot.setNoDataMessage(NO_DATA_MSG);
         plot.setInsets(new RectangleInsets(10, 10, 5, 10));
-        BarRenderer renderer = (BarRenderer) plot.getRenderer();
+        BarRenderer renderer = (BarRenderer) (specRenderIndex == null ? plot.getRenderer() : plot.getRenderer(specRenderIndex));
         renderer.setDefaultItemLabelGenerator(new StandardCategoryItemLabelGenerator());
         renderer.setMaximumBarWidth(0.075);// 设置柱子最大宽度
 
         if (isShowDataLabels) {
             renderer.setDefaultItemLabelsVisible(true);
+            Font smallFont = new Font("微軟正黑體", Font.PLAIN, 14);
+            renderer.setDefaultItemLabelFont(smallFont);
         }
 
         setXAixs(plot);
         setYAixs(plot);
+    }
+
+    public static void setBarRenderer(CategoryPlot plot, boolean isShowDataLabels) {
+        setBarRenderer(plot, null, isShowDataLabels);
     }
 
     /**
@@ -366,6 +389,9 @@ public class ChartUtils {
         plot.getDomainAxis().setAxisLinePaint(lineColor);// X坐标轴颜色
         plot.getDomainAxis().setTickMarkPaint(lineColor);// X坐标轴标记|竖线颜色
 
+        CategoryAxis domainAxis = plot.getDomainAxis();
+        domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
+        domainAxis.setCategoryLabelPositionOffset(2);
     }
 
     /**
@@ -424,6 +450,7 @@ public class ChartUtils {
 
     /**
      * 设置饼状图渲染
+     *
      * @param plot
      */
     public static void setPieRender(Plot plot) {
