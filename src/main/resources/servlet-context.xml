@@ -101,7 +101,7 @@
      要使用 @Transactional 時需要 
     <tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager"/>
 
-     DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+    DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
     
     <!--http://www.cnblogs.com/Irving/archive/2013/02/19/2917501.html-->
     <mvc:default-servlet-handler/>
@@ -127,7 +127,7 @@
     
     <mvc:resources mapping="/webjars/**" location="/webjars/"/>
     <!--Email setting-->
-<!--    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
         <property name="host" value="Relay.advantech.com.tw" />
         <property name="port" value="25" />
 
@@ -138,10 +138,10 @@
             </props>
         </property>
     </bean>
-
+    
     <bean id="orderManager" class="com.advantech.helper.MailManager">
         <property name="mailSender" ref="mailSender"/>
-    </bean>-->
+    </bean>
     
     <!--other import-->
 
