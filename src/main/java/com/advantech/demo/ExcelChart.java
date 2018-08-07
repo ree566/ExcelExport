@@ -151,10 +151,15 @@ public class ExcelChart {
         ChartUtils.setYAixs(chart.getCategoryPlot());// Y坐标轴渲染
 //        // 设置标注无边框
         chart.getLegend().setFrame(new BlockBorder(Color.WHITE));
-        
+
         ValueAxis axis = plot.getRangeAxis();
-        Font font = new Font("微軟正黑體", Font.PLAIN, 20);
+        Font font = new Font("微軟正黑體", Font.PLAIN, 16);
         axis.setTickLabelFont(font);
+        axis.setLabelFont(font);
+        
+        CategoryAxis caxis = plot.getDomainAxis();
+        caxis.setTickLabelFont(font);
+        caxis.setLabelFont(font);
         // 6:使用chartPanel接收
         ChartPanel chartPanel = new ChartPanel(chart);
 
@@ -162,26 +167,26 @@ public class ExcelChart {
     }
 
     public static void main(String[] args) {
-//        final JFrame frame = new JFrame();
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.setSize(1200, 600);
-//        frame.setLocationRelativeTo(null);
-//
-//        Runnable task3 = () -> {
-//            ChartPanel chartPanel = new ExcelChart().createChart();
-//            frame.getContentPane().add(chartPanel);
-//            frame.setVisible(true);
-//        };
-//
-//        SwingUtilities.invokeLater(task3);
-        ChartPanel chartPanel = new ExcelChart().createChart();
-        JFreeChart chart = chartPanel.getChart();
-        try {
-            String desktop = System.getProperty("user.home") + "/Desktop";
-            saveAsFile(chart, desktop + "/123.jpg", 1024, 420);
-        } catch (Exception ex) {
-            System.out.println(ex);
-        }
+        final JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(1200, 600);
+        frame.setLocationRelativeTo(null);
+
+        Runnable task3 = () -> {
+            ChartPanel chartPanel = new ExcelChart().createChart();
+            frame.getContentPane().add(chartPanel);
+            frame.setVisible(true);
+        };
+
+        SwingUtilities.invokeLater(task3);
+//        ChartPanel chartPanel = new ExcelChart().createChart();
+//        JFreeChart chart = chartPanel.getChart();
+//        try {
+//            String desktop = System.getProperty("user.home") + "/Desktop";
+//            saveAsFile(chart, desktop + "/123.jpg", 1024, 420);
+//        } catch (Exception ex) {
+//            System.out.println(ex);
+//        }
 
     }
 

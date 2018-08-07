@@ -5,10 +5,11 @@
  */
 package com.advantech.helper;
 
-import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-import static org.junit.Assert.assertEquals;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
 
 /**
@@ -17,7 +18,7 @@ import org.junit.Test;
  */
 public class TestClass {
 
-    @Test
+//    @Test
     public void testDerCool() {
         new Random().ints(1, 50)
                 .distinct()
@@ -30,5 +31,18 @@ public class TestClass {
 
     public void customP(Integer i) {
         System.out.printf("Number: %d\n", i);
+    }
+
+    @Test
+    public void testDateTime() {
+        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy/M/d");
+
+        DateTime d = new DateTime();
+
+        DateTime sDOW = d.minusDays(d.getDayOfWeek() - 1);
+        DateTime eDOW = sDOW.plusDays(7 - 1);
+
+        System.out.println(fmt.print(sDOW));
+        System.out.println(fmt.print(eDOW));
     }
 }

@@ -5,6 +5,7 @@
  */
 package com.advantech.helper;
 
+import com.advantech.model.ScrappedDetail;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import static com.google.common.collect.Lists.newArrayList;
 import java.io.File;
@@ -45,13 +46,16 @@ public class ExcelReaderTest {
 
     @Autowired
     private ExcelReader reader;
+    
+    private final String desktop = System.getProperty("user.home") + "/Desktop";
 
-//    @Test
+    @Test
     public void testRead() throws IOException, SAXException, InvalidFormatException {
         String xmlConfig = "\\excel-template\\ScrappedDetail.xml";
-        String dataXLS = "C:\\Users\\wei.cheng\\Desktop\\2018不良品&良品表單.xlsx";
+        
+        String dataXLS = desktop + "/2018不良品&良品表單.xlsx";
 
-        List l = reader.read(xmlConfig, dataXLS);
+        List<ScrappedDetail> l = reader.read(xmlConfig, dataXLS);
 
         assertNotEquals(0, l.size());
 
@@ -61,9 +65,9 @@ public class ExcelReaderTest {
         System.out.println(map);
     }
 
-    @Test
+//    @Test
     public void testReadPivot() throws Exception {
-        String fileLocal = "C:\\Users\\wei.cheng\\Desktop\\2018不良品&良品表單.xlsx";
+        String fileLocal = desktop + "/2018不良品&良品表單.xlsx";
         FileInputStream excelFile = new FileInputStream(new File(fileLocal));
         try (XSSFWorkbook workbook = new XSSFWorkbook(excelFile)) {
             assertNotNull(workbook);

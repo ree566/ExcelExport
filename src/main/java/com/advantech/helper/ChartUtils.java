@@ -249,7 +249,13 @@ public class ChartUtils {
 
         LineAndShapeRenderer renderer = (LineAndShapeRenderer) (specRenderIndex == null ? plot.getRenderer() : plot.getRenderer(specRenderIndex));
 
-        renderer.setDefaultStroke(new BasicStroke(1.5F));
+        renderer.setDefaultStroke(new BasicStroke(2.5F));
+
+        for (int i = 0, seriesCount = plot.getDatasetCount(); i < seriesCount; i++) {
+            plot.getRenderer().setSeriesStroke(i, new BasicStroke(2.5F));
+        }
+        
+        renderer.setSeriesStroke(0, new BasicStroke(2.5F));
         if (isShowDataLabels) {
             renderer.setDefaultItemLabelsVisible(true);
             renderer.setDefaultItemLabelGenerator(new StandardCategoryItemLabelGenerator(StandardCategoryItemLabelGenerator.DEFAULT_LABEL_FORMAT_STRING,
