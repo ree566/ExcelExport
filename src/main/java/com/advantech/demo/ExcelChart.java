@@ -60,7 +60,8 @@ public class ExcelChart {
 
     private void excelToData() {
         try {
-            String fileLocal = "C:\\Users\\wei.cheng\\Desktop\\2018不良品&良品表單.xlsx";
+            String desktop = System.getProperty("user.home") + "/Desktop";
+            String fileLocal = desktop + "/2018不良品&良品表單.xlsx";
             FileInputStream excelFile = new FileInputStream(new File(fileLocal));
             try (XSSFWorkbook workbook = new XSSFWorkbook(excelFile)) {
                 XSSFSheet datatypeSheet = workbook.getSheet("工作表6");
@@ -176,7 +177,8 @@ public class ExcelChart {
         ChartPanel chartPanel = new ExcelChart().createChart();
         JFreeChart chart = chartPanel.getChart();
         try {
-            saveAsFile(chart, "C:\\Users\\wei.cheng\\Desktop\\123.jpg", 1024, 420);
+            String desktop = System.getProperty("user.home") + "/Desktop";
+            saveAsFile(chart, desktop + "/123.jpg", 1024, 420);
         } catch (Exception ex) {
             System.out.println(ex);
         }
