@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import static java.util.stream.Collectors.toList;
@@ -61,8 +62,9 @@ public class TestSendMail {
     private DateTime sDOW, eDOW;
 
     DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy/M/d");
+    DateTimeFormatter fmt2 = DateTimeFormat.forPattern("M/d");
 
-//    @Test
+    @Test
     public void testMail() throws MessagingException, IOException {
         ChartPanel chartPanel = new ExcelChart().createChart();
         JFreeChart chart = chartPanel.getChart();
@@ -73,7 +75,8 @@ public class TestSendMail {
 
         String[] to = {"Wei.Cheng@advantech.com.tw"};
         String mailBody = generateMailBody();
-        manager.sendMail(to, "test", mailBody, m);
+        String mailTitle = "5F-6F樓每週報廢明細" + fmt2.print(sDOW) + "~" + fmt2.print(eDOW);
+        manager.sendMail(to, mailTitle, mailBody, m);
     }
 
     private List<ScrappedDetail> getFloorSixExcelData() throws IOException, SAXException, InvalidFormatException {
@@ -84,7 +87,7 @@ public class TestSendMail {
         return l;
     }
 
-    @Test
+//    @Test
     public void testGetFloorFiveExcelData() {
         updateDateRange(new DateTime("2018-05-22"));
         List<ScrappedDetail> d = getFloorFiveExcelData();
@@ -165,7 +168,7 @@ public class TestSendMail {
             List<ScrappedDetail> floorSixDetail = filterResult(getFloorSixExcelData());
 
             assertTrue(!floorSixDetail.isEmpty() && !floorFiveDetail.isEmpty());
-            Map<String, List<ScrappedDetail>> m = new HashMap();
+            Map<String, List<ScrappedDetail>> m = new LinkedHashMap();
             m.put("5F", floorFiveDetail);
             m.put("6F", floorSixDetail);
 
