@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+ <!--was: <?xml version="1.0" encoding="ISO-8859-1"?>--> 
+<workbook>
+    <worksheet name="報   廢">
+        
+        <section startRow="0" endRow="1" />
+        
+        <loop startRow="1" endRow="1" items="rows" var="scrappedDetail" varType="com.advantech.model.ScrappedDetail">
+            <section startRow="1" endRow="1">
+                <mapping row="1" col="2">scrappedDetail.createDate</mapping>
+                <mapping row="1" col="3">scrappedDetail.po</mapping>
+                <mapping row="1" col="4">scrappedDetail.modelName</mapping>
+                <mapping row="1" col="5">scrappedDetail.materialNumber</mapping>
+                <mapping row="1" col="6">scrappedDetail.amount</mapping>
+                <mapping row="1" col="7">scrappedDetail.reason</mapping>
+                <mapping row="1" col="8">scrappedDetail.kind</mapping>
+                <mapping row="1" col="9">scrappedDetail.price</mapping>
+                <mapping row="1" col="11">scrappedDetail.negligenceUser</mapping>
+                <mapping row="1" col="14">scrappedDetail.remark</mapping>
+            </section>
+            <loopbreakcondition>
+                <rowcheck offset="1">
+                    <cellcheck offset="2"></cellcheck>
+                </rowcheck>
+            </loopbreakcondition>
+        </loop>
+    </worksheet>
+</workbook>

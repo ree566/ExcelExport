@@ -15,8 +15,8 @@
                 <mapping row="1" col="6">scrappedDetail.reason</mapping>
                 <mapping row="1" col="7">scrappedDetail.kind</mapping>
                 <mapping row="1" col="8">scrappedDetail.price</mapping>
-                <mapping row="1" col="10">scrappedDetail.negligenceUser</mapping>
-                <mapping row="1" col="11">scrappedDetail.remark</mapping>
+                <mapping row="1" col="9">scrappedDetail.negligenceUser</mapping>
+                <mapping row="1" col="10">scrappedDetail.remark</mapping>
             </section>
             <loopbreakcondition>
                 <rowcheck offset="0">

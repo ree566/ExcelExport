@@ -7,7 +7,10 @@ package com.advantech.helper;
 
 import com.advantech.demo.ExcelChart;
 import com.advantech.model.ScrappedDetail;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -15,12 +18,19 @@ import java.util.Map;
 import static java.util.stream.Collectors.toList;
 import javax.mail.MessagingException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +62,7 @@ public class TestSendMail {
 
     DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy/M/d");
 
-    @Test
+//    @Test
     public void testMail() throws MessagingException, IOException {
         ChartPanel chartPanel = new ExcelChart().createChart();
         JFreeChart chart = chartPanel.getChart();
@@ -66,12 +76,72 @@ public class TestSendMail {
         manager.sendMail(to, "test", mailBody, m);
     }
 
-    private List getExcelData() throws IOException, SAXException, InvalidFormatException {
-        String xmlConfig = "\\excel-template\\ScrappedDetail.xml";
+    private List<ScrappedDetail> getFloorSixExcelData() throws IOException, SAXException, InvalidFormatException {
+        String xmlConfig = "\\excel-template\\ScrappedDetail_6F.xml";
         String desktop = System.getProperty("user.home") + "/Desktop";
         String dataXLS = desktop + "/2018不良品&良品表單.xlsx";
         List<ScrappedDetail> l = reader.read(xmlConfig, dataXLS);
         return l;
+    }
+
+    @Test
+    public void testGetFloorFiveExcelData() {
+        updateDateRange(new DateTime("2018-05-22"));
+        List<ScrappedDetail> d = getFloorFiveExcelData();
+        assertEquals(9, d.size());
+        HibernateObjectPrinter.print(d);
+    }
+
+    private List<ScrappedDetail> getFloorFiveExcelData() {
+        List<ScrappedDetail> l = new ArrayList();
+        String fileLocation = System.getProperty("user.home") + "/Desktop/2018不良品良品表單.xlsx";
+        try {
+            FileInputStream excelFile = new FileInputStream(new File(fileLocation));
+            try (XSSFWorkbook workbook = new XSSFWorkbook(excelFile)) {
+                assertNotNull(workbook);
+                XSSFSheet datatypeSheet = workbook.getSheet("報   廢");
+                assertNotNull(datatypeSheet);
+
+                for (Row row : datatypeSheet) {
+                    Cell checkCell = row.getCell(3);
+                    Cell dateCell = row.getCell(2);
+
+                    if ("工單".equals(checkCell.getStringCellValue()) || new DateTime(dateCell.getDateCellValue()).isBefore(sDOW)) {
+                        continue;
+                    } else if (checkCell.getCellTypeEnum() == CellType.BLANK || new DateTime(dateCell.getDateCellValue()).isAfter(eDOW)) {
+                        break;
+                    }
+                    convertCellToString(checkCell, row.getCell(4), row.getCell(5));
+                    ScrappedDetail d = this.rowToDetail(row);
+                    l.add(d);
+                }
+                // Closing the workbook
+            }
+        } catch (IOException ex) {
+            System.out.println(ex);
+        }
+        return l;
+    }
+
+    private void convertCellToString(Cell... cells) {
+        for (Cell c : cells) {
+            c.setCellType(CellType.STRING);
+        }
+    }
+
+    private ScrappedDetail rowToDetail(Row row) {
+        ScrappedDetail d = new ScrappedDetail();
+        d.setCreateDate(row.getCell(2).getDateCellValue());
+        d.setPo(row.getCell(3).getStringCellValue());
+        d.setModelName(row.getCell(4).getStringCellValue());
+        d.setMaterialNumber(row.getCell(5).getStringCellValue());
+        d.setAmount((int) row.getCell(6).getNumericCellValue());
+        d.setReason(row.getCell(7).getStringCellValue());
+        d.setKind(row.getCell(8).getStringCellValue());
+        d.setPrice((int) row.getCell(9).getNumericCellValue());
+        d.setNegligenceUser(row.getCell(11).getStringCellValue());
+        d.setRemark(row.getCell(14).getStringCellValue());
+        return d;
     }
 
     private List<ScrappedDetail> filterResult(List<ScrappedDetail> l) {
@@ -91,9 +161,13 @@ public class TestSendMail {
     private String generateMailBody() {
         try {
             updateDateRange(new DateTime("2018-05-22"));
-            List<ScrappedDetail> l = filterResult(getExcelData());
+            List<ScrappedDetail> floorFiveDetail = this.getFloorFiveExcelData();
+            List<ScrappedDetail> floorSixDetail = filterResult(getFloorSixExcelData());
 
-            assertNotEquals(0, l.size());
+            assertTrue(!floorSixDetail.isEmpty() && !floorFiveDetail.isEmpty());
+            Map<String, List<ScrappedDetail>> m = new HashMap();
+            m.put("5F", floorFiveDetail);
+            m.put("6F", floorSixDetail);
 
             StringBuilder sb = new StringBuilder();
 
@@ -104,61 +178,67 @@ public class TestSendMail {
             sb.append("</style>");
             sb.append("<h3>Dear All:</h3>");
             sb.append("<h3>本週報廢明細如下:</h3>");
-            sb.append("<h5>5F:</h5>");
-            sb.append("<hr />");
-            sb.append("<h5>6F:</h5>");
-            sb.append("<table>");
-            sb.append("<tr>");
-            sb.append("<th>日期</th>");
-            sb.append("<th>工單</th>");
-            sb.append("<th>機種</th>");
-            sb.append("<th>料號</th>");
-            sb.append("<th>數量</th>");
-            sb.append("<th>退料原因</th>");
-            sb.append("<th>類別</th>");
-            sb.append("<th>單價</th>");
-            sb.append("<th>總金額</th>");
-            sb.append("<th>疏失人員</th>");
-            sb.append("</tr>");
 
-            //日期	工單	機種	料號	數量	退料原因	類別	單價	總金額	疏失人員
-            for (ScrappedDetail detail : l) {
+            for (Map.Entry<String, List<ScrappedDetail>> entry : m.entrySet()) {
+                String key = entry.getKey();
+                List<ScrappedDetail> details = entry.getValue();
+
+                sb.append("<h5>");
+                sb.append(key);
+                sb.append("</h5>");
+                sb.append("<table>");
                 sb.append("<tr>");
-                sb.append("<td>");
-                sb.append(fmt.print(new DateTime(detail.getCreateDate())));
-                sb.append("</td>");
-                sb.append("<td>");
-                sb.append(detail.getPo());
-                sb.append("</td>");
-                sb.append("<td>");
-                sb.append(detail.getModelName());
-                sb.append("</td>");
-                sb.append("<td>");
-                sb.append(detail.getMaterialNumber());
-                sb.append("</td>");
-                sb.append("<td>");
-                sb.append(detail.getAmount());
-                sb.append("</td>");
-                sb.append("<td>");
-                sb.append(detail.getReason());
-                sb.append("</td>");
-                sb.append("<td>");
-                sb.append(detail.getKind());
-                sb.append("</td>");
-                sb.append("<td>");
-                sb.append(detail.getPrice());
-                sb.append("</td>");
-                sb.append("<td>");
-                sb.append(detail.getPrice() * detail.getAmount());
-                sb.append("</td>");
-                sb.append("<td>");
-                sb.append(detail.getNegligenceUser());
-                sb.append("</td>");
-
+                sb.append("<th>日期</th>");
+                sb.append("<th>工單</th>");
+                sb.append("<th>機種</th>");
+                sb.append("<th>料號</th>");
+                sb.append("<th>數量</th>");
+                sb.append("<th>退料原因</th>");
+                sb.append("<th>類別</th>");
+                sb.append("<th>單價</th>");
+                sb.append("<th>總金額</th>");
+                sb.append("<th>疏失人員</th>");
                 sb.append("</tr>");
+
+                for (ScrappedDetail detail : details) {
+                    sb.append("<tr>");
+                    sb.append("<td>");
+                    sb.append(fmt.print(new DateTime(detail.getCreateDate())));
+                    sb.append("</td>");
+                    sb.append("<td>");
+                    sb.append(detail.getPo());
+                    sb.append("</td>");
+                    sb.append("<td>");
+                    sb.append(detail.getModelName());
+                    sb.append("</td>");
+                    sb.append("<td>");
+                    sb.append(detail.getMaterialNumber());
+                    sb.append("</td>");
+                    sb.append("<td>");
+                    sb.append(detail.getAmount());
+                    sb.append("</td>");
+                    sb.append("<td>");
+                    sb.append(detail.getReason());
+                    sb.append("</td>");
+                    sb.append("<td>");
+                    sb.append(detail.getKind());
+                    sb.append("</td>");
+                    sb.append("<td>");
+                    sb.append(detail.getPrice());
+                    sb.append("</td>");
+                    sb.append("<td>");
+                    sb.append(detail.getPrice() * detail.getAmount());
+                    sb.append("</td>");
+                    sb.append("<td>");
+                    sb.append(detail.getNegligenceUser());
+                    sb.append("</td>");
+
+                    sb.append("</tr>");
+                }
+                sb.append("</table>");
+                sb.append("<hr />");
             }
-            sb.append("</table>");
-            sb.append("<hr />");
+
             sb.append("<h5>報廢指數表:</h5>");
             sb.append("<img src=\"cid:img1\"></img>");
 

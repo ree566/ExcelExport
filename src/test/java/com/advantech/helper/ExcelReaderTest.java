@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import static org.apache.poi.ss.usermodel.CellType.BLANK;
 import static org.apache.poi.ss.usermodel.CellType.BOOLEAN;
 import static org.apache.poi.ss.usermodel.CellType.FORMULA;
@@ -27,6 +28,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.jxls.reader.ReaderConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -46,46 +48,56 @@ public class ExcelReaderTest {
 
     @Autowired
     private ExcelReader reader;
-    
-    private final String desktop = System.getProperty("user.home") + "/Desktop";
 
-    @Test
+    private final String fileLocation = System.getProperty("user.home") + "/Desktop/2018不良品良品表單.xlsx";
+
+//    @Test
     public void testRead() throws IOException, SAXException, InvalidFormatException {
-        String xmlConfig = "\\excel-template\\ScrappedDetail.xml";
-        
-        String dataXLS = desktop + "/2018不良品&良品表單.xlsx";
+        String xmlConfig = "\\excel-template\\ScrappedDetail_5F.xml";
 
-        List<ScrappedDetail> l = reader.read(xmlConfig, dataXLS);
+        List<ScrappedDetail> l = reader.read(xmlConfig, fileLocation);
+        ReaderConfig.getInstance().setSkipErrors(true);
 
         assertNotEquals(0, l.size());
 
         ObjectMapper oMapper = new ObjectMapper();
 
-        Map<String, Object> map = oMapper.convertValue(l.get(5), Map.class);
+        Map<String, Object> map = oMapper.convertValue(l.get(0), Map.class);
         System.out.println(map);
+        System.out.println(l.size());
     }
 
-//    @Test
-    public void testReadPivot() throws Exception {
-        String fileLocal = desktop + "/2018不良品&良品表單.xlsx";
-        FileInputStream excelFile = new FileInputStream(new File(fileLocal));
+    @Test
+    public void testRead2() throws Exception {
+        FileInputStream excelFile = new FileInputStream(new File(fileLocation));
         try (XSSFWorkbook workbook = new XSSFWorkbook(excelFile)) {
             assertNotNull(workbook);
-            XSSFSheet datatypeSheet = workbook.getSheet("工作表6");
+            XSSFSheet datatypeSheet = workbook.getSheet("報   廢");
             assertNotNull(datatypeSheet);
 
-            List skipRows = newArrayList(0, 1, datatypeSheet.getPhysicalNumberOfRows() - 1);
-            int i = 0;
             for (Row row : datatypeSheet) {
-                if (!skipRows.contains(i++)) {
-                    System.out.print(i + " -> ");
-                    row.forEach(cell -> {
-                        printCellValue(cell);
-                    });
-                    System.out.println();
+                Cell checkCell = row.getCell(3);
+
+                if ("工單".equals(checkCell.getStringCellValue())) {
+                    continue;
+                } else if (checkCell.getCellTypeEnum() == CellType.BLANK) {
+                    break;
                 }
+
+//                convertCellToString(checkCell, row.getCell(4), row.getCell(5));
+                row.forEach(cell -> {
+                    printCellValue(cell);
+                });
+                System.out.println();
+
             }
             // Closing the workbook
+        }
+    }
+
+    private void convertCellToString(Cell... cells) {
+        for (Cell c : cells) {
+            c.setCellType(CellType.STRING);
         }
     }
 
