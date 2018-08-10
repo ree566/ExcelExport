@@ -51,7 +51,7 @@ public class ExcelReaderTest {
 
     private final String fileLocation = System.getProperty("user.home") + "/Desktop/2018不良品良品表單.xlsx";
 
-//    @Test
+    @Test
     public void testRead() throws IOException, SAXException, InvalidFormatException {
         String xmlConfig = "\\excel-template\\ScrappedDetail_5F.xml";
 
@@ -60,14 +60,10 @@ public class ExcelReaderTest {
 
         assertNotEquals(0, l.size());
 
-        ObjectMapper oMapper = new ObjectMapper();
-
-        Map<String, Object> map = oMapper.convertValue(l.get(0), Map.class);
-        System.out.println(map);
-        System.out.println(l.size());
+        
     }
 
-    @Test
+//    @Test
     public void testRead2() throws Exception {
         FileInputStream excelFile = new FileInputStream(new File(fileLocation));
         try (XSSFWorkbook workbook = new XSSFWorkbook(excelFile)) {

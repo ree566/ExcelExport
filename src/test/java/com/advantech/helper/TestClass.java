@@ -7,6 +7,7 @@ package com.advantech.helper;
 
 import java.util.Random;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -33,7 +34,7 @@ public class TestClass {
         System.out.printf("Number: %d\n", i);
     }
 
-    @Test
+//    @Test
     public void testDateTime() {
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy/M/d");
 
@@ -44,5 +45,21 @@ public class TestClass {
 
         System.out.println(fmt.print(sDOW));
         System.out.println(fmt.print(eDOW));
+    }
+
+//    @Test
+    public void testAscii() {
+        String str = "&#x5c0f;&#x5149;&#x4f60;&#x597d;";
+        String s = "";
+        Random r = new Random();
+        for (int i = 0; i < 50; i++) {
+            System.out.println(str.charAt(r.nextInt(str.length())));
+        } 
+        System.out.println(s);
+    }
+    
+    @Test
+    public void testException() throws BuJamException{
+        throw new BuJamException("Guang is disappear...");
     }
 }
