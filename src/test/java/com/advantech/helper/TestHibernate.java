@@ -5,11 +5,11 @@
  */
 package com.advantech.helper;
 
-import com.advantech.model.User;
-import java.util.Set;
+import com.advantech.model.ScrappedDetail;
+import com.advantech.repo.ScrappedDetailRepository;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.transaction.Transactional;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,18 +31,26 @@ import org.springframework.test.context.web.WebAppConfiguration;
 public class TestHibernate {
     
     @Autowired
-    SessionFactory sessionFactory;
+    private ScrappedDetailRepository repo;
+    
+    @Autowired
+    private EntityManagerFactory factory;
     
     @Test
     @Transactional
     @Rollback(true)
-    public void testUserPojo(){
-        Session session = sessionFactory.getCurrentSession();
-        User user = session.get(User.class, 89);
-        assertNotNull(user);
-        Set userNoti = user.getUserNotifications();
-        assertEquals(1, userNoti.size());
-        HibernateObjectPrinter.print(user);
+    public void testPojo(){
+        ScrappedDetail o = repo.findById(1).get();
+        assertNotNull(o);
+        HibernateObjectPrinter.print(o);
+    }
+    
+//    @Test
+    public void testPojo2(){
+        EntityManager manager = factory.createEntityManager();
+        ScrappedDetail o = manager.find(ScrappedDetail.class, 1);
+        assertNotNull(o);
+        HibernateObjectPrinter.print(o);
     }
     
 }

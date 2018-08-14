@@ -72,8 +72,13 @@
     </appender>
     
     <logger name="org.hibernate.type" level="INFO" />
+    <!--<logger name="org.hibernate" level="DEBUG" additivity="true" />-->
     <logger name="org.hibernate" level="INFO" additivity="false" />
-    <logger name="org.hibernate.engine.query.HQLQueryPlan" level="DEBUG" additivity="false" />
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE" />
+    <logger name="org.hibernate.type.descriptor.sql.BasicExtractor" level="DEBUG" />
+    <logger name="org.hibernate.SQL" level="DEBUG" />
+    <logger name="org.hibernate.engine.QueryParameters" level="DEBUG" />
+    <logger name="org.hibernate.engine.query.HQLQueryPlan" level="DEBUG" />
     
     <logger name="org.springframework" level="INFO" additivity="false" />
     
