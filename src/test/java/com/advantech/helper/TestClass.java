@@ -5,9 +5,11 @@
  */
 package com.advantech.helper;
 
+import static com.google.common.collect.Lists.newArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -54,12 +56,21 @@ public class TestClass {
         Random r = new Random();
         for (int i = 0; i < 50; i++) {
             System.out.println(str.charAt(r.nextInt(str.length())));
-        } 
+        }
         System.out.println(s);
     }
-    
-    @Test
-    public void testException() throws BuJamException{
+
+//    @Test
+    public void testException() throws BuJamException {
         throw new BuJamException("Guang is disappear...");
+    }
+
+    @Test
+    public void testCollection() {
+        List<Integer> l = newArrayList(1, 3, 4, 5, 2, 7, 8, 9, 2, 33, 14, 56, 0, 1);
+        List<Integer> l2 = newArrayList(2, 9, 8, 21, 3, 9, 5, 11, 2, 14);
+
+        System.out.println(CollectionUtils.subtract(l, l2));
+        System.out.println(CollectionUtils.subtract(l2, l));
     }
 }

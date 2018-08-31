@@ -22,6 +22,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
 
@@ -34,6 +35,12 @@ public class ExcelDataTransformer {
 
     @Autowired
     private ExcelReader reader;
+    
+    @Value("${floor.five.fileLocation}")
+    private String floorFiveFileLocation;
+    
+    @Value("${floor.six.fileLocation}")
+    private String floorSixFileLocation;
 
     private List<ScrappedDetail> filterResult(List<ScrappedDetail> l, DateTime sDOW, DateTime eDOW) {
         return l.stream().filter(p -> isDateBetweens(p.getCreateDate(), sDOW, eDOW)).collect(toList());
@@ -44,19 +51,27 @@ public class ExcelDataTransformer {
         return (sDOW.isBefore(d) || sDOW.isEqual(d)) && (eDOW.isAfter(d) || eDOW.isEqual(d));
     }
 
+    public List<ScrappedDetail> getFloorSixExcelData() throws IOException, SAXException, InvalidFormatException {
+        return this.getFloorSixExcelData(null, null);
+    }
+
     public List<ScrappedDetail> getFloorSixExcelData(DateTime sDOW, DateTime eDOW) throws IOException, SAXException, InvalidFormatException {
         String xmlConfig = "\\excel-template\\ScrappedDetail_6F.xml";
-        String desktop = System.getProperty("user.home") + "/Desktop";
-        String dataXLS = desktop + "/2018不良品&良品表單.xlsx";
-        List<ScrappedDetail> l = filterResult(reader.read(xmlConfig, dataXLS), sDOW, eDOW);
+        List<ScrappedDetail> l = reader.read(xmlConfig, floorSixFileLocation);
+        if(sDOW != null && eDOW != null){
+            l = filterResult(l, sDOW, eDOW);
+        }
         return l;
+    }
+
+    public List<ScrappedDetail> getFloorFiveExcelData() throws FileNotFoundException, IOException {
+        return this.getFloorFiveExcelData(null, null);
     }
 
     public List<ScrappedDetail> getFloorFiveExcelData(DateTime sDOW, DateTime eDOW) throws FileNotFoundException, IOException {
         List<ScrappedDetail> l = new ArrayList();
-        String fileLocation = System.getProperty("user.home") + "/Desktop/2018不良品良品表單.xlsx";
 
-        FileInputStream excelFile = new FileInputStream(new File(fileLocation));
+        FileInputStream excelFile = new FileInputStream(new File(floorFiveFileLocation));
         try (XSSFWorkbook workbook = new XSSFWorkbook(excelFile)) {
             XSSFSheet datatypeSheet = workbook.getSheet("報   廢");
 
@@ -64,9 +79,9 @@ public class ExcelDataTransformer {
                 Cell checkCell = row.getCell(3);
                 Cell dateCell = row.getCell(2);
 
-                if ("工單".equals(checkCell.getStringCellValue()) || new DateTime(dateCell.getDateCellValue()).isBefore(sDOW)) {
+                if ("工單".equals(checkCell.getStringCellValue()) || (sDOW != null && new DateTime(dateCell.getDateCellValue()).isBefore(sDOW))) {
                     continue;
-                } else if (checkCell.getCellTypeEnum() == CellType.BLANK || new DateTime(dateCell.getDateCellValue()).isAfter(eDOW)) {
+                } else if (checkCell.getCellTypeEnum() == CellType.BLANK || (sDOW != null && new DateTime(dateCell.getDateCellValue()).isAfter(eDOW))) {
                     break;
                 }
                 convertCellToString(checkCell, row.getCell(4), row.getCell(5));

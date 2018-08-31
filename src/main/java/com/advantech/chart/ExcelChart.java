@@ -3,25 +3,29 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.demo;
+package com.advantech.chart;
 
 import com.advantech.helper.ChartUtils;
+import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.helper.Serie;
+import com.advantech.model.ScrappedDetailWeekGroup;
+import com.advantech.repo.ScrappedDetailRepository;
+import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
 import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import static java.util.stream.Collectors.groupingBy;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.commons.collections.CollectionUtils;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -34,6 +38,8 @@ import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  *
@@ -49,65 +55,119 @@ import org.jfree.data.category.DefaultCategoryDataset;
  *
  * </p>
  */
+@Component
 public class ExcelChart {
 
     List<String> cate;
-    List<Serie> ser;
+    List ser;
     List<DefaultCategoryDataset> dataset;
 
-    public ExcelChart() {
-    }
+    @Autowired
+    private ScrappedDetailRepository repo;
 
     private void excelToData() {
-        try {
-            String desktop = System.getProperty("user.home") + "/Desktop";
-            String fileLocal = desktop + "/2018不良品&良品表單.xlsx";
-            FileInputStream excelFile = new FileInputStream(new File(fileLocal));
-            try (XSSFWorkbook workbook = new XSSFWorkbook(excelFile)) {
-                XSSFSheet datatypeSheet = workbook.getSheet("工作表6");
+        List<ScrappedDetailWeekGroup> d = repo.findAllGroupByWeek();
 
-                List skipRows = newArrayList(0, 1, datatypeSheet.getPhysicalNumberOfRows() - 1);
-                int i = 0;
+        cate = newArrayList();
+        ser = new ArrayList();
 
-                cate = new ArrayList();
-                ser = new ArrayList();
+        //先分樓層
+        Map<String, List<ScrappedDetailWeekGroup>> dGroup = d.stream()
+                .collect(groupingBy(ScrappedDetailWeekGroup::getFloorName));
 
-                List five_floor = new ArrayList();
-                List six_floor = new ArrayList();
-                List total = new ArrayList();
+        List<ScrappedDetailWeekGroup> floorFiveD = dGroup.get("5F");
+        List<ScrappedDetailWeekGroup> floorSixD = dGroup.get("6F");
 
-                for (Row row : datatypeSheet) {
-                    if (!skipRows.contains(i++)) {
-                        row.forEach(cell -> {
-                            int colIdx = cell.getColumnIndex();
-                            switch (colIdx) {
-                                case 0:
-                                    cate.add(cell.getStringCellValue());
-                                    break;
-                                case 1:
-                                    five_floor.add(cell.getNumericCellValue());
-                                    break;
-                                case 2:
-                                    six_floor.add(cell.getNumericCellValue());
-                                    break;
-                                case 3:
-                                    total.add(cell.getCellTypeEnum() == CellType.BLANK ? -1 : cell.getNumericCellValue());
-                                default:
-                                    break;
-                            }
-                        });
-                    }
+        //取得兩邊都有的week
+        List<Integer> c1 = dGroup.get("5F").stream()
+                .map(s -> s.getWeek())
+                .collect(Collectors.toList());
+
+        List<Integer> c2 = dGroup.get("6F").stream()
+                .map(s -> s.getWeek())
+                .collect(Collectors.toList());
+
+        List<Integer> totalWeek = (List<Integer>) CollectionUtils.union(c1, c2);
+
+        System.out.printf("Total week: %d\n", totalWeek.size());
+
+        //將沒有week的資料補0
+        List<Integer> floorFiveSub = (List<Integer>) CollectionUtils.subtract(totalWeek, c1);
+        List<Integer> floorSixSub = (List<Integer>) CollectionUtils.subtract(totalWeek, c2);
+
+        System.out.printf("Floor five current: %d -> diff: %d / Floor six current: %d -> diff: %d\n",
+                c1.size(), floorFiveSub.size(), c2.size(), floorSixSub.size());
+
+        floorFiveSub.forEach(s -> {
+            floorFiveD.add(new ScrappedDetailWeekGroup() {
+                @Override
+                public int getWeek() {
+                    return s;
                 }
 
-                ser.add(new Serie("5F", five_floor.toArray()));
-                ser.add(new Serie("6F", six_floor.toArray()));
-                ser.add(new Serie("total", total.toArray()));
+                @Override
+                public String getFloorName() {
+                    return "5F";
+                }
 
-                // Closing the workbook
-            }
-        } catch (Exception ex) {
-            System.out.println(ex);
-        }
+                @Override
+                public int getTotal() {
+                    return 0;
+                }
+            });
+        });
+
+        floorSixSub.forEach(s -> {
+            floorSixD.add(new ScrappedDetailWeekGroup() {
+                @Override
+                public int getWeek() {
+                    return s;
+                }
+
+                @Override
+                public String getFloorName() {
+                    return "6F";
+                }
+
+                @Override
+                public int getTotal() {
+                    return 0;
+                }
+            });
+        });
+
+        System.out.printf("floorFiveD: %d, floorSixD: %d\n", floorFiveD.size(), floorSixD.size());
+        
+        //Transform week to string list
+        cate = totalWeek.stream().map(s -> s.toString()).collect(Collectors.toList());
+
+        HibernateObjectPrinter.print(cate);
+
+        List<Integer> floorFiveTotal = floorFiveD.stream()
+                .sorted((ScrappedDetailWeekGroup o1, ScrappedDetailWeekGroup o2) -> o1.getWeek() - o2.getWeek())
+                .map(ScrappedDetailWeekGroup::getTotal)
+                .collect(Collectors.toList());
+
+        List<Integer> floorSixTotal = floorSixD.stream()
+                .sorted((ScrappedDetailWeekGroup o1, ScrappedDetailWeekGroup o2) -> o1.getWeek() - o2.getWeek())
+                .map(ScrappedDetailWeekGroup::getTotal)
+                .collect(Collectors.toList());
+        
+        HibernateObjectPrinter.print(floorFiveTotal);
+        HibernateObjectPrinter.print(floorSixTotal);
+
+        System.out.printf("floorFiveTotal: %d, floorSixTotal: %d\n", floorFiveTotal.size(), floorSixTotal.size());
+
+        List<Integer> total = new ArrayList();
+        floorFiveTotal.forEach((_item) -> {
+            total.add(-1);
+        });
+
+        ser.add(new Serie("5F", floorFiveTotal));
+        ser.add(new Serie("6F", floorSixTotal));
+        ser.add(new Serie("total", total));
+
+        HibernateObjectPrinter.print(ser);
 
         List l = newArrayList(ser.get(0), ser.get(1));
         List l2 = newArrayList(ser.get(2));
@@ -156,7 +216,7 @@ public class ExcelChart {
         Font font = new Font("微軟正黑體", Font.PLAIN, 16);
         axis.setTickLabelFont(font);
         axis.setLabelFont(font);
-        
+
         CategoryAxis caxis = plot.getDomainAxis();
         caxis.setTickLabelFont(font);
         caxis.setLabelFont(font);
@@ -166,31 +226,30 @@ public class ExcelChart {
         return chartPanel;
     }
 
-    public static void main(String[] args) {
+    public void toFrame(ChartPanel chartPanel) {
         final JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1200, 600);
         frame.setLocationRelativeTo(null);
 
         Runnable task3 = () -> {
-            ChartPanel chartPanel = new ExcelChart().createChart();
             frame.getContentPane().add(chartPanel);
             frame.setVisible(true);
         };
 
         SwingUtilities.invokeLater(task3);
-//        ChartPanel chartPanel = new ExcelChart().createChart();
-//        JFreeChart chart = chartPanel.getChart();
-//        try {
-//            String desktop = System.getProperty("user.home") + "/Desktop";
-//            saveAsFile(chart, desktop + "/123.jpg", 1024, 420);
-//        } catch (Exception ex) {
-//            System.out.println(ex);
-//        }
-
     }
 
-    public static void saveAsFile(JFreeChart chart, String outputPath,
+    public void saveAsFileDemo(JFreeChart chart) {
+        try {
+            String desktop = System.getProperty("user.home") + "/Desktop";
+            saveAsFile(chart, desktop + "/123.jpg", 1024, 420);
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+    }
+
+    public void saveAsFile(JFreeChart chart, String outputPath,
             int weight, int height) throws Exception {
         File outFile = new File(outputPath);
         if (!outFile.getParentFile().exists()) {

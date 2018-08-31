@@ -29,14 +29,15 @@ public class ExcelReaderTest {
     @Autowired
     private ExcelDataTransformer t;
 
-    
     @Test
     public void testRead() throws Exception {
         DateTime sDOW = new DateTime("2018-06-01");
         DateTime eDOW = new DateTime("2018-06-30");
-        List list1 = t.getFloorFiveExcelData(sDOW, eDOW);
+        List list1 = t.getFloorSixExcelData();
         assertTrue(!list1.isEmpty());
+        System.out.println(list1.size());
         List list2 = t.getFloorSixExcelData(sDOW, eDOW);
         assertTrue(!list2.isEmpty());
+        System.out.println(list2.size());
     }
 }

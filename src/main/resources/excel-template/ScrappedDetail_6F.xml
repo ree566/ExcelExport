@@ -3,7 +3,7 @@
 <workbook>
     <worksheet name="報廢">
         
-        <section startRow="0" endRow="1" />
+        <section startRow="0" endRow="0" />
         
         <loop startRow="1" endRow="1" items="rows" var="scrappedDetail" varType="com.advantech.model.ScrappedDetail">
             <section startRow="1" endRow="1">

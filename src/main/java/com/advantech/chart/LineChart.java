@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.demo;
+package com.advantech.chart;
 
 import com.advantech.helper.ChartUtils;
 import com.advantech.helper.Serie;

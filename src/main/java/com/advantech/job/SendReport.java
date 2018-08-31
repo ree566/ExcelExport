@@ -5,7 +5,7 @@
  */
 package com.advantech.job;
 
-import com.advantech.demo.ExcelChart;
+import com.advantech.chart.ExcelChart;
 import com.advantech.helper.ExcelDataTransformer;
 import com.advantech.helper.MailManager;
 import com.advantech.model.ScrappedDetail;

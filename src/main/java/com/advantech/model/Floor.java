@@ -27,6 +27,7 @@ public class Floor implements java.io.Serializable {
     private int id;
     private String name;
     private Set<User> users = new HashSet<>(0);
+    private Set<ScrappedDetail> scrappedDetails = new HashSet<>(0);
 
     public Floor() {
     }
@@ -71,6 +72,42 @@ public class Floor implements java.io.Serializable {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    @JsonIgnore
+    @JsonIgnoreProperties
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "floor")
+    public Set<ScrappedDetail> getScrappedDetails() {
+        return scrappedDetails;
+    }
+
+    public void setScrappedDetails(Set<ScrappedDetail> scrappedDetails) {
+        this.scrappedDetails = scrappedDetails;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 53 * hash + this.id;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Floor other = (Floor) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
     }
 
 }

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+    
+    <!--job1 setting-->
+    <bean name="SendReport-Job" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="sendReport" />
+        <property name="targetMethod" value="execute"/>  
+        <property name="concurrent" value="false"/>
+    </bean>
+    
+    <bean id="SendReport-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="SendReport-Job" />
+        <property name="cronExpression" value="0 0 15 ? * FRI *" />
+    </bean>
+    
+    <!--job2 setting-->
+    <bean name="SyncData-Job" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="syncData" />
+        <property name="targetMethod" value="execute"/>  
+        <property name="concurrent" value="false"/>
+    </bean>
+    
+    <bean id="SyncData-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="SyncData-Job" />
+        <property name="cronExpression" value="0 25 10 ? * * *" />
+    </bean>
+
+    <!--schedule jobs-->
+    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <!--<ref bean="SendReport-Trig"/>-->
+                <ref bean="SyncData-Trig"/>
+            </list>
+        </property>
+        <property name="schedulerName">
+            <value>jobScheduler</value>
+        </property>
+        
+        <property name="configLocation">
+            <value>classpath:quartz.properties</value>
+        </property>
+    </bean>
+    
+</beans>

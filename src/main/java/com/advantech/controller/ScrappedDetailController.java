@@ -6,8 +6,8 @@
 package com.advantech.controller;
 
 import com.advantech.model.ScrappedDetail;
-import com.advantech.repo.ScrappedDetailRepository;
 import com.advantech.service.ExceptionService;
+import com.advantech.service.ScrappedDetailService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ScrappedDetailController {
     
     @Autowired
-    private ScrappedDetailRepository repo;
+    private ScrappedDetailService scrapService;
     
     @Autowired
     private ExceptionService service;
@@ -33,13 +33,13 @@ public class ScrappedDetailController {
     @ResponseBody
     @RequestMapping(value = "/findAll", method = {RequestMethod.GET})
     protected List<ScrappedDetail> findAll() {
-        return repo.findAll();
+        return scrapService.findAll();
     }
     
     @ResponseBody
     @RequestMapping(value = "/findById", method = {RequestMethod.GET})
     protected ScrappedDetail findById(@RequestParam Integer id) {
-        return repo.findById(id).get();
+        return scrapService.findById(id).get();
     }
     
     @ResponseBody

@@ -31,7 +31,7 @@
           http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
 ">
     <!--Other settings in properties-->
-    <!--<context:property-placeholder location="classpath:upload-setting.properties" />-->
+    <context:property-placeholder location="classpath:options.properties" />
     
     <!--beans setting-->
     <!--    <bean class="org.springframework.web.servlet.view.XmlViewResolver">
@@ -96,13 +96,14 @@
     <context:component-scan base-package="
             com.advantech.dao, 
             com.advantech.service, 
+            com.advantech.chart, 
             com.advantech.controller, 
+            com.advantech.job,
             com.advantech.helper
     " />
     <!--            com.advantech.converter, 
     com.advantech.customException, 
     com.advantech.security, 
-    com.advantech.quartzJob,
     com.advantech.webservice,-->
             
     
@@ -132,7 +133,15 @@
     -->
 
     
-    <mvc:annotation-driven />
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="objectMapper">
+                    <bean class="com.advantech.converter.HibernateAwareObjectMapper" />
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
     
     <mvc:resources mapping="/webjars/**" location="/webjars/"/>
     <!--Email setting-->
@@ -155,6 +164,6 @@
     <!--other import-->
 
     <!--<import resource="classpath:spring-security.xml"/>-->
-    <!--<import resource="classpath:spring-quartz.xml"/>-->
+    <import resource="classpath:spring-quartz.xml"/>
 
 </beans>

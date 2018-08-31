@@ -8,10 +8,11 @@ package com.advantech.helper;
 import com.advantech.job.SendReport;
 import java.io.IOException;
 import javax.mail.MessagingException;
-import org.joda.time.DateTime;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -29,10 +30,13 @@ public class TestSendMail {
 
     @Autowired
     private SendReport job;
+    
+    @Value("${floor.five.fileLocation}")
+    private String fileLocation;
 
     @Test
     public void testMail() throws MessagingException, IOException {
-        job.sendMail(new DateTime());
+        job.execute();
     }
    
 }
