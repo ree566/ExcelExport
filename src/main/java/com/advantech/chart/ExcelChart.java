@@ -90,14 +90,9 @@ public class ExcelChart {
 
         List<Integer> totalWeek = (List<Integer>) CollectionUtils.union(c1, c2);
 
-        System.out.printf("Total week: %d\n", totalWeek.size());
-
         //將沒有week的資料補0
         List<Integer> floorFiveSub = (List<Integer>) CollectionUtils.subtract(totalWeek, c1);
         List<Integer> floorSixSub = (List<Integer>) CollectionUtils.subtract(totalWeek, c2);
-
-        System.out.printf("Floor five current: %d -> diff: %d / Floor six current: %d -> diff: %d\n",
-                c1.size(), floorFiveSub.size(), c2.size(), floorSixSub.size());
 
         floorFiveSub.forEach(s -> {
             floorFiveD.add(new ScrappedDetailWeekGroup() {
@@ -136,13 +131,9 @@ public class ExcelChart {
                 }
             });
         });
-
-        System.out.printf("floorFiveD: %d, floorSixD: %d\n", floorFiveD.size(), floorSixD.size());
         
         //Transform week to string list
         cate = totalWeek.stream().map(s -> s.toString()).collect(Collectors.toList());
-
-        HibernateObjectPrinter.print(cate);
 
         List<Integer> floorFiveTotal = floorFiveD.stream()
                 .sorted((ScrappedDetailWeekGroup o1, ScrappedDetailWeekGroup o2) -> o1.getWeek() - o2.getWeek())
@@ -153,11 +144,6 @@ public class ExcelChart {
                 .sorted((ScrappedDetailWeekGroup o1, ScrappedDetailWeekGroup o2) -> o1.getWeek() - o2.getWeek())
                 .map(ScrappedDetailWeekGroup::getTotal)
                 .collect(Collectors.toList());
-        
-        HibernateObjectPrinter.print(floorFiveTotal);
-        HibernateObjectPrinter.print(floorSixTotal);
-
-        System.out.printf("floorFiveTotal: %d, floorSixTotal: %d\n", floorFiveTotal.size(), floorSixTotal.size());
 
         List<Integer> total = new ArrayList();
         floorFiveTotal.forEach((_item) -> {
@@ -168,8 +154,6 @@ public class ExcelChart {
         ser.add(new Serie("6F", floorSixTotal));
         ser.add(new Serie("total", total));
 
-        HibernateObjectPrinter.print(ser);
-
         List l = newArrayList(ser.get(0), ser.get(1));
         List l2 = newArrayList(ser.get(2));
 
@@ -177,7 +161,6 @@ public class ExcelChart {
         DefaultCategoryDataset dataset2 = ChartUtils.createDefaultCategoryDataset(l2, cate.toArray(new String[cate.size()]));
 
         dataset = newArrayList(dataset1, dataset2);
-//        return dataset;
     }
 
     public ChartPanel createChart() {

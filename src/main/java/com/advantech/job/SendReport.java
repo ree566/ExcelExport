@@ -6,6 +6,7 @@
 package com.advantech.job;
 
 import com.advantech.chart.ExcelChart;
+import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.helper.MailManager;
 import com.advantech.model.ScrappedDetail;
 import com.advantech.model.User;
@@ -13,6 +14,7 @@ import com.advantech.model.UserNotification;
 import com.advantech.service.ScrappedDetailService;
 import com.advantech.service.UserNotificationService;
 import com.advantech.service.UserService;
+import static com.google.common.base.Preconditions.checkState;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -76,10 +78,10 @@ public class SendReport {
             UserNotification notifi = notificationService.findById(1).get();
             UserNotification notifiCc = notificationService.findById(2).get();
 
-//            String[] mailTarget = findUsersMail(notifi);
-//            String[] mailCcTarget = findUsersMail(notifiCc);
-            String[] mailTarget = {"Wei.Cheng@advantech.com.tw"};
-            String[] mailCcTarget = null;
+            String[] mailTarget = findUsersMail(notifi);
+            String[] mailCcTarget = findUsersMail(notifiCc);
+//            String[] mailTarget = {"Wei.Cheng@advantech.com.tw"};
+//            String[] mailCcTarget = {};
 
             updateDateRange(d);
 
@@ -92,6 +94,7 @@ public class SendReport {
 
             String mailBody = generateMailBody();
             String mailTitle = "5F-6F樓每週報廢明細" + fmt2.print(sDOW) + "~" + fmt2.print(eDOW);
+
             manager.sendMail(mailTarget, mailCcTarget, mailTitle, mailBody, m);
 
         } catch (SAXException | InvalidFormatException | IOException | MessagingException ex) {
@@ -126,8 +129,11 @@ public class SendReport {
         sb.append("table {border-collapse: collapse; padding:5px; }");
         sb.append("table, th, td {border: 1px solid black;}");
         sb.append("table th {background-color: yellow;}");
+        sb.append("#mailBody {font-family: 微軟正黑體;}");
+        sb.append(".highlight {background-color: yellow;}");
         sb.append("</style>");
-        sb.append("<h3>Dear All:</h3>");
+        sb.append("<div id='mailBody'>");
+        sb.append("<h3>Dear User:</h3>");
         sb.append("<h3>本週報廢明細如下:</h3>");
 
         for (Map.Entry<String, List<ScrappedDetail>> entry : m.entrySet()) {
@@ -193,9 +199,9 @@ public class SendReport {
         int floorFiveSum = floorFiveDetail.stream().collect(Collectors.summingInt(s -> s.getAmount() * s.getPrice()));
         int floorSixSum = floorSixDetail.stream().collect(Collectors.summingInt(s -> s.getAmount() * s.getPrice()));
 
-        sb.append("<h5>");
-        sb.append(sDOW.getWeekyear());
-        sb.append("周統計: ");
+        sb.append("<h5 class='highlight'>");
+        sb.append(sDOW.getWeekOfWeekyear());
+        sb.append("週統計-> ");
         sb.append("5F: ");
         sb.append(floorFiveSum);
         sb.append(" 元");
@@ -208,6 +214,7 @@ public class SendReport {
 
         sb.append("<h5>報廢指數表:</h5>");
         sb.append("<img src=\"cid:img1\"></img>");
+        sb.append("</div>");
 
         return sb.toString();
 
