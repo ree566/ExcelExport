@@ -6,14 +6,20 @@
 package com.advantech.job;
 
 import com.advantech.chart.ExcelChart;
-import com.advantech.helper.ExcelDataTransformer;
 import com.advantech.helper.MailManager;
 import com.advantech.model.ScrappedDetail;
+import com.advantech.model.User;
+import com.advantech.model.UserNotification;
+import com.advantech.service.ScrappedDetailService;
+import com.advantech.service.UserNotificationService;
+import com.advantech.service.UserService;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import static java.util.stream.Collectors.toList;
 import javax.mail.MessagingException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.jfree.chart.ChartPanel;
@@ -31,7 +37,10 @@ import org.xml.sax.SAXException;
 
 /**
  *
- * @author Wei.Cheng
+ * @author Wei.Cheng To: Timmy.Hsu Cc: Allen.Chu; Ls.He; Yichun.Chen; Sen.Hung;
+ * Abby.Chen; Candice.Kung; Anderson.Chen; Johnny.Lin; EVON.CHUANG; Rain.Chu;
+ * Kai.Yang; Momo.Hsieh; LU.Zheng; Apple.Hsieh; Dongni.Zheng
+ *
  */
 @Component
 public class SendReport {
@@ -42,7 +51,16 @@ public class SendReport {
     private MailManager manager;
 
     @Autowired
-    private ExcelDataTransformer excelTran;
+    private UserNotificationService notificationService;
+
+    @Autowired
+    private ExcelChart excelChart;
+
+    @Autowired
+    private ScrappedDetailService scrappedDetailService;
+
+    @Autowired
+    private UserService userService;
 
     private DateTime sDOW, eDOW;
 
@@ -52,26 +70,38 @@ public class SendReport {
     public void execute() {
         sendMail(new DateTime());
     }
-    
-    public void sendMail(DateTime d){
+
+    public void sendMail(DateTime d) {
         try {
+            UserNotification notifi = notificationService.findById(1).get();
+            UserNotification notifiCc = notificationService.findById(2).get();
+
+//            String[] mailTarget = findUsersMail(notifi);
+//            String[] mailCcTarget = findUsersMail(notifiCc);
+            String[] mailTarget = {"Wei.Cheng@advantech.com.tw"};
+            String[] mailCcTarget = null;
+
             updateDateRange(d);
 
-            ChartPanel chartPanel = new ExcelChart().createChart();
+            ChartPanel chartPanel = excelChart.createChart();
             JFreeChart chart = chartPanel.getChart();
             byte[] image = org.jfree.chart.ChartUtils.encodeAsPNG(chart.createBufferedImage(1800, 768));
             InputStreamSource is = new ByteArrayResource(image);
             Map<String, InputStreamSource> m = new HashMap();
             m.put("img1", is);
 
-            String[] to = {"Wei.Cheng@advantech.com.tw"};
             String mailBody = generateMailBody();
             String mailTitle = "5F-6F樓每週報廢明細" + fmt2.print(sDOW) + "~" + fmt2.print(eDOW);
-            manager.sendMail(to, mailTitle, mailBody, m);
+            manager.sendMail(mailTarget, mailCcTarget, mailTitle, mailBody, m);
 
         } catch (SAXException | InvalidFormatException | IOException | MessagingException ex) {
             logger.error("Send mail fail.", ex);
         }
+    }
+
+    private String[] findUsersMail(UserNotification notifi) {
+        List<User> l = userService.findByUserNotifications(notifi);
+        return l.stream().map(u -> u.getEmail()).toArray(size -> new String[size]);
     }
 
     private void updateDateRange(DateTime d) {
@@ -81,8 +111,9 @@ public class SendReport {
 
     private String generateMailBody() throws IOException, SAXException, InvalidFormatException {
 
-        List<ScrappedDetail> floorFiveDetail = excelTran.getFloorFiveExcelData(sDOW, eDOW);
-        List<ScrappedDetail> floorSixDetail = excelTran.getFloorSixExcelData(sDOW, eDOW);
+        List<ScrappedDetail> l = scrappedDetailService.findByCreateDateBetween(sDOW, eDOW);
+        List<ScrappedDetail> floorFiveDetail = l.stream().filter(s -> s.getFloor().getId() == 1).collect(toList());
+        List<ScrappedDetail> floorSixDetail = l.stream().filter(s -> s.getFloor().getId() == 2).collect(toList());
 
         //Use hashmap mass up the order in current map, so use linkedHashMap instead.
         Map<String, List<ScrappedDetail>> m = new LinkedHashMap();
@@ -158,6 +189,22 @@ public class SendReport {
             sb.append("</table>");
             sb.append("<hr />");
         }
+
+        int floorFiveSum = floorFiveDetail.stream().collect(Collectors.summingInt(s -> s.getAmount() * s.getPrice()));
+        int floorSixSum = floorSixDetail.stream().collect(Collectors.summingInt(s -> s.getAmount() * s.getPrice()));
+
+        sb.append("<h5>");
+        sb.append(sDOW.getWeekyear());
+        sb.append("周統計: ");
+        sb.append("5F: ");
+        sb.append(floorFiveSum);
+        sb.append(" 元");
+        sb.append(" / ");
+        sb.append("6F: ");
+        sb.append(floorSixSum);
+        sb.append(" 元");
+
+        sb.append("</h5>");
 
         sb.append("<h5>報廢指數表:</h5>");
         sb.append("<img src=\"cid:img1\"></img>");

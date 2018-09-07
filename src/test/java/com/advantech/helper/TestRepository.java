@@ -8,8 +8,12 @@ package com.advantech.helper;
 import com.advantech.model.Floor;
 import com.advantech.model.ScrappedDetail;
 import com.advantech.model.ScrappedDetailWeekGroup;
+import com.advantech.model.User;
+import com.advantech.model.UserNotification;
 import com.advantech.repo.FloorRepository;
 import com.advantech.repo.ScrappedDetailRepository;
+import com.advantech.repo.UserNotificationRepository;
+import com.advantech.repo.UserRepository;
 import java.util.List;
 import javax.transaction.Transactional;
 import org.apache.commons.collections.CollectionUtils;
@@ -17,6 +21,8 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -41,8 +47,14 @@ public class TestRepository {
 
     @Autowired
     private ExcelDataTransformer tr;
+    
+    @Autowired
+    private UserRepository userRepo;
+    
+    @Autowired
+    private UserNotificationRepository notificationRepo;
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(false)
     public void testScrappedDetailRepo() throws Exception {
@@ -110,6 +122,30 @@ public class TestRepository {
 
         HibernateObjectPrinter.print(l);
         
+        
+    }
+    
+//    @Test
+    @Transactional
+    @Rollback(true)
+    public void testPaginate() {
+        PageRequest req =  new PageRequest(1, 10, Sort.Direction.DESC, "createDate", "po");
+        List<ScrappedDetail> l = scrappedRepo.findAll(req).getContent();
+
+        HibernateObjectPrinter.print(l);
+        
+        
+    }
+    
+//    @Test
+    @Transactional
+    @Rollback(true)
+    public void testUserNotification() {
+        UserNotification n = notificationRepo.findById(2).get();
+        
+        List<User> l = userRepo.findByUserNotifications(n);
+
+        assertEquals(22, l.size());
         
     }
 

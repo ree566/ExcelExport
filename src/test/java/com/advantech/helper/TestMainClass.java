@@ -5,11 +5,12 @@
  */
 package com.advantech.helper;
 
-import java.util.List;
-import static org.junit.Assert.*;
+import com.advantech.chart.LineChart;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+import org.jfree.chart.ChartPanel;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -23,22 +24,22 @@ import org.springframework.test.context.web.WebAppConfiguration;
     "classpath:servlet-context.xml"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
-public class ExcelReaderTest {
-
-    @Autowired
-    private ExcelDataTransformer t;
+public class TestMainClass {
 
     @Test
-    public void testRead() throws Exception {
-        List list1 = t.getFloorFiveExcelData();
-        assertTrue(!list1.isEmpty());
+    public void testGui() {
+        final JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(1024, 420);
+        frame.setLocationRelativeTo(null);
 
-        for (int i = 1; i <= 10; i++) {
-            HibernateObjectPrinter.print(list1.get(list1.size() - i));
-        }
-        HibernateObjectPrinter.print(list1.get(0));
+        Runnable task3 = () -> {
+            ChartPanel chartPanel = new LineChart().createChart();
+            frame.getContentPane().add(chartPanel);
+            frame.setVisible(true);
+        };
 
-        assertEquals(521, list1.size());
-
+        SwingUtilities.invokeLater(task3);
     }
+
 }

@@ -45,7 +45,7 @@ public class SyncData {
     public void execute() {
         try {
             //Error delete && saving data count!!!
-            
+
             List<Floor> floors = floorRepo.findAll();
 
             Floor five = floors.stream().filter(f -> f.getName().equals("5F")).findFirst().get();
@@ -60,9 +60,6 @@ public class SyncData {
 
             excelFloorFiveData.forEach(s -> s.setFloor(five));
             excelFloorSixData.forEach(s -> s.setFloor(six));
-            
-            HibernateObjectPrinter.print(excelFloorFiveData.get(0));
-            HibernateObjectPrinter.print(floorFiveDataInDb.get(0));
 
             List<ScrappedDetail> newData1 = (List<ScrappedDetail>) CollectionUtils.subtract(excelFloorFiveData, floorFiveDataInDb);
             List<ScrappedDetail> newData2 = (List<ScrappedDetail>) CollectionUtils.subtract(excelFloorSixData, floorSixDataInDb);
@@ -73,6 +70,7 @@ public class SyncData {
             scrappedRepo.saveAll(newData2);
 
             //注意最後check兩邊size是否一致, 不一致可能是db有多的資料(使用者delete過), 必須做刪除
+            logger.info("Checking the data size again...");
             floorFiveDataInDb = scrappedRepo.findByFloor(five);
             floorSixDataInDb = scrappedRepo.findByFloor(six);
 
@@ -86,6 +84,8 @@ public class SyncData {
 
                 scrappedRepo.deleteAll(delData1);
                 scrappedRepo.deleteAll(delData2);
+            } else {
+                logger.info("Nothing need to remove.");
             }
 
         } catch (IOException | SAXException | InvalidFormatException ex) {

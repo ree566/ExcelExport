@@ -6,15 +6,17 @@
 package com.advantech.helper;
 
 import com.advantech.chart.ExcelChart;
+import static com.advantech.helper.DateConversion.fromUSWeekAndYear;
 import com.advantech.model.ScrappedDetailWeekGroup;
 import com.advantech.repo.ScrappedDetailRepository;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import static java.util.stream.Collectors.groupingBy;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,20 +45,27 @@ public class TestGeneratePivot {
     public void testGroupBy() {
         List<ScrappedDetailWeekGroup> d = repo.findAllGroupByWeek();
 
-        Map<String, List<ScrappedDetailWeekGroup>> dGroup = d.stream()
-                .collect(groupingBy(ScrappedDetailWeekGroup::getFloorName));
+        //同月, 最大week number, sum
+        Map collect = d.stream()
+                .collect(
+                        Collectors.groupingBy(
+                                p -> getMonth(fromUSWeekAndYear(2018, p.getWeek(), 1)),
+                                Collectors.collectingAndThen(
+                                        Collectors.maxBy(Comparator.comparing(ScrappedDetailWeekGroup::getWeek)),
+                                        Optional::get
+                                )
+                        )
+                );
+                                        //                                        Collectors.collectingAndThen(
+                                        //                                                Collectors.summingInt(ScrappedDetailWeekGroup::getTotal),
+                                //                                        ).
 
-        List<Integer> floorFiveTotal = dGroup.get("5F").stream()
-                        .map(ScrappedDetailWeekGroup::getTotal)
-                        .collect(Collectors.toList());
-        
-        List<Integer> floorSixTotal = dGroup.get("6F").stream()
-                        .map(ScrappedDetailWeekGroup::getTotal)
-                        .collect(Collectors.toList());
+        HibernateObjectPrinter.print(collect);
 
-        HibernateObjectPrinter.print(dGroup);
-        HibernateObjectPrinter.print(floorFiveTotal);
-        HibernateObjectPrinter.print(floorSixTotal);
+    }
+
+    private Integer getMonth(DateTime d) {
+        return d.getMonthOfYear();
     }
 
     @Test

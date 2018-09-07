@@ -6,6 +6,7 @@
 package com.advantech.helper;
 
 import com.advantech.job.SendReport;
+import com.advantech.job.SyncData;
 import java.io.IOException;
 import javax.mail.MessagingException;
 import static org.junit.Assert.assertNotNull;
@@ -26,17 +27,25 @@ import org.springframework.test.context.web.WebAppConfiguration;
     "classpath:servlet-context.xml"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
-public class TestSendMail {
+public class TestQuartzJob {
 
     @Autowired
-    private SendReport job;
+    private SendReport reportJob;
+    
+    @Autowired
+    private SyncData syncJob;
     
     @Value("${floor.five.fileLocation}")
     private String fileLocation;
 
+//    @Test
+    public void testMail() {
+        reportJob.execute();
+    }
+    
     @Test
-    public void testMail() throws MessagingException, IOException {
-        job.execute();
+    public void testSync() {
+        syncJob.execute();
     }
    
 }

@@ -26,6 +26,7 @@ import static java.util.stream.Collectors.groupingBy;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import org.apache.commons.collections.CollectionUtils;
+import org.jfree.chart.ChartFactory;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -182,12 +183,15 @@ public class ExcelChart {
     public ChartPanel createChart() {
         excelToData();
         // 2：创建Chart[创建不同图形]
-//        JFreeChart chart = ChartFactory.createBarChart("每周不良統計", "", "AMOUNT", excelToData());
+
         DefaultCategoryDataset ds1 = dataset.get(0);
         DefaultCategoryDataset ds2 = dataset.get(1);
 
-        CategoryPlot plot = new CategoryPlot();
-        JFreeChart chart = new JFreeChart(plot);
+//        CategoryPlot plot = new CategoryPlot();
+//        JFreeChart chart = new JFreeChart(plot);
+        JFreeChart chart = ChartFactory.createLineChart("TEST", "1", "2", ds1);
+        CategoryPlot plot = chart.getCategoryPlot();
+       
 
         CategoryItemRenderer lineRenderer = new LineAndShapeRenderer();
         plot.setDataset(0, ds1);
@@ -196,7 +200,7 @@ public class ExcelChart {
         CategoryItemRenderer barRenderer = new BarRenderer();
         plot.setDataset(1, ds2);
         plot.setRenderer(1, barRenderer);
-        plot.setDomainAxis(new CategoryAxis("日期"));
+        plot.setDomainAxis(new CategoryAxis("週別"));
         plot.setRangeAxis(new NumberAxis("金額"));
 
         chart.setTitle("報廢金額統計圖");
@@ -204,8 +208,8 @@ public class ExcelChart {
         // 3:设置抗锯齿，防止字体显示不清楚
         ChartUtils.setAntiAlias(chart);// 抗锯齿
 //        // 4:对柱子进行渲染[[采用不同渲染]]
-        ChartUtils.setLineRender(plot, 0, false, true);//
-        ChartUtils.setBarRenderer(plot, 1, true);
+        ChartUtils.setLineRender(plot, 0, false, true);//Set third param to show number label on each dot
+        ChartUtils.setBarRenderer(plot, 1, false);
 //        // 5:对其他部分进行渲染
         ChartUtils.setXAixs(chart.getCategoryPlot());// X坐标轴渲染
         ChartUtils.setYAixs(chart.getCategoryPlot());// Y坐标轴渲染

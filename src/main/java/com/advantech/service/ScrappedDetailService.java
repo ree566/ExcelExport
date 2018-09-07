@@ -5,13 +5,13 @@
  */
 package com.advantech.service;
 
-import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.Floor;
 import com.advantech.model.ScrappedDetail;
+import com.advantech.model.ScrappedDetailWeekGroup;
 import com.advantech.repo.ScrappedDetailRepository;
 import java.util.List;
 import java.util.Optional;
-import org.apache.commons.collections.CollectionUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +31,10 @@ public class ScrappedDetailService {
         return repo.findByFloor(floor);
     }
 
+    public List<ScrappedDetail> findByCreateDateBetween(DateTime sD, DateTime eD) {
+        return repo.findByCreateDateBetween(sD.toDate(), eD.toDate());
+    }
+
     public List<ScrappedDetail> findAll() {
         return repo.findAll();
     }
@@ -45,10 +49,6 @@ public class ScrappedDetailService {
 
     public Optional<ScrappedDetail> findById(Integer id) {
         return repo.findById(id);
-    }
-
-    public ScrappedDetail getOne(Integer id) {
-        return repo.getOne(id);
     }
 
     public void delete(ScrappedDetail t) {

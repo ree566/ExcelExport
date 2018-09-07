@@ -25,15 +25,28 @@
     
     <bean id="SyncData-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="SyncData-Job" />
-        <property name="cronExpression" value="0 25 10 ? * * *" />
+        <property name="cronExpression" value="0 0 22 ? * MON-SAT *" />
+    </bean>
+    
+    <!--job3 setting-->
+    <bean name="SyncDataBeforeSendMail-Job" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="syncData" />
+        <property name="targetMethod" value="execute"/>  
+        <property name="concurrent" value="false"/>
+    </bean>
+    
+    <bean id="SyncDataBeforeSendMail-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="SyncDataBeforeSendMail-Job" />
+        <property name="cronExpression" value="0 0 14 ? * FRI *" />
     </bean>
 
     <!--schedule jobs-->
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
-                <!--<ref bean="SendReport-Trig"/>-->
+                <ref bean="SendReport-Trig"/>
                 <ref bean="SyncData-Trig"/>
+                <ref bean="SyncDataBeforeSendMail-Trig"/>
             </list>
         </property>
         <property name="schedulerName">

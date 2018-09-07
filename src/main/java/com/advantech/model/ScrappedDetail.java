@@ -227,9 +227,12 @@ public class ScrappedDetail implements Serializable {
             //System.out.printf(" This remark: %s, other: %s ", this.remark, other.remark);
             return false;
         }
-        if ((this.createDate == null && other.createDate != null) || 
-                (this.createDate != null && other.createDate == null) || 
-                !Objects.equals(this.createDate.getTime(), other.createDate.getTime())) {
+        if (this.createDate == null && other.createDate == null) {
+            return true;
+        }
+        if ((this.createDate == null && other.createDate != null)
+                || (this.createDate != null && other.createDate == null)
+                || !Objects.equals(this.createDate.getTime(), other.createDate.getTime())) {
             //System.out.printf(" This createDate: %s, other: %s ", this.createDate.toString(), other.createDate.toString());
             return false;
         }
