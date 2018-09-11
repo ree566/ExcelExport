@@ -41,26 +41,27 @@ public class TestGeneratePivot {
     @Autowired
     private ScrappedDetailRepository repo;
 
-//    @Test
+    @Test
     public void testGroupBy() {
         List<ScrappedDetailWeekGroup> d = repo.findAllGroupByWeek();
 
         //同月, 最大week number, sum
-        Map collect = d.stream()
-                .collect(
-                        Collectors.groupingBy(
-                                p -> getMonth(fromUSWeekAndYear(2018, p.getWeek(), 1)),
-                                Collectors.collectingAndThen(
-                                        Collectors.maxBy(Comparator.comparing(ScrappedDetailWeekGroup::getWeek)),
-                                        Optional::get
-                                )
-                        )
-                );
-                                        //                                        Collectors.collectingAndThen(
-                                        //                                                Collectors.summingInt(ScrappedDetailWeekGroup::getTotal),
-                                //                                        ).
+        Map collect = d.stream().collect(
+                Collectors.groupingBy(
+                        p -> getMonth(fromUSWeekAndYear(2018, p.getWeek(), 1)),
+                        Collectors.collectingAndThen(Collectors.maxBy(Comparator.comparing(ScrappedDetailWeekGroup::getWeek)), Optional::get)
+                )
+        );
+        
+        Map collect2 = d.stream().collect(
+                Collectors.groupingBy(
+                        p -> getMonth(fromUSWeekAndYear(2018, p.getWeek(), 1)),
+                        Collectors.summingInt(ScrappedDetailWeekGroup::getTotal)
+                )
+        );
 
         HibernateObjectPrinter.print(collect);
+        HibernateObjectPrinter.print(collect2);
 
     }
 
@@ -68,7 +69,7 @@ public class TestGeneratePivot {
         return d.getMonthOfYear();
     }
 
-    @Test
+//    @Test
     public void test() throws IOException, Exception {
 
         ChartPanel chartPanel = excelChart.createChart();

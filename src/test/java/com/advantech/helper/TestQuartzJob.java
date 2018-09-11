@@ -38,12 +38,12 @@ public class TestQuartzJob {
     @Value("${floor.five.fileLocation}")
     private String fileLocation;
 
-    @Test
+//    @Test
     public void testMail() {
         reportJob.execute();
     }
     
-//    @Test
+    @Test
     public void testSync() {
         syncJob.execute();
     }
