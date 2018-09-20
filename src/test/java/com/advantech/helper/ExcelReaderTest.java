@@ -5,7 +5,10 @@
  */
 package com.advantech.helper;
 
+import com.advantech.model.ScrappedDetail;
+import java.math.BigDecimal;
 import java.util.List;
+import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,15 +33,18 @@ public class ExcelReaderTest {
 
     @Test
     public void testRead() throws Exception {
-        List list1 = t.getFloorFiveExcelData();
+        List<ScrappedDetail> list1 = t.getFloorFiveExcelData();
         assertTrue(!list1.isEmpty());
 
-        for (int i = 1; i <= 10; i++) {
-            HibernateObjectPrinter.print(list1.get(list1.size() - i));
-        }
-        HibernateObjectPrinter.print(list1.get(0));
+        List<String> model = list1.stream().map(ScrappedDetail::getMaterialNumber).collect(toList());
 
-        assertEquals(521, list1.size());
+        model.forEach(s -> {
+            if (s.contains(".")) {
+                System.out.println(Long.toString(new BigDecimal(s).longValue()));
+            } else {
+                System.out.println(s);
+            }
+        });
 
     }
 }

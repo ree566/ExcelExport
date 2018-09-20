@@ -14,6 +14,7 @@ import com.advantech.repo.FloorRepository;
 import com.advantech.repo.ScrappedDetailRepository;
 import com.advantech.repo.UserNotificationRepository;
 import com.advantech.repo.UserRepository;
+import java.math.BigDecimal;
 import java.util.List;
 import javax.transaction.Transactional;
 import org.apache.commons.collections.CollectionUtils;
@@ -47,10 +48,10 @@ public class TestRepository {
 
     @Autowired
     private ExcelDataTransformer tr;
-    
+
     @Autowired
     private UserRepository userRepo;
-    
+
     @Autowired
     private UserNotificationRepository notificationRepo;
 
@@ -121,32 +122,52 @@ public class TestRepository {
         List<ScrappedDetailWeekGroup> l = scrappedRepo.findAllGroupByWeek();
 
         HibernateObjectPrinter.print(l);
-        
-        
+
     }
-    
+
 //    @Test
     @Transactional
     @Rollback(true)
     public void testPaginate() {
-        PageRequest req =  new PageRequest(1, 10, Sort.Direction.DESC, "createDate", "po");
+        PageRequest req = new PageRequest(1, 10, Sort.Direction.DESC, "createDate", "po");
         List<ScrappedDetail> l = scrappedRepo.findAll(req).getContent();
 
         HibernateObjectPrinter.print(l);
-        
-        
+
     }
-    
+
 //    @Test
     @Transactional
     @Rollback(true)
     public void testUserNotification() {
         UserNotification n = notificationRepo.findById(2).get();
-        
+
         List<User> l = userRepo.findByUserNotifications(n);
 
         assertEquals(22, l.size());
-        
+
+    }
+
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void testFixScrappedDetailField() {
+        List<ScrappedDetail> l = scrappedRepo.findAll();
+
+        for (ScrappedDetail s : l) {
+            try {
+                if (s.getModelName().contains(".")) {
+                    s.setModelName(Long.toString(new BigDecimal(s.getModelName()).longValue()));
+                }
+                if (s.getMaterialNumber().contains(".")) {
+                    s.setMaterialNumber(Long.toString(new BigDecimal(s.getMaterialNumber()).longValue()));
+                }
+            } catch (Exception e) {
+                System.out.println(e.getCause());
+            }
+        }
+
+        scrappedRepo.saveAll(l);
     }
 
 }

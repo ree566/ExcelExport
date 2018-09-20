@@ -8,7 +8,7 @@ package com.advantech.helper;
 import static com.advantech.helper.DateConversion.*;
 import com.google.common.collect.ImmutableMap;
 import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newHashMap;
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +87,7 @@ public class TestClass {
         assertEquals(startOfDay(2018, 2, 1), fromUSWeekAndYear(2018, 4, 1));
     }
 
-    @Test
+//    @Test
     public void testMapSort() {
         ImmutableMap<String, Integer> map = ImmutableMap
                 .<String, Integer>builder()
@@ -111,5 +111,11 @@ public class TestClass {
         
         HibernateObjectPrinter.print(collect);
 
+    }
+    
+    @Test
+    public void testBigDecimal(){
+        String str = "9.680017514E9";
+        System.out.println(Long.toString(new BigDecimal(str).longValue()));
     }
 }
