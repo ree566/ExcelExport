@@ -6,7 +6,6 @@
 package com.advantech.job;
 
 import com.advantech.chart.ExcelChart;
-import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.helper.MailManager;
 import com.advantech.model.ScrappedDetail;
 import com.advantech.model.User;
@@ -14,7 +13,6 @@ import com.advantech.model.UserNotification;
 import com.advantech.service.ScrappedDetailService;
 import com.advantech.service.UserNotificationService;
 import com.advantech.service.UserService;
-import static com.google.common.base.Preconditions.checkState;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -39,9 +37,7 @@ import org.xml.sax.SAXException;
 
 /**
  *
- * @author Wei.Cheng To: Timmy.Hsu Cc: Allen.Chu; Ls.He; Yichun.Chen; Sen.Hung;
- * Abby.Chen; Candice.Kung; Anderson.Chen; Johnny.Lin; EVON.CHUANG; Rain.Chu;
- * Kai.Yang; Momo.Hsieh; LU.Zheng; Apple.Hsieh; Dongni.Zheng
+ * @author Wei.Cheng
  *
  */
 @Component
@@ -125,6 +121,7 @@ public class SendReport {
 
         StringBuilder sb = new StringBuilder();
 
+        //設定mail格式(css...etc)
         sb.append("<style>");
         sb.append("table {border-collapse: collapse; padding:5px; }");
         sb.append("table, th, td {border: 1px solid black;}");
@@ -136,6 +133,7 @@ public class SendReport {
         sb.append("<h3>Dear User:</h3>");
         sb.append("<h3>本週報廢明細如下:</h3>");
 
+        //當週報費明細
         for (Map.Entry<String, List<ScrappedDetail>> entry : m.entrySet()) {
             String key = entry.getKey();
             List<ScrappedDetail> details = entry.getValue();
@@ -199,6 +197,7 @@ public class SendReport {
         int floorFiveSum = floorFiveDetail.stream().collect(Collectors.summingInt(s -> s.getAmount() * s.getPrice()));
         int floorSixSum = floorSixDetail.stream().collect(Collectors.summingInt(s -> s.getAmount() * s.getPrice()));
 
+        //每周統計
         sb.append("<h5 class='highlight'>");
         sb.append(sDOW.getWeekOfWeekyear());
         sb.append("週統計-> ");
@@ -209,9 +208,38 @@ public class SendReport {
         sb.append("6F: ");
         sb.append(floorSixSum);
         sb.append(" 元");
+        sb.append("</h5>");
+
+        //料號累積發生次數
+        List<Map> materialNumSum = scrappedDetailService.findMaterialNumberSum(sDOW.toDate(), eDOW.toDate());
+        if (!materialNumSum.isEmpty()) {
+            sb.append("<h5>料號累積發生次數</h5>");
+            Map firstRow = materialNumSum.get(0);
+
+            //Add header
+            sb.append("<tr>");
+            firstRow.forEach((k, v) -> {
+                sb.append("<th>");
+                sb.append(k);
+                sb.append("</th>");
+            });
+            sb.append("</tr>");
+
+            //Add row
+            materialNumSum.forEach((row) -> {
+                sb.append("<tr>");
+                row.forEach((k, v) -> {
+                    sb.append("<td>");
+                    sb.append(v);
+                    sb.append("</td>");
+                });
+                sb.append("</tr>");
+            });
+        }
 
         sb.append("</h5>");
 
+        //Chart data
         sb.append("<h5>報廢指數表:</h5>");
         sb.append("<img src=\"cid:img1\"></img>");
         sb.append("</div>");

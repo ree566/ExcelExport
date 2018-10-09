@@ -15,9 +15,13 @@ import com.advantech.repo.ScrappedDetailRepository;
 import com.advantech.repo.UserNotificationRepository;
 import com.advantech.repo.UserRepository;
 import java.math.BigDecimal;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.apache.commons.collections.CollectionUtils;
+import org.joda.time.DateTime;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -148,7 +152,7 @@ public class TestRepository {
 
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(false)
     public void testFixScrappedDetailField() {
@@ -168,6 +172,64 @@ public class TestRepository {
         }
 
         scrappedRepo.saveAll(l);
+    }
+
+//    @Test
+    @Transactional
+    @Rollback(true)
+    public void testSortAndSearch() {
+        //Get price > 500 & current year
+
+        DateTime d = new DateTime("2018-01-01");
+
+        List<ScrappedDetail> l = scrappedRepo.findByPriceGreaterThanAndCreateDateGreaterThan(500, d.toDate());
+
+        assertEquals(82, l.size());
+
+        Map<String, Map<Integer, List<ScrappedDetail>>> map = l.stream()
+                .collect(Collectors.groupingBy(ScrappedDetail::getMaterialNumber,
+                        Collectors.groupingBy(ScrappedDetail::getPrice)));
+
+        Map<String, Map<Integer, List<ScrappedDetail>>> collect = map.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByKey())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> e.getValue()
+                                .entrySet()
+                                .stream()
+                                .sorted(Map.Entry.comparingByKey())
+                                .collect(
+                                        Collectors.toMap(
+                                                Map.Entry::getKey,
+                                                Map.Entry::getValue,
+                                                (a, b) -> a,
+                                                LinkedHashMap::new
+                                        )
+                                ),
+                        (a, b) -> a,
+                        LinkedHashMap::new
+                ));
+
+        HibernateObjectPrinter.print(collect);
+    }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testJpaProceduleCall() {
+        DateTime sD = new DateTime().withMonthOfYear(7).withDayOfMonth(1).withHourOfDay(0);
+        DateTime eD = new DateTime().withMonthOfYear(10).withDayOfMonth(30).withHourOfDay(23);
+
+        List<Map> l = scrappedRepo.findMaterialNumberSum(sD.toDate(), eD.toDate());
+        assertEquals(20, l.size());
+
+        l.forEach((m) -> {
+            m.forEach((k, v) -> {
+                System.out.println("Key : " + k + " Value : " + v);
+            });
+        });
+
     }
 
 }
