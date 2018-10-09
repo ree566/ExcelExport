@@ -6,12 +6,11 @@
 package com.advantech.service;
 
 import com.advantech.model.Floor;
+import com.advantech.model.MaterialNumberSum;
 import com.advantech.model.ScrappedDetail;
-import com.advantech.model.ScrappedDetailWeekGroup;
 import com.advantech.repo.ScrappedDetailRepository;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +40,7 @@ public class ScrappedDetailService {
         return repo.findAll();
     }
 
-    public List<Map> findMaterialNumberSum(Date sD, Date eD) {
+    public List<MaterialNumberSum> findMaterialNumberSum(Date sD, Date eD) {
         return repo.findMaterialNumberSum(sD, eD);
     }
 

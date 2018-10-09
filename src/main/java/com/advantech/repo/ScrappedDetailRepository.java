@@ -6,11 +6,11 @@
 package com.advantech.repo;
 
 import com.advantech.model.Floor;
+import com.advantech.model.MaterialNumberSum;
 import com.advantech.model.ScrappedDetail;
 import com.advantech.model.ScrappedDetailWeekGroup;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -34,6 +34,6 @@ public interface ScrappedDetailRepository extends JpaRepository<ScrappedDetail, 
     public List<ScrappedDetail> findByPriceGreaterThanAndCreateDateGreaterThan(int price, Date d);
 
     @Query(value = "{CALL usp_GetMaterialNumberSum(:sD, :eD)}", nativeQuery = true)
-    public List<Map> findMaterialNumberSum(@Param("sD") Date sD, @Param("eD") Date eD);
+    public List<MaterialNumberSum> findMaterialNumberSum(@Param("sD") Date sD, @Param("eD") Date eD);
 
 }

@@ -221,14 +221,14 @@ public class TestRepository {
         DateTime sD = new DateTime().withMonthOfYear(7).withDayOfMonth(1).withHourOfDay(0);
         DateTime eD = new DateTime().withMonthOfYear(10).withDayOfMonth(30).withHourOfDay(23);
 
-        List<Map> l = scrappedRepo.findMaterialNumberSum(sD.toDate(), eD.toDate());
-        assertEquals(20, l.size());
-
-        l.forEach((m) -> {
-            m.forEach((k, v) -> {
-                System.out.println("Key : " + k + " Value : " + v);
-            });
-        });
+//        List<Map> l = scrappedRepo.findMaterialNumberSum(sD.toDate(), eD.toDate());
+//        assertEquals(20, l.size());
+//
+//        l.forEach((m) -> {
+//            m.forEach((k, v) -> {
+//                System.out.println("Key : " + k + " Value : " + v);
+//            });
+//        });
 
     }
 

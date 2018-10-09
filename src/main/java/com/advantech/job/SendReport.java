@@ -7,6 +7,7 @@ package com.advantech.job;
 
 import com.advantech.chart.ExcelChart;
 import com.advantech.helper.MailManager;
+import com.advantech.model.MaterialNumberSum;
 import com.advantech.model.ScrappedDetail;
 import com.advantech.model.User;
 import com.advantech.model.UserNotification;
@@ -66,7 +67,7 @@ public class SendReport {
     DateTimeFormatter fmt2 = DateTimeFormat.forPattern("M/d");
 
     public void execute() {
-        sendMail(new DateTime());
+        sendMail(new DateTime("2018-10-05"));
     }
 
     public void sendMail(DateTime d) {
@@ -74,10 +75,10 @@ public class SendReport {
             UserNotification notifi = notificationService.findById(1).get();
             UserNotification notifiCc = notificationService.findById(2).get();
 
-            String[] mailTarget = findUsersMail(notifi);
-            String[] mailCcTarget = findUsersMail(notifiCc);
-//            String[] mailTarget = {"Wei.Cheng@advantech.com.tw"};
-//            String[] mailCcTarget = {};
+//            String[] mailTarget = findUsersMail(notifi);
+//            String[] mailCcTarget = findUsersMail(notifiCc);
+            String[] mailTarget = {"Wei.Cheng@advantech.com.tw"};
+            String[] mailCcTarget = {};
 
             updateDateRange(d);
 
@@ -209,35 +210,47 @@ public class SendReport {
         sb.append(floorSixSum);
         sb.append(" 元");
         sb.append("</h5>");
+        sb.append("<hr />");
 
         //料號累積發生次數
-        List<Map> materialNumSum = scrappedDetailService.findMaterialNumberSum(sDOW.toDate(), eDOW.toDate());
+        DateTime sDOY = new DateTime().withMonthOfYear(1).withDayOfMonth(1).withHourOfDay(0);
+        DateTime eDOY = new DateTime().withMonthOfYear(12).withDayOfMonth(1).withHourOfDay(0);
+        List<MaterialNumberSum> materialNumSum = scrappedDetailService.findMaterialNumberSum(sDOY.toDate(), eDOY.toDate());
         if (!materialNumSum.isEmpty()) {
-            sb.append("<h5>料號累積發生次數</h5>");
-            Map firstRow = materialNumSum.get(0);
+            sb.append("<h5>本年料號累積發生次數</h5>");
+            sb.append("<table>");
 
             //Add header
             sb.append("<tr>");
-            firstRow.forEach((k, v) -> {
-                sb.append("<th>");
-                sb.append(k);
-                sb.append("</th>");
-            });
+            sb.append("<th>料號</th>");
+            sb.append("<th>price(s)</th>");
+            sb.append("<th>次數</th>");
+            sb.append("<th>總金額</th>");
             sb.append("</tr>");
 
             //Add row
             materialNumSum.forEach((row) -> {
                 sb.append("<tr>");
-                row.forEach((k, v) -> {
-                    sb.append("<td>");
-                    sb.append(v);
-                    sb.append("</td>");
-                });
+                sb.append("<td>");
+                sb.append(row.getMaterialNumber());
+                sb.append("</td>");
+                sb.append("<td>");
+                sb.append(row.getPrice());
+                sb.append("</td>");
+                sb.append("<td>");
+                sb.append(row.getCnt());
+                sb.append("</td>");
+                sb.append("<td>");
+                sb.append(row.getTotalPrice());
+                sb.append("</td>");
                 sb.append("</tr>");
             });
+
+            sb.append("</table>");
         }
 
-        sb.append("</h5>");
+        sb.append("<h5>※附註: price(s)欄位格式->金額(數量)</h5>");
+        sb.append("<hr />");
 
         //Chart data
         sb.append("<h5>報廢指數表:</h5>");
