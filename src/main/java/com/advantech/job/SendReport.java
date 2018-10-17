@@ -217,7 +217,7 @@ public class SendReport {
         DateTime eDOY = new DateTime().withMonthOfYear(12).withDayOfMonth(1).withHourOfDay(0);
         List<MaterialNumberSum> materialNumSum = scrappedDetailService.findMaterialNumberSum(sDOY.toDate(), eDOY.toDate());
         if (!materialNumSum.isEmpty()) {
-            sb.append("<h5>本年料號累積發生次數</h5>");
+            sb.append("<h5>本年料號累積發生次數top 20</h5>");
             sb.append("<table>");
 
             //Add header
