@@ -6,12 +6,8 @@
 package com.advantech.controller;
 
 import com.advantech.helper.CustomPasswordEncoder;
-import com.advantech.jqgrid.PageInfo;
 import com.advantech.model.User;
-import com.advantech.jqgrid.JqGridResponse;
-import static com.advantech.jqgrid.JqGridResponseUtils.toJqGridResponse;
 import com.advantech.model.UserProfile;
-import com.advantech.security.State;
 import com.advantech.security.UserProfileType;
 import com.advantech.service.UserService;
 import java.util.List;
@@ -38,22 +34,6 @@ public class UserProfileController extends CrudController<User> {
 
     @Autowired
     private UserService userService;
-
-    @ResponseBody
-    @RequestMapping(value = SELECT_URL, method = {RequestMethod.GET})
-    @Override
-    protected JqGridResponse read(@ModelAttribute PageInfo info) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List l;
-        if (user.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-//            l = userService.findAll(info);
-        } else {
-//            l = userService.findAll(info, user.getUnit());
-        }
-//        return toJqGridResponse(l, info);
-
-        throw new UnsupportedOperationException();
-    }
 
     @ResponseBody
     @RequestMapping(value = INSERT_URL, method = {RequestMethod.POST})

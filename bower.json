@@ -1,0 +1,34 @@
+{
+    "name": "excelreport",
+    "version": "1.0.0",
+    "main": "path/to/main.css",
+    "ignore": [
+        ".jshintrc",
+        "**/*.txt",
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "package.json",
+        "src"
+    ],
+    "exportsOverride": {
+        "*": {
+            "js": "**/*.js",
+            "css": "**/*.css"
+        }
+    },
+    "dependencies": {
+        "jQuery": "3.3.1",
+        "bootstrap": "3.3.7",
+        "datatables.net": "^1.10.19",
+        "datatables.net-buttons": "^1.5.4"
+    },
+    "devDependencies": {},
+    "homepage": "https://github.com/ree566/ExcelExport",
+    "authors": [
+        "ree566 <ree566@yahoo.com.tw>"
+    ],
+    "description": "",
+    "license": "MIT"
+}

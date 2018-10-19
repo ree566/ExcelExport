@@ -5,8 +5,6 @@
  */
 package com.advantech.controller;
 
-import com.advantech.jqgrid.PageInfo;
-import com.advantech.jqgrid.JqGridResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -25,7 +23,7 @@ public abstract class CrudController<T> {
 
     protected final String SELECT_URL = "/read", INSERT_URL = "/create", UPDATE_URL = "/update", DELETE_URL = "/delete";
 
-    protected abstract JqGridResponse read(@ModelAttribute PageInfo info);
+//    protected abstract JqGridResponse read(@ModelAttribute PageInfo info);
 
     protected abstract ResponseEntity insert(@ModelAttribute T pojo, BindingResult bindingResult) throws Exception;
 

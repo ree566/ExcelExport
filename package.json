@@ -1,0 +1,26 @@
+{
+    "name": "excelreport",
+    "version": "1.0.0",
+    "description": "Excel report",
+    "main": "Gruntfile.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://ree566@github.com/ree566/ExcelExport.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/ree566/ExcelExport/issues"
+    },
+    "homepage": "https://github.com/ree566/ExcelExport#readme",
+    "dependencies": {},
+    "devDependencies": {
+        "grunt": "^1.0.3",
+        "grunt-bower-task": "^0.5.0",
+        "grunt-contrib-concat": "^1.0.1",
+        "grunt-dist": "0.0.6"
+    }
+}
