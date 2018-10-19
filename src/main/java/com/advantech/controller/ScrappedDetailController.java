@@ -8,7 +8,10 @@ package com.advantech.controller;
 import com.advantech.model.ScrappedDetail;
 import com.advantech.service.ExceptionService;
 import com.advantech.service.ScrappedDetailService;
+import static com.google.common.collect.Lists.newArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,14 +35,18 @@ public class ScrappedDetailController {
     
     @ResponseBody
     @RequestMapping(value = "/findAll", method = {RequestMethod.GET})
-    protected List<ScrappedDetail> findAll() {
-        return scrapService.findAll();
+    protected Map findAll() {
+        Map m = new HashMap();
+        m.put("data", newArrayList(scrapService.findAll()));
+        return m;
     }
     
     @ResponseBody
     @RequestMapping(value = "/findById", method = {RequestMethod.GET})
-    protected ScrappedDetail findById(@RequestParam Integer id) {
-        return scrapService.findById(id).get();
+    protected Map findById(@RequestParam Integer id) {
+        Map m = new HashMap();
+        m.put("data", newArrayList(scrapService.findById(id).get()));
+        return m;
     }
     
     @ResponseBody
