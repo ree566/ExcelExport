@@ -13,95 +13,155 @@ import java.util.List;
  */
 public class DataTableParameter {
 
-    private int sEcho; //请求服务器端次数
-    private int iDisplayStart;//其实记录，第一条为0
-    private int iDisplayLength;
-    private int iColumns;
-    private List<String> mDataProps; //列的Name列表
-    private List<Boolean> bSortables;//列对应是否能排序
-    private int iSortingCols;
-    private List<Integer> iSortCols;    //排序列的编号
-    private List<String> iSortColsName; //排序列的名称
-    private List<String> sSortDirs;     //排布列排序形式 Asc/Desc
+    private int draw;
+    private int start;//其实记录，第一条为0
+    private int length;
+    private List<ColumnInfo> columns; //列的Name列表
+    private List<OrderInfo> order;//列对应是否能排序
+    private List<SearchInfo> search;    //排序列的编号
 
-    public int getsEcho() {
-        return sEcho;
+    public int getDraw() {
+        return draw;
     }
 
-    public void setsEcho(int sEcho) {
-        this.sEcho = sEcho;
+    public void setDraw(int draw) {
+        this.draw = draw;
     }
 
-    public int getiDisplayStart() {
-        return iDisplayStart;
+    public int getStart() {
+        return start;
     }
 
-    public void setiDisplayStart(int iDisplayStart) {
-        this.iDisplayStart = iDisplayStart;
+    public void setStart(int start) {
+        this.start = start;
     }
 
-    public int getiDisplayLength() {
-        return iDisplayLength;
+    public int getLength() {
+        return length;
     }
 
-    public void setiDisplayLength(int iDisplayLength) {
-        this.iDisplayLength = iDisplayLength;
+    public void setLength(int length) {
+        this.length = length;
     }
 
-    public int getiColumns() {
-        return iColumns;
+    public List<ColumnInfo> getColumns() {
+        return columns;
     }
 
-    public void setiColumns(int iColumns) {
-        this.iColumns = iColumns;
+    public void setColumns(List<ColumnInfo> columns) {
+        this.columns = columns;
     }
 
-    public List<String> getmDataProps() {
-        return mDataProps;
+    public List<OrderInfo> getOrder() {
+        return order;
     }
 
-    public void setmDataProps(List<String> mDataProps) {
-        this.mDataProps = mDataProps;
+    public void setOrder(List<OrderInfo> order) {
+        this.order = order;
     }
 
-    public List<Boolean> getbSortables() {
-        return bSortables;
+    public List<SearchInfo> getSearch() {
+        return search;
     }
 
-    public void setbSortables(List<Boolean> bSortables) {
-        this.bSortables = bSortables;
+    public void setSearch(List<SearchInfo> search) {
+        this.search = search;
     }
 
-    public int getiSortingCols() {
-        return iSortingCols;
+    public static class OrderInfo {
+
+        private int column;
+        private String dir;
+
+        public int getColumn() {
+            return column;
+        }
+
+        public void setColumn(int column) {
+            this.column = column;
+        }
+
+        public String getDir() {
+            return dir;
+        }
+
+        public void setDir(String dir) {
+            this.dir = dir;
+        }
+
     }
 
-    public void setiSortingCols(int iSortingCols) {
-        this.iSortingCols = iSortingCols;
+    public static class SearchInfo {
+
+        private boolean regex;
+        private String value;
+
+        public boolean isRegex() {
+            return regex;
+        }
+
+        public void setRegex(boolean regex) {
+            this.regex = regex;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+
     }
 
-    public List<Integer> getiSortCols() {
-        return iSortCols;
-    }
+    public static class ColumnInfo {
 
-    public void setiSortCols(List<Integer> iSortCols) {
-        this.iSortCols = iSortCols;
-    }
+        private String data;
+        private String name;
+        private boolean orderable;
+        private List<SearchInfo> search;
+        private boolean searchable;
 
-    public List<String> getiSortColsName() {
-        return iSortColsName;
-    }
+        public String getData() {
+            return data;
+        }
 
-    public void setiSortColsName(List<String> iSortColsName) {
-        this.iSortColsName = iSortColsName;
-    }
+        public void setData(String data) {
+            this.data = data;
+        }
 
-    public List<String> getsSortDirs() {
-        return sSortDirs;
-    }
+        public String getName() {
+            return name;
+        }
 
-    public void setsSortDirs(List<String> sSortDirs) {
-        this.sSortDirs = sSortDirs;
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public boolean isOrderable() {
+            return orderable;
+        }
+
+        public void setOrderable(boolean orderable) {
+            this.orderable = orderable;
+        }
+
+        public List<SearchInfo> getSearch() {
+            return search;
+        }
+
+        public void setSearch(List<SearchInfo> search) {
+            this.search = search;
+        }
+
+        public boolean isSearchable() {
+            return searchable;
+        }
+
+        public void setSearchable(boolean searchable) {
+            this.searchable = searchable;
+        }
+
     }
 
 }

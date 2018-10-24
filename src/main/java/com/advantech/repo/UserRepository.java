@@ -18,6 +18,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
 
+    public User findByJobnumber(String jobnumber);
+    
     public List<User> findByUserNotifications(UserNotification notifi);
     
 }

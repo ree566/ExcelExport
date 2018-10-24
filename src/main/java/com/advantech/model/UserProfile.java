@@ -6,7 +6,7 @@
 package com.advantech.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
@@ -30,7 +30,7 @@ import javax.persistence.UniqueConstraint;
         name = "User_Profile",
         uniqueConstraints = @UniqueConstraint(columnNames = "type")
 )
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(generator = JSOGGenerator.class)
 public class UserProfile implements java.io.Serializable {
 
     private int id;

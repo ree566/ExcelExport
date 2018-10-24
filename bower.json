@@ -12,10 +12,22 @@
     "package.json",
     "src"
   ],
-  "exportsOverride": {
-    "*": {
-      "js": "**/*.js",
-      "css": "**/*.css"
+  "install": {
+    "base": "src/main/webapp/libs",
+    "path": {
+      "js": "{name}/js",
+      "css": "{name}/css",
+      "/[sc|le]ss$/": "{name}/css",
+      "/[png|jpg|gif|jpeg]$/": "{name}/images",
+      "eot": "{name}/fonts",
+      "svg": "{name}/fonts",
+      "ttf": "{name}/fonts",
+      "woff": "{name}/fonts"
+    },
+    "sources": {
+      "bootstrap": [
+        "bower_components/bootstrap/dist/**"
+      ]
     }
   },
   "dependencies": {
@@ -23,7 +35,12 @@
     "bootstrap": "3.3.7",
     "datatables.net": "^1.10.19",
     "datatables.net-buttons": "^1.5.4",
-    "datatables.net-dt": "^3.2.2"
+    "datatables.net-dt": "^3.2.2",
+    "datatables.net-buttons-dt": "^1.5.4",
+    "datatables.net-fixedheader": "^3.1.5",
+    "datatables.net-fixedheader-dt": "^3.1.5",
+    "datatables.net-select": "^1.2.7",
+    "datatables.net-select-dt": "^1.2.7"
   },
   "devDependencies": {},
   "homepage": "https://github.com/ree566/ExcelExport",

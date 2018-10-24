@@ -43,6 +43,10 @@ public class UserService {
         return repo.findByUserNotifications(notifi);
     }
 
+    public User findByJobnumber(String jobnumber) {
+        return repo.findByJobnumber(jobnumber);
+    }
+
     public <S extends User> S save(S s) {
         return repo.save(s);
     }

@@ -67,7 +67,7 @@ public class SendReport {
     DateTimeFormatter fmt2 = DateTimeFormat.forPattern("M/d");
 
     public void execute() {
-        sendMail(new DateTime("2018-10-05"));
+        sendMail(new DateTime());
     }
 
     public void sendMail(DateTime d) {
@@ -75,10 +75,10 @@ public class SendReport {
             UserNotification notifi = notificationService.findById(1).get();
             UserNotification notifiCc = notificationService.findById(2).get();
 
-//            String[] mailTarget = findUsersMail(notifi);
-//            String[] mailCcTarget = findUsersMail(notifiCc);
-            String[] mailTarget = {"Wei.Cheng@advantech.com.tw"};
-            String[] mailCcTarget = {};
+            String[] mailTarget = findUsersMail(notifi);
+            String[] mailCcTarget = findUsersMail(notifiCc);
+//            String[] mailTarget = {"Wei.Cheng@advantech.com.tw"};
+//            String[] mailCcTarget = {};
 
             updateDateRange(d);
 

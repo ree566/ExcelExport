@@ -10,14 +10,14 @@
                 http://www.springframework.org/schema/websocket/spring-websocket-4.3.xsd
                 http://www.springframework.org/schema/security 
                 http://www.springframework.org/schema/security/spring-security-4.2.xsd">
-      
-    <beans:bean name="customPasswordEncoder" class="com.advantech.helper.CustomPasswordEncoder"/>
+    
+    <beans:bean name="customPasswordEncoder" class="com.advantech.security.CustomPasswordEncoder"/>
     
     <beans:bean id="authenticationEntryPoint"
                 class="com.advantech.security.AjaxAwareAuthenticationEntryPoint">
         <beans:constructor-arg name="loginUrl" value="/login"/>
     </beans:bean>
-
+      
     <http auto-config="true">
         <!--
             If frame option is set to default(deny all), 
@@ -31,74 +31,35 @@
         </headers>
         
         <!--Global system access setting-->
-        <intercept-url pattern="/login.jsp" access="permitAll" />
-        <intercept-url pattern="/pages/admin/**" access="hasRole('ADMIN')" />
-        <intercept-url pattern="/pages/test/**" access="hasRole('ADMIN')" />
-        <intercept-url pattern="/pages/mod/**" access="hasAnyRole('OPER', 'ADMIN')" />
-        <intercept-url pattern="/pages/author/**" access="hasAnyRole('OPER', 'ADMIN', 'AUTHOR')" />
-        <intercept-url pattern="/pages/**" access="isAuthenticated()" />
-        <intercept-url pattern="/socket/**" access="isAuthenticated()" />
+        
+        <intercept-url pattern="/**" access="permitAll" />
         
         <!--Controller security role setting-->
-        <intercept-url pattern="/Audit/find" access="isAuthenticated()" />
-        <intercept-url pattern="/Audit/findLastRevision" access="hasAnyRole('AUTHOR', 'CONTRIBUTOR', 'ADMIN', 'OPER')" />
-        <intercept-url pattern="/WorktimeDownload/**" access="hasAnyRole('USER', 'AUTHOR', 'CONTRIBUTOR', 'ADMIN', 'OPER')" />
-        <intercept-url pattern="/Flow/**" access="hasAnyRole('OPER', 'ADMIN')" />
-        <intercept-url pattern="/Pending/**" access="hasAnyRole('OPER', 'ADMIN')" />
-        <intercept-url pattern="/PreAssy/**" access="hasAnyRole('OPER', 'ADMIN')" />
-        <intercept-url pattern="/Type/**" access="hasAnyRole('OPER', 'ADMIN')" />
-        <intercept-url pattern="/User/**" access="hasAnyRole('OPER', 'ADMIN')" />
-        <intercept-url pattern="/WorktimeBatchMod/**" access="hasAnyRole('OPER', 'ADMIN', 'AUTHOR')" />
-        <intercept-url pattern="/WorktimeColumnGroup/read" access="hasAnyRole('OPER', 'ADMIN')" />
-        <intercept-url pattern="/WorktimeColumnGroup/create" access="hasAnyRole('OPER', 'ADMIN')" />
-        <intercept-url pattern="/WorktimeColumnGroup/update" access="hasAnyRole('OPER', 'ADMIN')" />
-        <intercept-url pattern="/WorktimeColumnGroup/delete" access="hasAnyRole('OPER', 'ADMIN')" />
-        <intercept-url pattern="/WorktimeColumnGroup/byUnit" access="hasAnyRole('OPER', 'ADMIN', 'AUTHOR', 'CONTRIBUTOR')" />
-        <intercept-url pattern="/Worktime/**" access="isAuthenticated()" />
-        <intercept-url pattern="/Worktime/create" access="hasAnyRole('AUTHOR', 'ADMIN', 'OPER')" />
-        <intercept-url pattern="/Worktime/update" access="hasAnyRole('AUTHOR', 'CONTRIBUTOR', 'ADMIN', 'OPER')" />
-        <intercept-url pattern="/Worktime/delete" access="hasAnyRole('AUTHOR', 'ADMIN', 'OPER')" />
-        <intercept-url pattern="/WorktimeFormulaSetting" access="hasAnyRole('AUTHOR', 'CONTRIBUTOR', 'ADMIN', 'OPER')" />
-        <intercept-url pattern="/SelectOption" access="isAuthenticated()" />
         
-        <form-login  
-            login-page="/login.jsp"
-            default-target-url="/pages/"
-            always-use-default-target="true"                    
-            authentication-failure-url="/login.jsp?error=true" 
-            username-parameter="jobnumber"
-            password-parameter="password"
-        />
-        <csrf/>
+        <form-login authentication-success-forward-url="/" />
+        <csrf disabled="true"/>
 
         <logout invalidate-session="true"
-                logout-success-url="/login?logout"
+                logout-success-url="/"
                 logout-url="/logout"
                 delete-cookies="JSESSIONID"
         />
         
-        <!-- enable remember me -->
+        <!--enable remember me--> 
         <remember-me
             token-validity-seconds="1209600"
             remember-me-parameter="remember-me"
         />
         
     </http>
-
+    
     <authentication-manager >
         <authentication-provider user-service-ref="customUserDetailsService">
             <password-encoder ref="customPasswordEncoder" />
         </authentication-provider>
     </authentication-manager>
-      
+   
     <beans:bean id="customUserDetailsService" class="com.advantech.service.CustomUserDetailsService" />
-    
-    <!--    <websocket:message-broker application-destination-prefix="/app">
-        <websocket:stomp-endpoint path="/socket">
-            <websocket:sockjs/>
-        </websocket:stomp-endpoint>
-        <websocket:simple-broker prefix="/topic, /queue"/>
-    </websocket:message-broker>-->
-     
+  
     <global-method-security secured-annotations="enabled" />
 </beans:beans>

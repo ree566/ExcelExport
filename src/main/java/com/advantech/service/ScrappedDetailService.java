@@ -12,8 +12,12 @@ import com.advantech.repo.ScrappedDetailRepository;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
+import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +46,26 @@ public class ScrappedDetailService {
 
     public List<MaterialNumberSum> findMaterialNumberSum(Date sD, Date eD) {
         return repo.findMaterialNumberSum(sD, eD);
+    }
+
+    public DataTablesOutput<ScrappedDetail> findAll(DataTablesInput dti) {
+        return repo.findAll(dti);
+    }
+
+    public DataTablesOutput<ScrappedDetail> findAll(DataTablesInput dti, Specification<ScrappedDetail> s) {
+        return repo.findAll(dti, s);
+    }
+
+    public DataTablesOutput<ScrappedDetail> findAll(DataTablesInput dti, Specification<ScrappedDetail> s, Specification<ScrappedDetail> s1) {
+        return repo.findAll(dti, s, s1);
+    }
+
+    public <R> DataTablesOutput<R> findAll(DataTablesInput dti, Function<ScrappedDetail, R> fnctn) {
+        return repo.findAll(dti, fnctn);
+    }
+
+    public <R> DataTablesOutput<R> findAll(DataTablesInput dti, Specification<ScrappedDetail> s, Specification<ScrappedDetail> s1, Function<ScrappedDetail, R> fnctn) {
+        return repo.findAll(dti, s, s1, fnctn);
     }
 
     public <S extends ScrappedDetail> List<S> saveAll(Iterable<S> itrbl) {

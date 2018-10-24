@@ -3,7 +3,7 @@ package com.advantech.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,7 +31,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Table(name = "[User]",
         uniqueConstraints = @UniqueConstraint(columnNames = "jobnumber")
 )
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = User.class)
+@JsonIdentityInfo(generator = JSOGGenerator.class)
 public class User implements UserDetails, Comparable<User> {
 
     private int id;

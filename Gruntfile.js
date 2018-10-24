@@ -10,17 +10,7 @@ module.exports = function (grunt) {
     grunt.initConfig({
         bower: {
             install: {
-                options: {
-                    copy: false,
-                    targetDir: './lib',
-                    layout: 'byType',
-                    install: true,
-                    verbose: false,
-                    prune: false,
-                    cleanTargetDir: false,
-                    cleanBowerDir: false,
-                    bowerOptions: {}
-                }
+                
             }
         },
         dist: {

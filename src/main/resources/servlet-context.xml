@@ -55,7 +55,7 @@
         <property name="password" value="m3server" />
     </bean>
     
-    <jpa:repositories base-package="com.advantech.repo" />
+    <jpa:repositories base-package="com.advantech.repo" factory-class="org.springframework.data.jpa.datatables.repository.DataTablesRepositoryFactoryBean"/>
     
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" destroy-method="destroy"> 
 
@@ -79,6 +79,7 @@
                 <prop key="hibernate.jdbc.batch_size">${HIBERNATE.JDBC.BATCHSIZE}</prop>
                 <prop key="hibernate.id.new_generator_mappings" >false</prop>
                 <prop key="hibernate.show_sql">true</prop>
+                <!--<prop key="hibernate.format_sql">true</prop>-->
                 <!--<prop key="hibernate.hbm2ddl.auto">update</prop>-->
             </props> 
         </property> 
@@ -101,13 +102,7 @@
             com.advantech.job,
             com.advantech.helper
     " />
-    <!--            com.advantech.converter, 
-    com.advantech.customException, 
-    com.advantech.security, 
-    com.advantech.webservice,-->
-            
-    
-    
+
     <!--要使用 @Transactional 時需要--> 
     <tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager"/>
 
@@ -132,7 +127,6 @@
         org.springframework.format.support.FormattingConversionServiceFactoryBean
     -->
 
-    
     <mvc:annotation-driven>
         <mvc:message-converters>
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
@@ -163,7 +157,7 @@
     
     <!--other import-->
 
-    <!--<import resource="classpath:spring-security.xml"/>-->
+    <import resource="classpath:spring-security.xml"/>
     <import resource="classpath:spring-quartz.xml"/>
 
 </beans>

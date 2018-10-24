@@ -16,7 +16,7 @@
         <spring.version>5.0.6.RELEASE</spring.version>
         <spring-security.version>4.2.2.RELEASE</spring-security.version>
         <hibernate.version>5.3.1.Final</hibernate.version>
-        <jackson.version>2.9.4</jackson.version>
+        <jackson.version>[2.9.5,)</jackson.version>
         <quartz.version>2.2.3</quartz.version>
     </properties>
     
@@ -247,6 +247,13 @@
             <artifactId>jackson-datatype-hibernate5</artifactId>
             <version>${jackson.version}</version>
         </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/com.voodoodyne.jackson.jsog/jackson-jsog -->
+        <dependency>
+            <groupId>com.voodoodyne.jackson.jsog</groupId>
+            <artifactId>jackson-jsog</artifactId>
+            <version>1.1.1</version>
+        </dependency>
 
         <!-- http://mvnrepository.com/artifact/axis/axis -->
         <dependency>
@@ -413,6 +420,13 @@
             <version>1.5.0</version>
         </dependency>
         
+        <!--https://github.com/darrachequesne/spring-data-jpa-datatables-->
+        <dependency>
+            <groupId>com.github.darrachequesne</groupId>
+            <artifactId>spring-data-jpa-datatables</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+        
     </dependencies>
     
     <build>
@@ -488,6 +502,33 @@
                     <argLine>-Dfile.encoding=UTF-8</argLine>
                     <skipTests>true</skipTests>
                 </configuration>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.bsc.maven</groupId>
+                <artifactId>maven-processor-plugin</artifactId>
+                <version>2.2.4</version>
+                <executions>
+                    <execution>
+                        <id>process</id>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <processors>
+                                <processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
+                            </processors>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-jpamodelgen</artifactId>
+                        <version>4.3.8.Final</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
         

@@ -11,6 +11,7 @@ import com.advantech.model.ScrappedDetail;
 import com.advantech.model.ScrappedDetailWeekGroup;
 import java.util.Date;
 import java.util.List;
+import org.springframework.data.jpa.datatables.repository.DataTablesRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public interface ScrappedDetailRepository extends JpaRepository<ScrappedDetail, Integer> {
+public interface ScrappedDetailRepository extends JpaRepository<ScrappedDetail, Integer>, DataTablesRepository<ScrappedDetail, Integer> {
 
     public List<ScrappedDetail> findByFloor(Floor floor);
 
