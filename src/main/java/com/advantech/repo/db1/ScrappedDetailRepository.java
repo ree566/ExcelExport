@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.repo;
+package com.advantech.repo.db1;
 
 import com.advantech.model.Floor;
 import com.advantech.model.MaterialNumberSum;

@@ -6,7 +6,7 @@
 package com.advantech.service;
 
 import com.advantech.model.UserProfile;
-import com.advantech.repo.UserProfileRepository;
+import com.advantech.repo.db1.UserProfileRepository;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;

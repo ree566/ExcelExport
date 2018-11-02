@@ -10,16 +10,16 @@ import com.advantech.model.ScrappedDetail;
 import com.advantech.model.ScrappedDetailWeekGroup;
 import com.advantech.model.User;
 import com.advantech.model.UserNotification;
-import com.advantech.repo.FloorRepository;
-import com.advantech.repo.ScrappedDetailRepository;
-import com.advantech.repo.UserNotificationRepository;
-import com.advantech.repo.UserRepository;
+import com.advantech.repo.db1.FloorRepository;
+import com.advantech.repo.db1.ScrappedDetailRepository;
+import com.advantech.repo.db1.UserNotificationRepository;
+import com.advantech.repo.db1.UserRepository;
+import com.advantech.repo.db1.WorkingHoursRepository;
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.transaction.Transactional;
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.DateTime;
 import static org.junit.Assert.*;
@@ -32,6 +32,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -148,7 +149,7 @@ public class TestRepository {
 
         List<User> l = userRepo.findByUserNotifications(n);
 
-        assertEquals(22, l.size());
+        assertEquals(5, l.size());
 
     }
 
@@ -184,7 +185,7 @@ public class TestRepository {
 
         List<ScrappedDetail> l = scrappedRepo.findByPriceGreaterThanAndCreateDateGreaterThan(500, d.toDate());
 
-        assertEquals(82, l.size());
+        assertEquals(89, l.size());
 
         Map<String, Map<Integer, List<ScrappedDetail>>> map = l.stream()
                 .collect(Collectors.groupingBy(ScrappedDetail::getMaterialNumber,
@@ -214,21 +215,35 @@ public class TestRepository {
         HibernateObjectPrinter.print(collect);
     }
 
+    @Autowired
+    public WorkingHoursRepository whRepo;
+
     @Test
     @Transactional
     @Rollback(true)
-    public void testJpaProceduleCall() {
-        DateTime sD = new DateTime().withMonthOfYear(7).withDayOfMonth(1).withHourOfDay(0);
-        DateTime eD = new DateTime().withMonthOfYear(10).withDayOfMonth(30).withHourOfDay(23);
+    public void testJpa() {
+        List l = scrappedRepo.findAllGroupByWeek();
+        assertTrue(!l.isEmpty());
+        HibernateObjectPrinter.print(l);
+    }
 
-//        List<Map> l = scrappedRepo.findMaterialNumberSum(sD.toDate(), eD.toDate());
-//        assertEquals(20, l.size());
-//
-//        l.forEach((m) -> {
-//            m.forEach((k, v) -> {
-//                System.out.println("Key : " + k + " Value : " + v);
-//            });
-//        });
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testJpa2() {
+
+        List l = whRepo.findMonthlyWhReport();
+        assertTrue(!l.isEmpty());
+        HibernateObjectPrinter.print(l);
+        
+        
+
+    }
+
+//    @Test
+    @Transactional
+    @Rollback(true)
+    public void testJpaMix() {
 
     }
 

@@ -37,7 +37,7 @@
     
     <bean id="SyncDataBeforeSendMail-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="SyncDataBeforeSendMail-Job" />
-        <property name="cronExpression" value="0 0 14 ? * FRI *" />
+        <property name="cronExpression" value="0 50 14 ? * FRI *" />
     </bean>
 
     <!--schedule jobs-->

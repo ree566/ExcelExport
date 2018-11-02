@@ -54,9 +54,11 @@
         <property name="username" value="waychien" />
         <property name="password" value="m3server" />
     </bean>
-    
-    <jpa:repositories base-package="com.advantech.repo" factory-class="org.springframework.data.jpa.datatables.repository.DataTablesRepositoryFactoryBean"/>
-    
+
+    <jpa:repositories base-package="com.advantech.repo.db1" 
+                      factory-class="org.springframework.data.jpa.datatables.repository.DataTablesRepositoryFactoryBean"         
+    />
+
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" destroy-method="destroy"> 
 
         <!--指定數據源，此處是C3P0連接池--> 
@@ -79,7 +81,7 @@
                 <prop key="hibernate.jdbc.batch_size">${HIBERNATE.JDBC.BATCHSIZE}</prop>
                 <prop key="hibernate.id.new_generator_mappings" >false</prop>
                 <prop key="hibernate.show_sql">true</prop>
-                <!--<prop key="hibernate.format_sql">true</prop>-->
+                <prop key="hibernate.format_sql">true</prop>
                 <!--<prop key="hibernate.hbm2ddl.auto">update</prop>-->
             </props> 
         </property> 
@@ -131,9 +133,16 @@
         <mvc:message-converters>
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
                 <property name="objectMapper">
-                    <bean class="com.advantech.converter.HibernateAwareObjectMapper" />
+                    <bean class="com.advantech.converter.HibernateAwareObjectMapper">
+                        <property name="dateFormat">
+                            <bean class="java.text.SimpleDateFormat">
+                                <constructor-arg type="java.lang.String" value="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" />
+                            </bean>
+                        </property>
+                    </bean>
                 </property>
             </bean>
+
         </mvc:message-converters>
     </mvc:annotation-driven>
     

@@ -3,6 +3,7 @@ package com.advantech.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import java.util.Collection;
 import java.util.HashSet;
@@ -38,6 +39,8 @@ public class User implements UserDetails, Comparable<User> {
     private Floor floor;
     private Unit unit;
     private String jobnumber;
+    
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)//Jackson
     private String password;
     private String username;
     private String email;

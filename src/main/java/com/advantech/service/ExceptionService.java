@@ -7,8 +7,8 @@ package com.advantech.service;
 
 import com.advantech.model.ScrappedDetail;
 import com.advantech.model.User;
-import com.advantech.repo.ScrappedDetailRepository;
-import com.advantech.repo.UserRepository;
+import com.advantech.repo.db1.ScrappedDetailRepository;
+import com.advantech.repo.db1.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -8,7 +8,7 @@ package com.advantech.helper;
 import com.advantech.chart.ExcelChart;
 import static com.advantech.helper.DateConversion.fromUSWeekAndYear;
 import com.advantech.model.ScrappedDetailWeekGroup;
-import com.advantech.repo.ScrappedDetailRepository;
+import com.advantech.repo.db1.ScrappedDetailRepository;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;

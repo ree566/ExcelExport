@@ -6,7 +6,7 @@
 package com.advantech.controller;
 
 import com.advantech.model.User;
-import com.advantech.repo.UserRepository;
+import com.advantech.repo.db1.UserRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

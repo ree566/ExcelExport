@@ -16,7 +16,7 @@
         <spring.version>5.0.6.RELEASE</spring.version>
         <spring-security.version>4.2.2.RELEASE</spring-security.version>
         <hibernate.version>5.3.1.Final</hibernate.version>
-        <jackson.version>[2.9.5,)</jackson.version>
+        <jackson.version>2.9.5</jackson.version>
         <quartz.version>2.2.3</quartz.version>
     </properties>
     
@@ -111,7 +111,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
-            <version>${hibernate.version}</version>
+            <version>4.3.1.Final</version>
         </dependency>
         
         <dependency>
@@ -493,17 +493,6 @@
                 </executions>
             </plugin>
 
-            <!--The output console set utf-8-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.15</version>
-                <configuration>
-                    <argLine>-Dfile.encoding=UTF-8</argLine>
-                    <skipTests>true</skipTests>
-                </configuration>
-            </plugin>
-            
             <plugin>
                 <groupId>org.bsc.maven</groupId>
                 <artifactId>maven-processor-plugin</artifactId>
@@ -530,8 +519,19 @@
                     </dependency>
                 </dependencies>
             </plugin>
+            
+            <!--The output console set utf-8-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.15</version>
+                <configuration>
+                    <argLine>-Dfile.encoding=UTF-8</argLine>
+                    <skipTests>false</skipTests>
+                </configuration>
+            </plugin>
         </plugins>
-        
+
         <finalName>${project.artifactId}##${project.version}</finalName>
         
     </build>

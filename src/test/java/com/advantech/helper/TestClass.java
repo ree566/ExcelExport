@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toMap;
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import static org.junit.Assert.assertEquals;
@@ -103,19 +104,35 @@ public class TestClass {
                 .build();
 
         HibernateObjectPrinter.print(map);
-        
+
         Map collect = map.entrySet()
                 .stream()
                 .sorted(comparingByKey())
                 .collect(toMap(e -> e.getKey(), e -> e.getValue(), (e1, e2) -> e2, LinkedHashMap::new));
-        
+
         HibernateObjectPrinter.print(collect);
 
     }
-    
-    @Test
-    public void testBigDecimal(){
+
+//    @Test
+    public void testBigDecimal() {
         String str = "9.680017514E9";
         System.out.println(Long.toString(new BigDecimal(str).longValue()));
+    }
+
+    @Test
+    public void testDateTime2() {
+        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy/M/d");
+        
+        DateTime lastDateOfWeek = new DateTime().withTime(0, 0, 0, 0).dayOfWeek().withMaximumValue();
+        lastDateOfWeek = lastDateOfWeek.minusDays(2);
+        System.out.println(fmt.print(lastDateOfWeek));
+        
+        DateTime lastDateOfMonth = new DateTime().withTime(0, 0, 0, 0).dayOfMonth().withMaximumValue();
+        int lastDateMonthOfWeek = lastDateOfMonth.getDayOfWeek();
+        lastDateOfMonth = lastDateOfMonth.minusDays(lastDateMonthOfWeek == 7 ? 2 : (lastDateMonthOfWeek == 6 ? 1 : 0));
+        System.out.println(fmt.print(lastDateOfMonth));
+        
+        System.out.println(LocalDate.now().compareTo(new LocalDate(lastDateOfWeek)) == 0);
     }
 }

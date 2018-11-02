@@ -8,7 +8,7 @@ package com.advantech.service;
 import com.advantech.model.Floor;
 import com.advantech.model.MaterialNumberSum;
 import com.advantech.model.ScrappedDetail;
-import com.advantech.repo.ScrappedDetailRepository;
+import com.advantech.repo.db1.ScrappedDetailRepository;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;

@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.repo;
+package com.advantech.repo.db1;
 
-import com.advantech.model.UserProfile;
+import com.advantech.model.Unit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,6 +14,6 @@ import org.springframework.stereotype.Repository;
  * @author Wei.Cheng
  */
 @Repository
-public interface UserProfileRepository extends JpaRepository<UserProfile, Integer> {
+public interface UnitRepository extends JpaRepository<Unit, Integer> {
 
 }
