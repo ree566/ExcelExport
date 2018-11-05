@@ -121,7 +121,7 @@
                         }
                     });
                 });
-                
+
                 $("#_header_fitler_日期").addClass("search_disabled").attr("disabled", true);
 
                 var table = $('#favourable').DataTable(dataTable_config);
@@ -131,6 +131,8 @@
                     showOn: "button",
                     buttonImage: "images/calendar.gif",
                     buttonImageOnly: false
+                }).on('change', function () {
+                    $('.datepicker').hide();
                 });
 
                 $("#search").click(function () {
@@ -147,7 +149,7 @@
                 }).ajaxStop(function () {
                     $("input").not(".search_disabled").removeAttr("disabled");
                 });
-                
+
 
                 function formatDate(ds) {
                     return moment(ds).format('YYYY/MM/DD'); // October 22nd 2018, 10:37:08 am

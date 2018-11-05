@@ -5,8 +5,10 @@
  */
 package com.advantech.service;
 
+import com.advantech.model.WorkingHoursReport;
 import com.advantech.repo.db1.WorkingHoursRepository;
 import java.util.List;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,16 +24,16 @@ public class WorkingHoursService {
     @Autowired
     private WorkingHoursRepository repo;
 
-    public List findDailyWhReport() {
-        return repo.findDailyWhReport();
+    public List<WorkingHoursReport> findDailyWhReport(DateTime dt) {
+        return repo.findDailyWhReport(dt.toDate());
     }
 
-    public List findWeeklyWhReport() {
-        return repo.findWeeklyWhReport();
+    public List<WorkingHoursReport> findWeeklyWhReport(DateTime dt) {
+        return repo.findWeeklyWhReport(dt.toDate());
     }
 
-    public List findMonthlyWhReport() {
-        return repo.findMonthlyWhReport();
+    public List<WorkingHoursReport> findMonthlyWhReport(DateTime dt) {
+        return repo.findMonthlyWhReport(dt.toDate());
     }
 
 }

@@ -7,9 +7,11 @@ package com.advantech.repo.db1;
 
 import com.advantech.model.Floor;
 import com.advantech.model.WorkingHoursReport;
+import java.util.Date;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -20,16 +22,16 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WorkingHoursRepository extends JpaRepository<Floor, Integer> {
 
-    @Query(value = "SELECT * FROM vw_Daily_WH_Report order by 1, 5",
+    @Query(value = "{CALL usp_Daily_WH_Report(:specDate)}",
             nativeQuery = true)
-    public List findDailyWhReport();
+    public List<WorkingHoursReport> findDailyWhReport(@Param("specDate") Date sD);
 
-    @Query(value = "SELECT * FROM vw_Weekly_WH_Report order by 1, 5",
+    @Query(value = "{CALL usp_Weekly_WH_Report(:specDate)}",
             nativeQuery = true)
-    public List findWeeklyWhReport();
+    public List<WorkingHoursReport> findWeeklyWhReport(@Param("specDate") Date sD);
 
-    @Query(value = "SELECT * FROM vw_Monthly_WH_Report",
+    @Query(value = "{CALL usp_Monthly_WH_Report(:specDate)}",
             nativeQuery = true)
-    public List<WorkingHoursReport> findMonthlyWhReport();
+    public List<WorkingHoursReport> findMonthlyWhReport(@Param("specDate") Date sD);
 
 }

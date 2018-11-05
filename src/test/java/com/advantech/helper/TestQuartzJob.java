@@ -43,7 +43,7 @@ public class TestQuartzJob {
         reportJob.execute();
     }
     
-//    @Test
+    @Test
     public void testSync() {
         syncJob.execute();
     }

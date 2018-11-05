@@ -6,10 +6,13 @@
 package com.advantech.controller;
 
 import com.advantech.helper.HibernateObjectPrinter;
+import com.advantech.job.SendWhReports;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,6 +41,16 @@ public class TestController {
     public String testGetUtf8(@RequestParam String testString) {
         HibernateObjectPrinter.print(testString);
         return testString;
+    }
+
+    @Autowired
+    private SendWhReports job;
+
+    @ResponseBody
+    @RequestMapping(value = "/testSendWhReport", method = {RequestMethod.GET})
+    public String testSendWhReport(@RequestParam int year, @RequestParam int month, @RequestParam int day) throws Exception {
+        DateTime dt = new DateTime(year, month, day, 0, 0, 0);
+        return job.generateMailBody(dt);
     }
 
 }

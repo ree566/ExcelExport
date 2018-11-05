@@ -218,7 +218,7 @@ public class TestRepository {
     @Autowired
     public WorkingHoursRepository whRepo;
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testJpa() {
@@ -231,10 +231,20 @@ public class TestRepository {
     @Transactional
     @Rollback(true)
     public void testJpa2() {
+        
+        DateTime now = new DateTime();
 
-        List l = whRepo.findMonthlyWhReport();
+        List l = whRepo.findDailyWhReport(now.toDate());
         assertTrue(!l.isEmpty());
         HibernateObjectPrinter.print(l);
+        
+        List l2 = whRepo.findWeeklyWhReport(now.toDate());
+        assertTrue(!l2.isEmpty());
+        HibernateObjectPrinter.print(l2);
+        
+        List l3 = whRepo.findMonthlyWhReport(now.toDate());
+        assertTrue(!l3.isEmpty());
+        HibernateObjectPrinter.print(l3);
         
         
 

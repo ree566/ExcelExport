@@ -13,13 +13,13 @@ import java.math.BigDecimal;
  */
 public interface WorkingHoursReport {
 
-    public String getA();
+    public String getDateField();
 
-    public String getB();
+    public int getQuantity();
 
-    public String getC();
+    public BigDecimal getSapWorktime();
 
-    public String getD();
+    public String getSapOutputValue();
 
-    public String getE();
+    public String getPlant();
 }
