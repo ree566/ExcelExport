@@ -6,11 +6,15 @@
 package com.advantech.job;
 
 import com.advantech.helper.MailManager;
+import com.advantech.model.User;
 import com.advantech.model.UserNotification;
 import com.advantech.model.WorkingHoursReport;
 import com.advantech.service.UserNotificationService;
+import com.advantech.service.UserService;
 import com.advantech.service.WorkingHoursService;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.List;
 import javax.mail.MessagingException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -41,8 +45,13 @@ public class SendWhReports {
 
     @Autowired
     private WorkingHoursService whService;
+    
+    @Autowired
+    private UserService userService;
 
-    private DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy/M/d");
+    private final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy/M/d");
+
+    private final DecimalFormat df = new DecimalFormat("$#,##0");
 
     public void execute() {
         sendMail();
@@ -50,17 +59,22 @@ public class SendWhReports {
 
     public void sendMail() {
         try {
-            UserNotification notifi = notificationService.findById(1).get();
-            UserNotification notifiCc = notificationService.findById(2).get();
+            UserNotification notifi = notificationService.findById(6).get();
+            UserNotification notifiCc = notificationService.findById(7).get();
 
-//            String[] mailTarget = findUsersMail(notifi);
-//            String[] mailCcTarget = findUsersMail(notifiCc);
-            String[] mailTarget = {"Wei.Cheng@advantech.com.tw"};
-            String[] mailCcTarget = {};
+            String[] mailTarget = findUsersMail(notifi);
+            String[] mailCcTarget = findUsersMail(notifiCc);
+//            String[] mailTarget = {"Wei.Cheng@advantech.com.tw"};
+//            String[] mailCcTarget = {};
+            
+            if(mailTarget.length == 0){
+                logger.info("Job sendReport can't find mail target in database table.");
+                return;
+            }
 
             DateTime now = new DateTime();
-            String mailBody = generateMailBody(new DateTime());
-            String mailTitle = "" + fmt.print(now);
+            String mailBody = generateMailBody(new DateTime(2018, 9, 28, 0, 0, 0));
+            String mailTitle = "SAP產值資料 - " + fmt.print(now);
 
             manager.sendMail(mailTarget, mailCcTarget, mailTitle, mailBody);
 
@@ -68,6 +82,11 @@ public class SendWhReports {
             logger.error("Send mail fail.", ex);
         }
 
+    }
+    
+    private String[] findUsersMail(UserNotification notifi) {
+        List<User> l = userService.findByUserNotifications(notifi);
+        return l.stream().map(u -> u.getEmail()).toArray(size -> new String[size]);
     }
 
     public String generateMailBody(DateTime dt) throws IOException, SAXException, InvalidFormatException {
@@ -82,6 +101,8 @@ public class SendWhReports {
         sb.append("table th {background-color: yellow;}");
         sb.append("#mailBody {font-family: 微軟正黑體;}");
         sb.append(".highlight {background-color: yellow;}");
+        sb.append(".rightAlign {text-align:right;}");
+        sb.append(".total {font-weight: bold;}");
         sb.append("</style>");
         sb.append("<div id='mailBody'>");
         sb.append("<h3>Dear User:</h3>");
@@ -129,26 +150,58 @@ public class SendWhReports {
         sb.append("<th>廠別</th>");
         sb.append("</tr>");
 
+        int totalQuantity = 0;
+        BigDecimal totalSapWorktime = BigDecimal.ZERO, totalSapOutputValue = BigDecimal.ZERO;
+
         for (WorkingHoursReport whr : l) {
+            totalQuantity = totalQuantity + whr.getQuantity();
+            totalSapWorktime = totalSapWorktime.add(whr.getSapWorktime());
+            
+            BigDecimal outputValue = cutOutDigits(whr.getSapOutputValue());
+            totalSapOutputValue = totalSapOutputValue.add(outputValue);
+
             sb.append("<tr>");
             sb.append("<td>");
             sb.append(whr.getDateField());
             sb.append("</td>");
-            sb.append("<td>");
+            sb.append("<td class='rightAlign'>");
             sb.append(whr.getQuantity());
             sb.append("</td>");
-            sb.append("<td>");
+            sb.append("<td class='rightAlign'>");
             sb.append(whr.getSapWorktime());
             sb.append("</td>");
-            sb.append("<td>");
-            sb.append(whr.getSapOutputValue());
+            sb.append("<td class='rightAlign'>");
+            sb.append(df.format(outputValue));
             sb.append("</td>");
             sb.append("<td>");
             sb.append(whr.getPlant());
             sb.append("</td>");
             sb.append("</tr>");
         }
+
+        sb.append("<tr class='total'>");
+        sb.append("<td>");
+        sb.append("Total:");
+        sb.append("</td>");
+        sb.append("<td class='rightAlign'>");
+        sb.append(totalQuantity);
+        sb.append("</td>");
+        sb.append("<td class='rightAlign'>");
+        sb.append(totalSapWorktime);
+        sb.append("</td>");
+        sb.append("<td class='rightAlign'>");
+        sb.append(df.format(totalSapOutputValue));
+        sb.append("</td>");
+        sb.append("<td>");
+        sb.append("");
+        sb.append("</td>");
+        sb.append("</tr>");
+
         sb.append("</table>");
         sb.append("<hr />");
+    }
+
+    private BigDecimal cutOutDigits(BigDecimal bd) {
+        return bd.subtract(bd.remainder(new BigDecimal(10)));
     }
 }

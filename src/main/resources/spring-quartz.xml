@@ -41,15 +41,15 @@
     </bean>
     
     <!--job3 setting-->
-    <bean name="SendWhReport-Job" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+    <bean name="SendWhReports-Job" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
         <property name="targetObject" ref="sendWhReports" />
         <property name="targetMethod" value="execute"/>  
         <property name="concurrent" value="false"/>
     </bean>
     
-    <bean id="SendWhReport-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-        <property name="jobDetail" ref="SendWhReport-Job" />
-        <property name="cronExpression" value="0 50 14 ? * FRI *" />
+    <bean id="SendWhReports-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="SendWhReports-Job" />
+        <property name="cronExpression" value="0 30 8 ? * MON-FRI *" />
     </bean>
 
     <!--schedule jobs-->
@@ -59,7 +59,7 @@
                 <ref bean="SendReport-Trig"/>
                 <ref bean="SyncData-Trig"/>
                 <ref bean="SyncDataBeforeSendMail-Trig"/>
-                <!--<ref bean="SendWhReport-Trig"/>-->
+                <ref bean="SendWhReports-Trig"/>
             </list>
         </property>
         <property name="schedulerName">

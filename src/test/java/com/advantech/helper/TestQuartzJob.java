@@ -6,6 +6,7 @@
 package com.advantech.helper;
 
 import com.advantech.job.SendReport;
+import com.advantech.job.SendWhReports;
 import com.advantech.job.SyncData;
 import java.io.IOException;
 import javax.mail.MessagingException;
@@ -35,17 +36,25 @@ public class TestQuartzJob {
     @Autowired
     private SyncData syncJob;
     
+    @Autowired
+    private SendWhReports whReportJob;
+    
     @Value("${floor.five.fileLocation}")
     private String fileLocation;
 
-    @Test
+//    @Test
     public void testMail() {
         reportJob.execute();
     }
     
-    @Test
+//    @Test
     public void testSync() {
         syncJob.execute();
+    }
+    
+    @Test
+    public void testSendWhReports() {
+        whReportJob.execute();
     }
    
 }

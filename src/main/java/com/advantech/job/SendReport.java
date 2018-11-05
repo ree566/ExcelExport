@@ -80,6 +80,11 @@ public class SendReport {
 //            String[] mailTarget = {"Wei.Cheng@advantech.com.tw"};
 //            String[] mailCcTarget = {};
 
+            if(mailTarget.length == 0){
+                logger.info("Job sendReport can't find mail target in database table.");
+                return;
+            }
+
             updateDateRange(d);
 
             ChartPanel chartPanel = excelChart.createChart();

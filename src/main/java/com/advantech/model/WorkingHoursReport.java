@@ -19,7 +19,7 @@ public interface WorkingHoursReport {
 
     public BigDecimal getSapWorktime();
 
-    public String getSapOutputValue();
+    public BigDecimal getSapOutputValue();
 
     public String getPlant();
 }
