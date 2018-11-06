@@ -45,7 +45,7 @@ public class SendWhReports {
 
     @Autowired
     private WorkingHoursService whService;
-    
+
     @Autowired
     private UserService userService;
 
@@ -64,17 +64,17 @@ public class SendWhReports {
 
             String[] mailTarget = findUsersMail(notifi);
             String[] mailCcTarget = findUsersMail(notifiCc);
-//            String[] mailTarget = {"Wei.Cheng@advantech.com.tw"};
+//            String[] mailTarget = {"Wei.Cheng@advantech.com.tw", "Gavin311.Chen@advantech.com.tw"};
 //            String[] mailCcTarget = {};
-            
-            if(mailTarget.length == 0){
+
+            if (mailTarget.length == 0) {
                 logger.info("Job sendReport can't find mail target in database table.");
                 return;
             }
 
             DateTime now = new DateTime();
-            String mailBody = generateMailBody(new DateTime(2018, 9, 28, 0, 0, 0));
-            String mailTitle = "SAP產值資料 - " + fmt.print(now);
+            String mailBody = generateMailBody(new DateTime());
+            String mailTitle = fmt.print(now) + " - SAP產值/工時資料";
 
             manager.sendMail(mailTarget, mailCcTarget, mailTitle, mailBody);
 
@@ -83,7 +83,7 @@ public class SendWhReports {
         }
 
     }
-    
+
     private String[] findUsersMail(UserNotification notifi) {
         List<User> l = userService.findByUserNotifications(notifi);
         return l.stream().map(u -> u.getEmail()).toArray(size -> new String[size]);
@@ -106,7 +106,7 @@ public class SendWhReports {
         sb.append("</style>");
         sb.append("<div id='mailBody'>");
         sb.append("<h3>Dear User:</h3>");
-        sb.append("<h3>SAP產值資料如下(");
+        sb.append("<h3>SAP產值/工時資料如下(");
         sb.append(fmt.print(dt));
         sb.append("):</h3>");
 
@@ -127,14 +127,14 @@ public class SendWhReports {
         }
 
         //Generate monthly table
-        DateTime lastDateOfMonth = dt.withTime(0, 0, 0, 0).dayOfMonth().withMaximumValue();
-        int lastDateMonthOfWeek = lastDateOfMonth.getDayOfWeek();
-        lastDateOfMonth = lastDateOfMonth.minusDays(lastDateMonthOfWeek == 7 ? 2 : (lastDateMonthOfWeek == 6 ? 1 : 0));
-        if (dt.toLocalDate().compareTo(new LocalDate(lastDateOfMonth)) == 0) {
-            List monthlyList = whService.findMonthlyWhReport(dt);
-            sb.append("<h5>Monthly report</h5>");
-            addTable(monthlyList, sb);
-        }
+//        DateTime lastDateOfMonth = dt.withTime(0, 0, 0, 0).dayOfMonth().withMaximumValue();
+//        int lastDateMonthOfWeek = lastDateOfMonth.getDayOfWeek();
+//        lastDateOfMonth = lastDateOfMonth.minusDays(lastDateMonthOfWeek == 7 ? 2 : (lastDateMonthOfWeek == 6 ? 1 : 0));
+//        if (dt.toLocalDate().compareTo(new LocalDate(lastDateOfMonth)) == 0) {
+        List monthlyList = whService.findMonthlyWhReport(dt);
+        sb.append("<h5>Monthly report(當月累積)</h5>");
+        addTable(monthlyList, sb);
+//        }
 
         return sb.toString();
 
@@ -156,7 +156,7 @@ public class SendWhReports {
         for (WorkingHoursReport whr : l) {
             totalQuantity = totalQuantity + whr.getQuantity();
             totalSapWorktime = totalSapWorktime.add(whr.getSapWorktime());
-            
+
             BigDecimal outputValue = cutOutDigits(whr.getSapOutputValue());
             totalSapOutputValue = totalSapOutputValue.add(outputValue);
 
