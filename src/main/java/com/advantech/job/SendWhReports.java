@@ -12,6 +12,7 @@ import com.advantech.model.WorkingHoursReport;
 import com.advantech.service.UserNotificationService;
 import com.advantech.service.UserService;
 import com.advantech.service.WorkingHoursService;
+import static com.google.common.base.Preconditions.checkState;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -73,7 +74,7 @@ public class SendWhReports {
             }
 
             DateTime now = new DateTime();
-            String mailBody = generateMailBody(new DateTime());
+            String mailBody = generateMailBody(now);
             String mailTitle = fmt.print(now) + " - SAP產值/工時資料";
 
             manager.sendMail(mailTarget, mailCcTarget, mailTitle, mailBody);
@@ -84,12 +85,30 @@ public class SendWhReports {
 
     }
 
+    public void testSendMail(int testTargetUserId, DateTime specDate) throws Exception {
+        
+        User user = userService.findById(testTargetUserId).orElseGet(null);
+
+        checkState(user != null, "User not found.");
+
+        String[] mailTarget = {user.getEmail()};
+        String[] mailCcTarget = {};
+
+        checkState(mailTarget.length != 0, "Job sendReport can't find mail target in database table.");
+
+        String mailBody = generateMailBody(specDate);
+        String mailTitle = fmt.print(specDate) + " - SAP產值/工時資料";
+
+        manager.sendMail(mailTarget, mailCcTarget, mailTitle, mailBody);
+        
+    }
+
     private String[] findUsersMail(UserNotification notifi) {
         List<User> l = userService.findByUserNotifications(notifi);
         return l.stream().map(u -> u.getEmail()).toArray(size -> new String[size]);
     }
 
-    public String generateMailBody(DateTime dt) throws IOException, SAXException, InvalidFormatException {
+    private String generateMailBody(DateTime dt) throws IOException, SAXException, InvalidFormatException {
 
         StringBuilder sb = new StringBuilder();
 

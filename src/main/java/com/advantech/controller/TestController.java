@@ -48,9 +48,11 @@ public class TestController {
 
     @ResponseBody
     @RequestMapping(value = "/testSendWhReport", method = {RequestMethod.GET})
-    public String testSendWhReport(@RequestParam int year, @RequestParam int month, @RequestParam int day) throws Exception {
+    public String testSendWhReport(@RequestParam int targetUserId, @RequestParam int year,
+            @RequestParam int month, @RequestParam int day) throws Exception {
         DateTime dt = new DateTime(year, month, day, 0, 0, 0);
-        return job.generateMailBody(dt);
+        job.testSendMail(targetUserId, dt);
+        return "success";
     }
 
 }
