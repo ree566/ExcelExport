@@ -65,8 +65,6 @@ public class SendWhReports {
 
             String[] mailTarget = findUsersMail(notifi);
             String[] mailCcTarget = findUsersMail(notifiCc);
-//            String[] mailTarget = {"Wei.Cheng@advantech.com.tw", "Gavin311.Chen@advantech.com.tw"};
-//            String[] mailCcTarget = {};
 
             if (mailTarget.length == 0) {
                 logger.info("Job sendReport can't find mail target in database table.");
@@ -86,7 +84,7 @@ public class SendWhReports {
     }
 
     public void testSendMail(int testTargetUserId, DateTime specDate) throws Exception {
-        
+
         User user = userService.findById(testTargetUserId).orElseGet(null);
 
         checkState(user != null, "User not found.");
@@ -100,7 +98,7 @@ public class SendWhReports {
         String mailTitle = fmt.print(specDate) + " - SAP產值/工時資料";
 
         manager.sendMail(mailTarget, mailCcTarget, mailTitle, mailBody);
-        
+
     }
 
     private String[] findUsersMail(UserNotification notifi) {
@@ -134,7 +132,7 @@ public class SendWhReports {
 
         sb.append("<h5>Daily report(7日)</h5>");
 
-        addTable(daliyList, sb);
+        addTable("日期", daliyList, sb);
 
         //Generate weekly table
         DateTime lastDateOfWeek = dt.withTime(0, 0, 0, 0).dayOfWeek().withMaximumValue();
@@ -142,27 +140,24 @@ public class SendWhReports {
         if (dt.toLocalDate().compareTo(new LocalDate(lastDateOfWeek)) == 0) {
             List weeklyList = whService.findWeeklyWhReport(dt);
             sb.append("<h5>Weekly report(4週)</h5>");
-            addTable(weeklyList, sb);
+            addTable("週別", weeklyList, sb);
         }
 
         //Generate monthly table
-//        DateTime lastDateOfMonth = dt.withTime(0, 0, 0, 0).dayOfMonth().withMaximumValue();
-//        int lastDateMonthOfWeek = lastDateOfMonth.getDayOfWeek();
-//        lastDateOfMonth = lastDateOfMonth.minusDays(lastDateMonthOfWeek == 7 ? 2 : (lastDateMonthOfWeek == 6 ? 1 : 0));
-//        if (dt.toLocalDate().compareTo(new LocalDate(lastDateOfMonth)) == 0) {
         List monthlyList = whService.findMonthlyWhReport(dt);
         sb.append("<h5>Monthly report(當月累積)</h5>");
-        addTable(monthlyList, sb);
-//        }
+        addTable("月份", monthlyList, sb);
 
         return sb.toString();
 
     }
 
-    private void addTable(List<WorkingHoursReport> l, StringBuilder sb) {
+    private void addTable(String dateTitleName, List<WorkingHoursReport> l, StringBuilder sb) {
         sb.append("<table>");
         sb.append("<tr>");
-        sb.append("<th>日期</th>");
+        sb.append("<th>");
+        sb.append(dateTitleName);
+        sb.append("</th>");
         sb.append("<th>Quantity</th>");
         sb.append("<th>SAP工時</th>");
         sb.append("<th>SAP產值</th>");
