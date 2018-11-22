@@ -135,9 +135,8 @@ public class SendWhReports {
         addTable("日期", daliyList, sb);
 
         //Generate weekly table
-        DateTime lastDateOfWeek = dt.withTime(0, 0, 0, 0).dayOfWeek().withMaximumValue();
-        lastDateOfWeek = lastDateOfWeek.minusDays(2);
-        if (dt.toLocalDate().compareTo(new LocalDate(lastDateOfWeek)) == 0) {
+        DateTime firstDateOfWeek = dt.withTime(0, 0, 0, 0).dayOfWeek().withMinimumValue();
+        if (dt.toLocalDate().compareTo(new LocalDate(firstDateOfWeek)) == 0) {
             List weeklyList = whService.findWeeklyWhReport(dt);
             sb.append("<h5>Weekly report(4週)</h5>");
             addTable("週別", weeklyList, sb);

@@ -120,7 +120,7 @@ public class TestClass {
         System.out.println(Long.toString(new BigDecimal(str).longValue()));
     }
 
-    @Test
+//    @Test
     public void testDateTime2() {
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy/M/d");
         
@@ -134,5 +134,12 @@ public class TestClass {
         System.out.println(fmt.print(lastDateOfMonth));
         
         System.out.println(LocalDate.now().compareTo(new LocalDate(lastDateOfWeek)) == 0);
+    }
+    
+    @Test
+    public void testDateTime3(){
+        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy/M/d");
+        DateTime firstDateOfWeek = new DateTime().withDayOfMonth(14).withTime(0, 0, 0, 0).dayOfWeek().withMinimumValue();
+        System.out.println(fmt.print(firstDateOfWeek));
     }
 }
