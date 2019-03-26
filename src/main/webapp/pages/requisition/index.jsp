@@ -1,7 +1,11 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-    "http://www.w3.org/TR/html4/loose.dtd">
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
+<sec:authentication var="user" property="principal" />
+<sec:authorize access="isAuthenticated()"  var="isLogin" />
+<sec:authorize access="hasRole('USER')"  var="isUser" />
+<sec:authorize access="hasRole('OPER')"  var="isOper" />
 
 <html>
     <head>
@@ -37,54 +41,19 @@
         <script src="<c:url value="/libs/datatables.net-select/js/dataTables.select.js" />"></script>
         <script src="<c:url value="/libs/datatables.net-buttons/js/dataTables.buttons.js" />"></script>
         <script src="<c:url value="/libs/bootstrap-datepicker/js/bootstrap-datepicker.js" />"></script>
-        <script src="<c:url value="extraJs/jquery.spring-friendly.js" />"></script>
+        <script src="<c:url value="/extraJs/jquery.spring-friendly.js" />"></script>
         <script src="<c:url value="/libs/moment/js/moment.js" />"></script>
         <script src="<c:url value="/libs/jsog/js/JSOG.js" />"></script>
         <script>
             $(function () {
 
                 var dataTable_config = {
-                    "dom": 'Bfrtip',
-                    "buttons": [
-                        {
-                            "text": 'New request',
-                            "attr": {
-                                "data-toggle": "modal",
-                                "data-target": "#myModal"
-                            },
-                            "action": function (e, dt, node, config) {
-                                $("#model-table input").val("");
-                                $("#model-table #id").val(0);
-                            }
-                        },
-                        {
-                            "text": 'Edit',
-                            "attr": {
-
-                            },
-                            "action": function (e, dt, node, config) {
-                                var cnt = table.rows('.selected').count();
-                                if (cnt != 1) {
-                                    alert("Please select a row.");
-                                    return false;
-                                }
-                                $('#myModal').modal('show');
-                                var arr = table.rows('.selected').data();
-                                var data = arr[0];
-
-                                $("#model-table #id").val(data.id);
-                                $("#model-table #po").val(data.po);
-                                $("#model-table #materialNumber").val(data.materialNumber);
-                                $("#model-table #amount").val(data.amount);
-                            }
-                        }
-                    ],
                     "processing": true,
                     "serverSide": true,
                     "fixedHeader": true,
                     "orderCellsTop": true,
                     "ajax": {
-                        "url": "RequisitionController/findAll",
+                        "url": "<c:url value="/RequisitionController/findAll" />",
                         "type": "POST",
                         "data": function (d) {
 //                            https://medium.com/code-kings/datatables-js-how-to-update-your-data-object-for-ajax-json-data-retrieval-c1ac832d7aa5
@@ -101,9 +70,11 @@
                         {data: "materialNumber"},
                         {data: "amount"},
                         {data: "requisitionState.name"},
+                        {data: "user.username"},
                         {data: "createDate"},
                         {data: "lastUpdateDate"},
-                        {data: "requisitionState.id"}
+                        {data: "requisitionState.id"},
+                        {data: "id"}
                     ],
                     "columnDefs": [
                         {
@@ -112,18 +83,25 @@
                             "searchable": false
                         },
                         {
-                            "targets": [5, 6],
+                            "targets": [6, 7],
                             "searchable": false,
                             'render': function (data, type, full, meta) {
                                 return data == null ? "n/a" : formatDate(data);
                             }
                         },
                         {
-                            "targets": [7],
+                            "targets": [8],
                             "searchable": false,
                             'render': function (data, type, full, meta) {
-                                return data == 3 ? ("<input type='button' class='accept btn btn-default' value='核可' />" +
-                                        "<input type='button' class='reject btn btn-default' value='拒絕' />") : "已處理" ;
+                                return data == 3 ? (${isOper} ? ("<input type='button' class='accept btn btn-default' value='核可' />" +
+                                        "<input type='button' class='reject btn btn-default' value='拒絕' />") : "待處理") : "已處理";
+                            }
+                        },
+                        {
+                            "targets": [9],
+                            "searchable": false,
+                            'render': function (data, type, full, meta) {
+                                return "<a href='event.jsp?requisition_id=" + data + "' target='_blank'>紀錄</a>";
                             }
                         }
                     ],
@@ -133,7 +111,7 @@
                         "sInfo": "目前記錄：_START_ 至 _END_, 總筆數：_TOTAL_"
                     },
                     "bAutoWidth": false,
-                    "displayLength": 10,
+                    "displayLength": 50,
                     "lengthChange": true,
                     "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
                     "filter": true,
@@ -143,6 +121,48 @@
                     "searchDelay": 1000,
                     "order": [[0, "desc"]]
                 };
+
+                if (${isUser && !isOper}) {
+                    var extraSetting = {
+                        "dom": 'Bfrtip',
+                        "buttons": [
+                            {
+                                "text": 'New request',
+                                "attr": {
+                                    "data-toggle": "modal",
+                                    "data-target": "#myModal"
+                                },
+                                "action": function (e, dt, node, config) {
+                                    $("#model-table input").val("");
+                                    $("#model-table #id").val(0);
+                                }
+                            },
+                            {
+                                "text": 'Edit',
+                                "attr": {
+
+                                },
+                                "action": function (e, dt, node, config) {
+                                    var cnt = table.rows('.selected').count();
+                                    if (cnt != 1) {
+                                        alert("Please select a row.");
+                                        return false;
+                                    }
+                                    $('#myModal').modal('show');
+                                    var arr = table.rows('.selected').data();
+                                    var data = arr[0];
+
+                                    $("#model-table #id").val(data.id);
+                                    $("#model-table #po").val(data.po);
+                                    $("#model-table #materialNumber").val(data.materialNumber);
+                                    $("#model-table #amount").val(data.amount);
+                                }
+                            }
+                        ]
+                    };
+                    $.extend(dataTable_config, extraSetting);
+                }
+
                 $('#favourable thead tr').clone(true).appendTo('#favourable thead');
                 $('#favourable thead tr:eq(1) th').each(function (i) {
                     var title = $(this).text();
@@ -196,13 +216,17 @@
                 });
 
                 $("body").on("click", ".accept", function () {
-                    var data = table.row($(this).parents('tr')).data();
-                    changeStatus(data, 1);
+                    if (confirm("Confirm action \"Approved\"?")) {
+                        var data = table.row($(this).parents('tr')).data();
+                        changeStatus(data, 1);
+                    }
                 });
-                
+
                 $("body").on("click", ".reject", function () {
-                    var data = table.row($(this).parents('tr')).data();
-                    changeStatus(data, 2);
+                    if (confirm("Confirm action \"Reject\"?")) {
+                        var data = table.row($(this).parents('tr')).data();
+                        changeStatus(data, 2);
+                    }
                 });
 
                 function formatDate(ds) {
@@ -302,6 +326,13 @@
         <div class="container box">
             <div class="table-responsive">
                 <h1 align="center">Requisition details search</h1>
+
+                <c:if test="${isLogin}">
+                    <h5>
+                        Hello, <c:out value="${user.username}" />
+                        <a href="<c:url value="/logout" />">logout</a>
+                    </h5>
+                </c:if>
                 <div class="row">
                     <div id="date_filter" class="input-daterange">
                         <div class="col-md-4">
@@ -324,9 +355,11 @@
                             <th>料號</th>
                             <th>數量</th>
                             <th>狀態</th>
+                            <th>申請人</th>
                             <th>起始日期</th>
                             <th>結束日期</th>
                             <th>狀態</th>
+                            <th></th>
                         </tr>
                     </thead>
                 </table>

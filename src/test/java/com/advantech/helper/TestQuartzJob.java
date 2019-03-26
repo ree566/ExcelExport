@@ -47,12 +47,12 @@ public class TestQuartzJob {
         reportJob.execute();
     }
     
-//    @Test
+    @Test
     public void testSync() {
         syncJob.execute();
     }
     
-    @Test
+//    @Test
     public void testSendWhReports() {
         whReportJob.execute();
     }

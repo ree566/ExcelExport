@@ -7,10 +7,12 @@ package com.advantech.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -19,11 +21,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.Transient;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
@@ -39,11 +42,13 @@ public class Requisition implements Serializable {
     private String po;
     private String materialNumber;
     private int amount;
-    private ReturnReason returnReason;
+    private RequisitionState requisitionState;
     private User user;
     private Date createDate;
     private Date lastUpdateDate;
-    private State state = State.Open;
+
+    @JsonIgnore
+    private Set<RequisitionEvent> requisitionEvents = new HashSet(0);
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -84,13 +89,13 @@ public class Requisition implements Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "returnReason_id")
-    public ReturnReason getReturnReason() {
-        return returnReason;
+    @JoinColumn(name = "requisitionState_id")
+    public RequisitionState getRequisitionState() {
+        return requisitionState;
     }
 
-    public void setReturnReason(ReturnReason returnReason) {
-        this.returnReason = returnReason;
+    public void setRequisitionState(RequisitionState requisitionState) {
+        this.requisitionState = requisitionState;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -107,7 +112,7 @@ public class Requisition implements Serializable {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "createDate", length = 23, updatable = false)
+    @Column(name = "createDate", length = 23)
     public Date getCreateDate() {
         return createDate;
     }
@@ -116,6 +121,7 @@ public class Requisition implements Serializable {
         this.createDate = createDate;
     }
 
+    @UpdateTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
@@ -128,13 +134,13 @@ public class Requisition implements Serializable {
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    @Transient
-    public State getState() {
-        return state;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "requisition")
+    public Set<RequisitionEvent> getRequisitionEvents() {
+        return requisitionEvents;
     }
 
-    public void setState(State state) {
-        this.state = state;
+    public void setRequisitionEvents(Set<RequisitionEvent> requisitionEvents) {
+        this.requisitionEvents = requisitionEvents;
     }
 
 }

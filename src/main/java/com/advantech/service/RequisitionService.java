@@ -5,8 +5,15 @@
  */
 package com.advantech.service;
 
+import com.advantech.helper.SecurityPropertiesUtils;
 import com.advantech.model.Requisition;
+import com.advantech.model.RequisitionEvent;
+import com.advantech.model.RequisitionState;
+import com.advantech.model.User;
+import com.advantech.repo.db1.RequisitionEventRepository;
 import com.advantech.repo.db1.RequisitionRepository;
+import com.advantech.repo.db1.RequisitionStateRepository;
+import java.util.Optional;
 import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
@@ -25,6 +32,12 @@ public class RequisitionService {
 
     @Autowired
     private RequisitionRepository repo;
+
+    @Autowired
+    private RequisitionEventRepository eventRepo;
+
+    @Autowired
+    private RequisitionStateRepository stateRepo;
 
     public DataTablesOutput<Requisition> findAll(DataTablesInput dti) {
         return repo.findAll(dti);
@@ -46,8 +59,33 @@ public class RequisitionService {
         return repo.findAll(dti, s, s1, fnctn);
     }
 
+    public Optional<Requisition> findById(Integer id) {
+        return repo.findById(id);
+    }
+
     public <S extends Requisition> S save(S s) {
-        return repo.save(s);
+        RequisitionState stat = stateRepo.findById(3).get();
+        User user = SecurityPropertiesUtils.retrieveAndCheckUserInSession();
+
+        s.setRequisitionState(stat);
+        s.setUser(user);
+        S result = repo.save(s);
+
+        RequisitionEvent e = new RequisitionEvent(s, user, stat, "");
+        eventRepo.save(e);
+
+        return result;
+    }
+
+    public void changeState(int requisition_id, int state_id) {
+        Requisition r = this.findById(requisition_id).get();
+        User user = SecurityPropertiesUtils.retrieveAndCheckUserInSession();
+        RequisitionState state = stateRepo.getOne(state_id);
+        r.setRequisitionState(state);
+        RequisitionEvent e = new RequisitionEvent(r, user, state, "");
+        
+        repo.save(r);
+        eventRepo.save(e);
     }
 
     public void delete(Requisition t) {

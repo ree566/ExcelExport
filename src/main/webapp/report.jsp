@@ -44,8 +44,8 @@
                 var dataTable_config = {
                     "processing": true,
                     "serverSide": true,
-                    fixedHeader: true,
-                    orderCellsTop: true,
+                    "fixedHeader": true,
+                    "orderCellsTop": true,
                     "ajax": {
                         "url": "ScrappedDetailController/findAll",
                         "type": "POST",
@@ -97,15 +97,15 @@
                         "sZeroRecords": "無符合資料",
                         "sInfo": "目前記錄：_START_ 至 _END_, 總筆數：_TOTAL_"
                     },
-                    bAutoWidth: false,
-                    displayLength: 10,
-                    lengthChange: true,
-                    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-                    filter: true,
-                    info: true,
-                    paginate: true,
-                    select: true,
-                    searchDelay: 1000,
+                    "bAutoWidth": false,
+                    "displayLength": 10,
+                    "lengthChange": true,
+                    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    "filter": true,
+                    "info": true,
+                    "paginate": true,
+                    "select": true,
+                    "searchDelay": 1000,
                     "order": [[0, "desc"]]
                 };
                 $('#favourable thead tr').clone(true).appendTo('#favourable thead');

@@ -10,6 +10,7 @@ import com.advantech.model.UserNotification;
 import com.advantech.repo.db1.UserRepository;
 import java.util.List;
 import java.util.Optional;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,7 +45,17 @@ public class UserService {
     }
 
     public User findByJobnumber(String jobnumber) {
-        return repo.findByJobnumber(jobnumber);
+        User i = repo.findByJobnumber(jobnumber);
+
+        if (i == null) {
+            return null;
+        }
+
+        //Initialize the lazy loading relative object
+        Hibernate.initialize(i.getUnit());
+        Hibernate.initialize(i.getFloor());
+        Hibernate.initialize(i.getUserProfiles());
+        return i;
     }
 
     public <S extends User> S save(S s) {

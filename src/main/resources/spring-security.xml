@@ -32,7 +32,10 @@
         
         <!--Global system access setting-->
         
-        <intercept-url pattern="/**" access="permitAll" />
+        <intercept-url pattern="/index.jsp" access="permitAll" />
+        <intercept-url pattern="/report.jsp" access="permitAll" />
+        <intercept-url pattern="/requisition.jsp" access="permitAll" />
+        <intercept-url pattern="/pages/requisition/**" access="isAuthenticated()" />
         
         <!--Controller security role setting-->
         

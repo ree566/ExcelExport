@@ -56,6 +56,7 @@ public class User implements UserDetails, Comparable<User> {
     private boolean credentialsNonExpired;
     private boolean accountNonLocked;
     private Collection<? extends GrantedAuthority> authorities;
+    
 
     public User() {
     }
