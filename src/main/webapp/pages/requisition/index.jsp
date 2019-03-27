@@ -136,28 +136,28 @@
                                     $("#model-table input").val("");
                                     $("#model-table #id").val(0);
                                 }
-                            },
-                            {
-                                "text": 'Edit',
-                                "attr": {
-
-                                },
-                                "action": function (e, dt, node, config) {
-                                    var cnt = table.rows('.selected').count();
-                                    if (cnt != 1) {
-                                        alert("Please select a row.");
-                                        return false;
-                                    }
-                                    $('#myModal').modal('show');
-                                    var arr = table.rows('.selected').data();
-                                    var data = arr[0];
-
-                                    $("#model-table #id").val(data.id);
-                                    $("#model-table #po").val(data.po);
-                                    $("#model-table #materialNumber").val(data.materialNumber);
-                                    $("#model-table #amount").val(data.amount);
-                                }
                             }
+//                            {
+//                                "text": 'Edit',
+//                                "attr": {
+//
+//                                },
+//                                "action": function (e, dt, node, config) {
+//                                    var cnt = table.rows('.selected').count();
+//                                    if (cnt != 1) {
+//                                        alert("Please select a row.");
+//                                        return false;
+//                                    }
+//                                    $('#myModal').modal('show');
+//                                    var arr = table.rows('.selected').data();
+//                                    var data = arr[0];
+//
+//                                    $("#model-table #id").val(data.id);
+//                                    $("#model-table #po").val(data.po);
+//                                    $("#model-table #materialNumber").val(data.materialNumber);
+//                                    $("#model-table #amount").val(data.amount);
+//                                }
+//                            }
                         ]
                     };
                     $.extend(dataTable_config, extraSetting);
@@ -204,15 +204,22 @@
                 });
 
                 $("#save").click(function () {
-                    var data = {
-                        id: $("#model-table #id").val(),
-                        po: $("#model-table #po").val(),
-                        materialNumber: $("#model-table #materialNumber").val(),
-                        amount: $("#model-table #amount").val(),
-                        "returnReason.id": $("#model-table #returnReason\\.id").val(),
-                        "user.id": $("#model-table #user\\.id").val()
-                    };
-                    save(data);
+                    if (confirm("Confirm save?")) {
+                        var number = $("#model-table #materialNumber").val();
+                        if (isNaN(number)) {
+                            alert("Please insert a number.");
+                            return false;
+                        }
+                        var data = {
+                            id: $("#model-table #id").val(),
+                            po: $("#model-table #po").val(),
+                            materialNumber: number,
+                            amount: $("#model-table #amount").val(),
+                            "returnReason.id": $("#model-table #returnReason\\.id").val(),
+                            "user.id": $("#model-table #user\\.id").val()
+                        };
+                        save(data);
+                    }
                 });
 
                 $("body").on("click", ".accept", function () {
@@ -230,7 +237,7 @@
                 });
 
                 function formatDate(ds) {
-                    console.log(moment(ds));
+//                    console.log(moment(ds));
                     return moment(ds).format('YYYY/MM/DD'); // October 22nd 2018, 10:37:08 am
                 }
 
@@ -242,7 +249,8 @@
                         success: function (response) {
                             alert(response);
                             $('#myModal').modal('toggle');
-                            table.ajax.reload();
+                            refreshTable();
+                            ws.send("ADD");
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
                             $("#dialog-msg").val(xhr.responseText);
@@ -260,12 +268,54 @@
                         },
                         success: function (response) {
                             alert(response);
-                            table.ajax.reload();
+                            refreshTable();
+                            ws.send("ADD");
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
                             alert(xhr.responseText);
                         }
                     });
+                }
+
+                function refreshTable() {
+                    table.ajax.reload();
+                }
+
+                //Websocket connect part
+                var ws;
+                var wsFailMsg = $("#ws-connect-fail-message");
+                function connectToServer() {
+
+                    try {
+                        ws = new WebSocket("ws://localhost:8080/ExcelReport/myHandler");
+
+                        ws.onopen = function () {
+                            wsFailMsg.remove();
+                            console.log("Connected");
+                        };
+                        ws.onmessage = function (event) {
+                            var d = event.data;
+                            d = d.replace(/\"/g, "");
+                            console.log(d);
+                            if ("ADD" == d || "REMOVE" == d) {
+                                refreshTable();
+                            }
+                        };
+                        ws.onclose = function () {
+                            console.log("Disconnected");
+                        };
+                    } catch (e) {
+                        console.log(e);
+                    }
+
+
+                }
+                function disconnectToServer() {
+                    ws.close();
+                }
+
+                connectToServer();
+                if (ws != null) {
                 }
 
             });
@@ -333,6 +383,8 @@
                         <a href="<c:url value="/logout" />">logout</a>
                     </h5>
                 </c:if>
+
+                <h5 class="text-danger" id="ws-connect-fail-message">※因網頁不支援某些功能無法自動重整, 請手動按右方的Search button重新整理表格</h5>
                 <div class="row">
                     <div id="date_filter" class="input-daterange">
                         <div class="col-md-4">
