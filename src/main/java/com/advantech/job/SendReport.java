@@ -110,7 +110,7 @@ public class SendReport {
     }
 
     private void updateDateRange(DateTime d) {
-        sDOW = d.minusDays(d.getDayOfWeek() - 1).withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0);
+        sDOW = d.minusDays(d.getDayOfWeek()).withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0);
         eDOW = sDOW.plusDays(7 - 1).withHourOfDay(23).withMinuteOfHour(59).withSecondOfMinute(59);
     }
 

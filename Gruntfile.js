@@ -10,16 +10,19 @@ module.exports = function (grunt) {
     grunt.initConfig({
         bower: {
             install: {
-                
-            }
-        },
-        dist: {
-            files: {
-                'dist/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>']
+                options: {
+                    copy: true,
+                    targetDir: './src/main/webapp/libs',
+                    layout: 'byType',
+                    install: true,
+                    verbose: false,
+                    prune: false,
+                    cleanTargetDir: false,
+                    cleanBowerDir: false,
+                    bowerOptions: {}
+                }
             }
         }
     });
-
     grunt.loadNpmTasks('grunt-bower-task');
-    grunt.loadNpmTasks('grunt-dist');
 };

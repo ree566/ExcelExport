@@ -63,7 +63,7 @@ public class RequisitionService {
         return repo.findById(id);
     }
 
-    public <S extends Requisition> S save(S s) {
+    public <S extends Requisition> S save(S s, String remark) {
         RequisitionState stat = stateRepo.findById(3).get();
         User user = SecurityPropertiesUtils.retrieveAndCheckUserInSession();
 
@@ -71,7 +71,7 @@ public class RequisitionService {
         s.setUser(user);
         S result = repo.save(s);
 
-        RequisitionEvent e = new RequisitionEvent(s, user, stat, "");
+        RequisitionEvent e = new RequisitionEvent(s, user, stat, remark);
         eventRepo.save(e);
 
         return result;

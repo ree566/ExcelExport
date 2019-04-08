@@ -5,18 +5,25 @@
  */
 package com.advantech.controller;
 
+import com.advantech.helper.SecurityPropertiesUtils;
+import com.advantech.model.Floor;
 import com.advantech.model.Requisition;
 import com.advantech.model.RequisitionEvent;
 import com.advantech.model.RequisitionEvent_;
 import com.advantech.model.Requisition_;
+import com.advantech.model.User;
+import com.advantech.model.User_;
 import com.advantech.service.RequisitionEventService;
 import com.advantech.service.RequisitionService;
 import com.fasterxml.jackson.annotation.JsonView;
 import java.util.Date;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,29 +54,45 @@ public class RequisitionController {
     @JsonView(DataTablesOutput.View.class)
     @RequestMapping(value = "/findAll", method = {RequestMethod.POST})
     protected DataTablesOutput<Requisition> findAll(
+            HttpServletRequest request,
             @Valid DataTablesInput input,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate) {
 
+        User user = SecurityPropertiesUtils.retrieveAndCheckUserInSession();
+        Floor floor = user.getFloor();
+
         if (startDate != null && endDate != null) {
             final Date sD = startDate.toDate();
-            final Date eD = endDate.toDate();
+            final Date eD = endDate.withHourOfDay(23).toDate();
 
             return service.findAll(input, (Root<Requisition> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
                 Path<Date> dateEntryPath = root.get(Requisition_.createDate);
-                return cb.between(dateEntryPath, sD, eD);
+                if (request.isUserInRole("ROLE_ADMIN")) {
+                    return cb.between(dateEntryPath, sD, eD);
+                } else {
+                    Join<Requisition, User> userJoin = root.join(Requisition_.user, JoinType.INNER);
+                    return cq.where(cb.and(cb.between(dateEntryPath, sD, eD), cb.equal(userJoin.get(User_.FLOOR), floor))).getRestriction();
+                }
             });
         } else {
-            return service.findAll(input);
+            if (request.isUserInRole("ROLE_ADMIN")) {
+                return service.findAll(input);
+            } else {
+                return service.findAll(input, (Root<Requisition> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
+                    Join<Requisition, User> userJoin = root.join(Requisition_.user, JoinType.INNER);
+                    return cb.equal(userJoin.get(User_.FLOOR), floor);
+                });
+            }
         }
 
     }
 
     @ResponseBody
     @RequestMapping(value = "/save", method = {RequestMethod.POST})
-    protected String save(@ModelAttribute Requisition requisition) {
+    protected String save(@ModelAttribute Requisition requisition, @RequestParam(required = false) String remark) {
 
-        service.save(requisition);
+        service.save(requisition, remark);
         return "success";
 
     }

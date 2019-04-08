@@ -11,7 +11,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>${initParam.pageTitle}</title>
+        <title>${initParam.pageTitle} - Requisition</title>
         <style>
             h1{
                 color: red;
@@ -28,23 +28,24 @@
                 margin-top:25px;
             }
         </style>
-        <link rel="stylesheet" href="<c:url value="/libs/bootstrap/css/css/bootstrap.min.css" />" />
-        <link rel="stylesheet" href="<c:url value="/libs/datatables.net-dt/css/jquery.dataTables.css" />" />
-        <link rel="stylesheet" href="<c:url value="/libs/datatables.net-fixedheader-dt/css/fixedHeader.dataTables.css" />"/>
-        <link rel="stylesheet" href="<c:url value="/libs/datatables.net-select-dt/css/select.dataTables.css" />"/>
-        <link rel="stylesheet" href="<c:url value="/libs/datatables.net-buttons-dt/css/buttons.dataTables.css" />"/>
-        <link rel="stylesheet" href="<c:url value="/libs/bootstrap-datepicker/css/bootstrap-datepicker3.css" />"/>
+        <link rel="stylesheet" href="<c:url value="/libs/bootstrap/bootstrap.css" />" />
+        <link rel="stylesheet" href="<c:url value="/libs/datatables.net-dt/jquery.dataTables.css" />" />
+        <link rel="stylesheet" href="<c:url value="/libs/datatables.net-fixedheader-dt/fixedHeader.dataTables.css" />"/>
+        <link rel="stylesheet" href="<c:url value="/libs/datatables.net-select-dt/select.dataTables.css" />"/>
+        <link rel="stylesheet" href="<c:url value="/libs/datatables.net-buttons-dt/buttons.dataTables.css" />"/>
+        <link rel="stylesheet" href="<c:url value="/libs/bootstrap-datepicker/bootstrap-datepicker3.css" />"/>
 
-        <script src="<c:url value="/libs/jquery/js/jquery.js" />"></script>
-        <script src="<c:url value="/libs/bootstrap/js/js/bootstrap.min.js" />"></script>
-        <script src="<c:url value="/libs/datatables.net/js/jquery.dataTables.js" />"></script>
-        <script src="<c:url value="/libs/datatables.net-fixedheader/js/dataTables.fixedHeader.js" />"></script>
-        <script src="<c:url value="/libs/datatables.net-select/js/dataTables.select.js" />"></script>
-        <script src="<c:url value="/libs/datatables.net-buttons/js/dataTables.buttons.js" />"></script>
-        <script src="<c:url value="/libs/bootstrap-datepicker/js/bootstrap-datepicker.js" />"></script>
+        <script src="<c:url value="/libs/jQuery/jquery.js" />"></script>
+        <script src="<c:url value="/libs/bootstrap/bootstrap.js" />"></script>
+        <script src="<c:url value="/libs/datatables.net/jquery.dataTables.js" />"></script>
+        <script src="<c:url value="/libs/datatables.net-fixedheader/dataTables.fixedHeader.js" />"></script>
+        <script src="<c:url value="/libs/datatables.net-select/dataTables.select.js" />"></script>
+        <script src="<c:url value="/libs/datatables.net-buttons/dataTables.buttons.js" />"></script>
+        <script src="<c:url value="/libs/jszip/jszip.js" />"></script>
+        <script src="<c:url value="/libs/bootstrap-datepicker/bootstrap-datepicker.js" />"></script>
         <script src="<c:url value="/extraJs/jquery.spring-friendly.js" />"></script>
-        <script src="<c:url value="/libs/moment/js/moment.js" />"></script>
-        <script src="<c:url value="/libs/jsog/js/JSOG.js" />"></script>
+        <script src="<c:url value="/libs/moment/moment.js" />"></script>
+        <script src="<c:url value="/libs/jsog/JSOG.js" />"></script>
         <script>
             $(function () {
                 var requisition_id = '${param.requisition_id}';
@@ -114,7 +115,7 @@
 
                 function formatDate(ds) {
                     console.log(moment(ds));
-                    return moment(ds).format('YYYY/MM/DD'); // October 22nd 2018, 10:37:08 am
+                    return moment.utc(ds).format('YYYY/MM/DD HH:mm:ss'); // October 22nd 2018, 10:37:08 am
                 }
 
             });

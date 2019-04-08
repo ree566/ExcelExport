@@ -29,7 +29,7 @@
         <link rel="stylesheet" href="<c:url value="/libs/datatables.net-select-dt/css/select.dataTables.css" />"/>
         <link rel="stylesheet" href="<c:url value="/libs/bootstrap-datepicker/css/bootstrap-datepicker3.css" />"/>
 
-        <script src="<c:url value="/libs/jquery/js/jquery.js" />"></script>
+        <script src="<c:url value="/libs/jQuery/jquery.js" />"></script>
         <script src="<c:url value="/libs/bootstrap/js/js/bootstrap.min.js" />"></script>
         <script src="<c:url value="/libs/datatables.net/js/jquery.dataTables.js" />"></script>
         <script src="<c:url value="/libs/datatables.net-fixedheader/js/dataTables.fixedHeader.js" />"></script>

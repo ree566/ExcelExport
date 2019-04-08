@@ -6,7 +6,9 @@
 package com.advantech.helper;
 
 import com.advantech.model.ScrappedDetail;
+import com.advantech.model.User;
 import com.advantech.repo.db1.ScrappedDetailRepository;
+import com.advantech.repo.db1.UserRepository;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -40,8 +42,11 @@ public class TestHibernate {
     private EntityManagerFactory factory;
 
     @Autowired
-    @Qualifier("entityManagerFactory2")
+//    @Qualifier("entityManagerFactory2")
     private EntityManagerFactory factory2;
+
+    @Autowired
+    private UserRepository userRepo;
 
 //    @Test
     @Transactional
@@ -59,15 +64,26 @@ public class TestHibernate {
         assertNotNull(o);
         HibernateObjectPrinter.print(o);
     }
-    
-    @Test
-    @Transactional("transactionManager2")
+
+//    @Test
+//    @Transactional("transactionManager2")
     @Rollback(true)
     public void testFactory2Pojo() {
         EntityManager manager = factory2.createEntityManager();
         List l = manager.createNativeQuery("select * from T_OutputValueSummaryDaily").setMaxResults(1).getResultList();
         HibernateObjectPrinter.print(l);
-        
+
+    }
+
+    @Test
+    @Rollback(false)
+    public void testResetPassword() {
+        List<User> users = userRepo.findAll();
+        CustomPasswordEncoder e = new CustomPasswordEncoder();
+        users.forEach(u -> {
+            u.setPassword(e.encode(u.getJobnumber()));
+        });
+        userRepo.saveAll(users);
     }
 
 }

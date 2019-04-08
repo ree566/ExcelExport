@@ -10,7 +10,9 @@
     "bower_components",
     "test",
     "package.json",
-    "src"
+    "src",
+    "libs",
+    "tests"
   ],
   "install": {
     "base": "src/main/webapp/libs",
@@ -30,17 +32,19 @@
       ]
     }
   },
-  "dependencies": {
-    "jQuery": "3.3.1",
+  "dependencies": {"no-bootstrap-notify":"3.1.6",
+    "jQuery": "latest",
     "bootstrap": "3.3.7",
-    "datatables.net": "^1.10.19",
-    "datatables.net-buttons": "^1.5.4",
-    "datatables.net-dt": "^3.2.2",
-    "datatables.net-buttons-dt": "^1.5.4",
-    "datatables.net-fixedheader": "^3.1.5",
-    "datatables.net-fixedheader-dt": "^3.1.5",
-    "datatables.net-select": "^1.2.7",
-    "datatables.net-select-dt": "^1.2.7"
+    "datatables.net": "latest",
+    "datatables.net-buttons": "latest",
+    "datatables.net-dt": "latest",
+    "datatables.net-fixedheader": "latest",
+    "datatables.net-fixedheader-dt": "latest",
+    "datatables.net-buttons-dt": "latest",
+    "datatables.net-select": "latest",
+    "datatables.net-select-dt": "latest",
+    "jszip": "latest",
+    "remarkable-bootstrap-notify": "no-bootstrap-notify#3.1.6"
   },
   "devDependencies": {},
   "homepage": "https://github.com/ree566/ExcelExport",

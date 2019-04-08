@@ -6,11 +6,12 @@
 <sec:authorize access="isAuthenticated()"  var="isLogin" />
 <sec:authorize access="hasRole('USER')"  var="isUser" />
 <sec:authorize access="hasRole('OPER')"  var="isOper" />
+<sec:authorize access="hasRole('ADMIN')"  var="isAdmin" />
 
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>${initParam.pageTitle}</title>
+        <title>${initParam.pageTitle} - Requisition</title>
         <style>
             h1{
                 color: red;
@@ -27,26 +28,31 @@
                 margin-top:25px;
             }
         </style>
-        <link rel="stylesheet" href="<c:url value="/libs/bootstrap/css/css/bootstrap.min.css" />" />
-        <link rel="stylesheet" href="<c:url value="/libs/datatables.net-dt/css/jquery.dataTables.css" />" />
-        <link rel="stylesheet" href="<c:url value="/libs/datatables.net-fixedheader-dt/css/fixedHeader.dataTables.css" />"/>
-        <link rel="stylesheet" href="<c:url value="/libs/datatables.net-select-dt/css/select.dataTables.css" />"/>
-        <link rel="stylesheet" href="<c:url value="/libs/datatables.net-buttons-dt/css/buttons.dataTables.css" />"/>
-        <link rel="stylesheet" href="<c:url value="/libs/bootstrap-datepicker/css/bootstrap-datepicker3.css" />"/>
+        <link rel="stylesheet" href="<c:url value="/libs/bootstrap/bootstrap.css" />" />
+        <link rel="stylesheet" href="<c:url value="/libs/datatables.net-dt/jquery.dataTables.css" />" />
+        <link rel="stylesheet" href="<c:url value="/libs/datatables.net-fixedheader-dt/fixedHeader.dataTables.css" />"/>
+        <link rel="stylesheet" href="<c:url value="/libs/datatables.net-select-dt/select.dataTables.css" />"/>
+        <link rel="stylesheet" href="<c:url value="/libs/datatables.net-buttons-dt/buttons.dataTables.css" />"/>
+        <link rel="stylesheet" href="<c:url value="/libs/bootstrap-datepicker/bootstrap-datepicker3.css" />"/>
 
-        <script src="<c:url value="/libs/jquery/js/jquery.js" />"></script>
-        <script src="<c:url value="/libs/bootstrap/js/js/bootstrap.min.js" />"></script>
-        <script src="<c:url value="/libs/datatables.net/js/jquery.dataTables.js" />"></script>
-        <script src="<c:url value="/libs/datatables.net-fixedheader/js/dataTables.fixedHeader.js" />"></script>
-        <script src="<c:url value="/libs/datatables.net-select/js/dataTables.select.js" />"></script>
-        <script src="<c:url value="/libs/datatables.net-buttons/js/dataTables.buttons.js" />"></script>
-        <script src="<c:url value="/libs/bootstrap-datepicker/js/bootstrap-datepicker.js" />"></script>
+        <script src="<c:url value="/libs/jQuery/jquery.js" />"></script>
+        <script src="<c:url value="/libs/bootstrap/bootstrap.js" />"></script>
+        <script src="<c:url value="/libs/datatables.net/jquery.dataTables.js" />"></script>
+        <script src="<c:url value="/libs/datatables.net-fixedheader/dataTables.fixedHeader.js" />"></script>
+        <script src="<c:url value="/libs/datatables.net-select/dataTables.select.js" />"></script>
+        <script src="<c:url value="/libs/datatables.net-buttons/dataTables.buttons.js" />"></script>
+        <script src="<c:url value="/libs/datatables.net-buttons/buttons.flash.js" />"></script>
+        <script src="<c:url value="/libs/datatables.net-buttons/buttons.colVis.js" />"></script>
+        <script src="<c:url value="/libs/datatables.net-buttons/buttons.html5.js" />"></script>
+        <script src="<c:url value="/libs/datatables.net-buttons/buttons.print.js" />"></script>
+        <script src="<c:url value="/libs/jszip/jszip.js" />"></script>
+        <script src="<c:url value="/libs/bootstrap-datepicker/bootstrap-datepicker.js" />"></script>
         <script src="<c:url value="/extraJs/jquery.spring-friendly.js" />"></script>
-        <script src="<c:url value="/libs/moment/js/moment.js" />"></script>
-        <script src="<c:url value="/libs/jsog/js/JSOG.js" />"></script>
+        <script src="<c:url value="/libs/moment/moment.js" />"></script>
+        <script src="<c:url value="/libs/jsog/JSOG.js" />"></script>
+        <script src="<c:url value="/libs/remarkable-bootstrap-notify/bootstrap-notify.js" />"></script>
         <script>
             $(function () {
-
                 var dataTable_config = {
                     "processing": true,
                     "serverSide": true,
@@ -79,7 +85,7 @@
                     "columnDefs": [
                         {
                             "targets": [0],
-                            "visible": true,
+                            "visible": false,
                             "searchable": false
                         },
                         {
@@ -110,6 +116,9 @@
                         "sZeroRecords": "無符合資料",
                         "sInfo": "目前記錄：_START_ 至 _END_, 總筆數：_TOTAL_"
                     },
+                    "initComplete": function (settings, json) {
+                        connectToServer();
+                    },
                     "bAutoWidth": false,
                     "displayLength": 50,
                     "lengthChange": true,
@@ -127,7 +136,7 @@
                         "dom": 'Bfrtip',
                         "buttons": [
                             {
-                                "text": 'New request',
+                                "text": '需求申請',
                                 "attr": {
                                     "data-toggle": "modal",
                                     "data-target": "#myModal"
@@ -161,6 +170,20 @@
                         ]
                     };
                     $.extend(dataTable_config, extraSetting);
+                } else if (${isOper}) {
+                    var extraSetting2 = {
+                        "dom": 'Bfrtip',
+                        "buttons": [
+                            "csv",
+                            {
+                                "extend": 'excel',
+                                "exportOptions": {
+                                    "columns": 'th:not(:first-child):not(:last-child)'
+                                }
+                            }
+                        ]
+                    };
+                    $.extend(dataTable_config, extraSetting2);
                 }
 
                 $('#favourable thead tr').clone(true).appendTo('#favourable thead');
@@ -205,18 +228,24 @@
 
                 $("#save").click(function () {
                     if (confirm("Confirm save?")) {
-                        var number = $("#model-table #materialNumber").val();
-                        if (isNaN(number)) {
-                            alert("Please insert a number.");
+                        var amount = $("#model-table #amount").val();
+                        var po = $("#model-table #po").val(), m = $("#model-table #materialNumber").val();
+                        if (isNaN(amount) || amount == "") {
+                            alert("Amount please insert a number.");
+                            return false;
+                        }
+                        if (po == "" || m == "") {
+                            alert("Po or MaterialNumber can't be empty.");
                             return false;
                         }
                         var data = {
                             id: $("#model-table #id").val(),
-                            po: $("#model-table #po").val(),
-                            materialNumber: number,
-                            amount: $("#model-table #amount").val(),
+                            po: po,
+                            materialNumber: m,
+                            amount: amount,
                             "returnReason.id": $("#model-table #returnReason\\.id").val(),
-                            "user.id": $("#model-table #user\\.id").val()
+                            "user.id": $("#model-table #user\\.id").val(),
+                            remark: $("#model-table #remark").val()
                         };
                         save(data);
                     }
@@ -236,9 +265,12 @@
                     }
                 });
 
+                $("body").on("keyup", "#model-table #po, #model-table #materialNumber", function () {
+                    $(this).val($(this).val().trim().toLocaleUpperCase());
+                });
                 function formatDate(ds) {
 //                    console.log(moment(ds));
-                    return moment(ds).format('YYYY/MM/DD'); // October 22nd 2018, 10:37:08 am
+                    return moment.utc(ds).format('YYYY/MM/DD HH:mm:ss'); // October 22nd 2018, 10:37:08 am
                 }
 
                 function save(data) {
@@ -299,6 +331,11 @@
                             console.log(d);
                             if ("ADD" == d || "REMOVE" == d) {
                                 refreshTable();
+                                $.notify('資料已更新', {placement: {
+                                        from: "bottom",
+                                        align: "right"
+                                    }
+                                });
                             }
                         };
                         ws.onclose = function () {
@@ -314,7 +351,6 @@
                     ws.close();
                 }
 
-                connectToServer();
                 if (ws != null) {
                 }
 
@@ -343,21 +379,27 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="lab">po</td>
+                                    <td class="lab">工單</td>
                                     <td> 
                                         <input type="text" id="po">
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="lab">materialNumber</td>
+                                    <td class="lab">料號</td>
                                     <td>
                                         <input type="text" id="materialNumber">
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="lab">amount</td>
+                                    <td class="lab">數量</td>
                                     <td>
                                         <input type="number" id="amount">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="lab">備註</td>
+                                    <td>
+                                        <textarea id="remark"></textarea>
                                     </td>
                                 </tr>
                             </table>
@@ -375,12 +417,12 @@
 
         <div class="container box">
             <div class="table-responsive">
-                <h1 align="center">Requisition details search</h1>
+                <!--<h1 align="center">Requisition details search</h1>-->
 
                 <c:if test="${isLogin}">
                     <h5>
-                        Hello, <c:out value="${user.username}" />
-                        <a href="<c:url value="/logout" />">logout</a>
+                        Hello, <c:out value="${user.username}" /> /
+                        <a href="<c:url value="/logout" />">Logout</a>
                     </h5>
                 </c:if>
 
@@ -394,8 +436,8 @@
                             <span id="date-label-to" class="date-label">To:<input class="date_range_filter date form-control" type="text" id="datepicker_to" />
                         </div>
                         <div class="col-md-4">
-                            <input type="button" id="search" class="form-control" value="Search">
-                            <input type="button" id="clear" class="form-control" value="Clear search filter">
+                            <input type="button" id="search" class="form-control" value="搜尋">
+                            <input type="button" id="clear" class="form-control" value="清除搜尋">
                         </div>
                     </div>
                 </div>
@@ -410,8 +452,8 @@
                             <th>申請人</th>
                             <th>起始日期</th>
                             <th>結束日期</th>
-                            <th>狀態</th>
-                            <th></th>
+                            <th>動作</th>
+                            <th>紀錄</th>
                         </tr>
                     </thead>
                 </table>

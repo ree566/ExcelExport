@@ -14,7 +14,6 @@
                 line-height:30px;
             }
         </style>
-        <script src="directory/jQuery/dist/jquery.min.js"></script>
     </head>
     <body>
         <h1>入口</h1>

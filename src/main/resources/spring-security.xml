@@ -17,6 +17,10 @@
                 class="com.advantech.security.AjaxAwareAuthenticationEntryPoint">
         <beans:constructor-arg name="loginUrl" value="/login"/>
     </beans:bean>
+    
+    <beans:bean
+        class="com.advantech.security.RefererRedirectionAuthenticationSuccessHandler"
+        name="refererHandler"/>
       
     <http auto-config="true">
         <!--
@@ -39,7 +43,7 @@
         
         <!--Controller security role setting-->
         
-        <form-login authentication-success-forward-url="/" />
+        <form-login authentication-success-handler-ref="refererHandler" />
         <csrf disabled="true"/>
 
         <logout invalidate-session="true"
