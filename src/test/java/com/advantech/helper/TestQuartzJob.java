@@ -25,7 +25,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
  */
 @WebAppConfiguration
 @ContextConfiguration(locations = {
-    "classpath:servlet-context.xml"
+    "classpath:servlet-context_test.xml"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestQuartzJob {

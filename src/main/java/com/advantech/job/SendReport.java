@@ -260,9 +260,9 @@ public class SendReport {
         
         //人員疏失累計
         List<ScrappedDetailCount> scrappedDetailCounts = scrappedDetailService
-                .findUserScrappedDetailCount(sDOW.toDate(), sDOW.toDate(), sDOY.toDate());
+                .findUserScrappedDetailCount(sDOW.toDate(), eDOW.toDate(), sDOY.toDate());
         if (!scrappedDetailCounts.isEmpty()) {
-            sb.append("<h5>本週疏失人員疏失累計</h5>");
+            sb.append("<h5>本週疏失人員今年疏失累計</h5>");
             sb.append("<table>");
 
             //Add header
