@@ -8,6 +8,7 @@ package com.advantech.service;
 import com.advantech.model.Requisition;
 import com.advantech.model.RequisitionState;
 import com.advantech.repo.db1.RequisitionStateRepository;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +29,16 @@ public class RequisitionStateService {
     @Autowired
     private RequisitionStateRepository repo;
 
+    public List<RequisitionState> findAll() {
+        return repo.findAll();
+    }
+
     public DataTablesOutput<RequisitionState> findAll(DataTablesInput dti) {
         return repo.findAll(dti);
+    }
+
+    public List<RequisitionState> findAll(Specification<RequisitionState> s) {
+        return repo.findAll(s);
     }
 
     public Optional<RequisitionState> findById(Integer id) {

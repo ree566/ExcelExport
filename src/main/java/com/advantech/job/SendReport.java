@@ -9,6 +9,7 @@ import com.advantech.chart.ExcelChart;
 import com.advantech.helper.MailManager;
 import com.advantech.model.MaterialNumberSum;
 import com.advantech.model.ScrappedDetail;
+import com.advantech.model.ScrappedDetailCount;
 import com.advantech.model.User;
 import com.advantech.model.UserNotification;
 import com.advantech.service.ScrappedDetailService;
@@ -255,6 +256,36 @@ public class SendReport {
         }
 
         sb.append("<h5>※附註: price(s)欄位格式->金額(數量)</h5>");
+        sb.append("<hr />");
+        
+        //人員疏失累計
+        List<ScrappedDetailCount> scrappedDetailCounts = scrappedDetailService
+                .findUserScrappedDetailCount(sDOW.toDate(), sDOW.toDate(), sDOY.toDate());
+        if (!scrappedDetailCounts.isEmpty()) {
+            sb.append("<h5>本週疏失人員疏失累計</h5>");
+            sb.append("<table>");
+
+            //Add header
+            sb.append("<tr>");
+            sb.append("<th>人員</th>");
+            sb.append("<th>次數</th>");
+            sb.append("</tr>");
+
+            //Add row
+            scrappedDetailCounts.forEach((row) -> {
+                sb.append("<tr>");
+                sb.append("<td>");
+                sb.append(row.getNegligenceUser());
+                sb.append("</td>");
+                sb.append("<td>");
+                sb.append(row.getCnt());
+                sb.append("</td>");
+                sb.append("</tr>");
+            });
+
+            sb.append("</table>");
+        }
+
         sb.append("<hr />");
 
         //Chart data

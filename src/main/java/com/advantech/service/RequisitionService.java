@@ -9,10 +9,13 @@ import com.advantech.helper.SecurityPropertiesUtils;
 import com.advantech.model.Requisition;
 import com.advantech.model.RequisitionEvent;
 import com.advantech.model.RequisitionState;
+import com.advantech.model.RequisitionType;
 import com.advantech.model.User;
 import com.advantech.repo.db1.RequisitionEventRepository;
 import com.advantech.repo.db1.RequisitionRepository;
 import com.advantech.repo.db1.RequisitionStateRepository;
+import com.advantech.repo.db1.RequisitionTypeRepository;
+import java.util.Date;
 import java.util.Optional;
 import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +42,9 @@ public class RequisitionService {
     @Autowired
     private RequisitionStateRepository stateRepo;
 
+    @Autowired
+    private RequisitionTypeRepository typeRepo;
+
     public DataTablesOutput<Requisition> findAll(DataTablesInput dti) {
         return repo.findAll(dti);
     }
@@ -64,11 +70,26 @@ public class RequisitionService {
     }
 
     public <S extends Requisition> S save(S s, String remark) {
-        RequisitionState stat = stateRepo.findById(3).get();
+        RequisitionState stat;
         User user = SecurityPropertiesUtils.retrieveAndCheckUserInSession();
+        if (s.getId() == 0) {
+            stat = stateRepo.getOne(3);
+            RequisitionType rType = typeRepo.getOne(1);
 
-        s.setRequisitionState(stat);
-        s.setUser(user);
+            s.setRequisitionState(stat);
+            s.setRequisitionType(rType);
+            s.setUser(user);
+        } else {
+            stat = s.getRequisitionState();
+            int stateId = stat.getId();
+            Date now = new Date();
+            if (stateId == 4 || stateId == 5) {
+                s.setReceiveDate(now);
+            } else if (stateId == 6 || stateId == 7) {
+                s.setReturnDate(now);
+            }
+        }
+
         S result = repo.save(s);
 
         RequisitionEvent e = new RequisitionEvent(s, user, stat, remark);
@@ -83,7 +104,7 @@ public class RequisitionService {
         RequisitionState state = stateRepo.getOne(state_id);
         r.setRequisitionState(state);
         RequisitionEvent e = new RequisitionEvent(r, user, state, "");
-        
+
         repo.save(r);
         eventRepo.save(e);
     }

@@ -6,11 +6,14 @@
 package com.advantech.helper;
 
 import com.advantech.model.Floor;
+import com.advantech.model.Requisition;
 import com.advantech.model.ScrappedDetail;
+import com.advantech.model.ScrappedDetailCount;
 import com.advantech.model.ScrappedDetailWeekGroup;
 import com.advantech.model.User;
 import com.advantech.model.UserNotification;
 import com.advantech.repo.db1.FloorRepository;
+import com.advantech.repo.db1.RequisitionRepository;
 import com.advantech.repo.db1.ScrappedDetailRepository;
 import com.advantech.repo.db1.UserNotificationRepository;
 import com.advantech.repo.db1.UserRepository;
@@ -40,7 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @WebAppConfiguration
 @ContextConfiguration(locations = {
-    "classpath:servlet-context.xml"
+    "classpath:servlet-context_test.xml"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestRepository {
@@ -227,26 +230,24 @@ public class TestRepository {
         HibernateObjectPrinter.print(l);
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testJpa2() {
-        
+
         DateTime now = new DateTime();
 
         List l = whRepo.findDailyWhReport(now.toDate());
         assertTrue(!l.isEmpty());
         HibernateObjectPrinter.print(l);
-        
+
         List l2 = whRepo.findWeeklyWhReport(now.toDate());
         assertTrue(!l2.isEmpty());
         HibernateObjectPrinter.print(l2);
-        
+
         List l3 = whRepo.findMonthlyWhReport(now.toDate());
         assertTrue(!l3.isEmpty());
         HibernateObjectPrinter.print(l3);
-        
-        
 
     }
 
@@ -255,6 +256,36 @@ public class TestRepository {
     @Rollback(true)
     public void testJpaMix() {
 
+    }
+
+    @Autowired
+    private RequisitionRepository requisitionRepo;
+
+//    @Test
+    @Transactional
+    @Rollback(true)
+    public void testRequisition() {
+        Requisition r = requisitionRepo.getOne(32);
+        assertNotNull(r);
+
+        System.out.println(r.getRequisitionState().getName());
+        System.out.println(r.getRequisitionType().getName());
+        System.out.println(r.getRequisitionReason().getName());
+    }
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testScrappedDetailCount() {
+        DateTime sD = new DateTime("2019-04-22");
+        DateTime eD = new DateTime("2019-04-26");
+        DateTime startDateOfYear = new DateTime("2019-01-01");
+        List<ScrappedDetailCount> r = scrappedRepo.findUserScrappedDetailCount(sD.toDate(), eD.toDate(), startDateOfYear.toDate());
+        
+        assertTrue(r.size() > 0);
+
+        HibernateObjectPrinter.print(r.get(0));
+        HibernateObjectPrinter.print(r.get(1));
     }
 
 }

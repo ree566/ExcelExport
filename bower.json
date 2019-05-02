@@ -32,9 +32,8 @@
       ]
     }
   },
-  "dependencies": {"no-bootstrap-notify":"3.1.6",
-    "jQuery": "latest",
-    "bootstrap": "3.3.7",
+  "dependencies": {
+    "no-bootstrap-notify": "3.1.6",
     "datatables.net": "latest",
     "datatables.net-buttons": "latest",
     "datatables.net-dt": "latest",
@@ -44,7 +43,10 @@
     "datatables.net-select": "latest",
     "datatables.net-select-dt": "latest",
     "jszip": "latest",
-    "remarkable-bootstrap-notify": "no-bootstrap-notify#3.1.6"
+    "remarkable-bootstrap-notify": "no-bootstrap-notify#3.1.6",
+    "bootstrap": "4.3.1",
+    "jQuery": "latest",
+    "tooltipster": "4.2.6"
   },
   "devDependencies": {},
   "homepage": "https://github.com/ree566/ExcelExport",

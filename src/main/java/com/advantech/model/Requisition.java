@@ -43,9 +43,16 @@ public class Requisition implements Serializable {
     private String materialNumber;
     private int amount;
     private RequisitionState requisitionState;
+    private RequisitionReason requisitionReason;
+    private RequisitionType requisitionType;
     private User user;
     private Date createDate;
     private Date lastUpdateDate;
+    private String materialType;
+    private String remark;
+
+    private Date receiveDate;
+    private Date returnDate;
 
     @JsonIgnore
     private Set<RequisitionEvent> requisitionEvents = new HashSet(0);
@@ -99,6 +106,26 @@ public class Requisition implements Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "requisitionReason_id")
+    public RequisitionReason getRequisitionReason() {
+        return requisitionReason;
+    }
+
+    public void setRequisitionReason(RequisitionReason requisitionReason) {
+        this.requisitionReason = requisitionReason;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "requisitionType_id")
+    public RequisitionType getRequisitionType() {
+        return requisitionType;
+    }
+
+    public void setRequisitionType(RequisitionType requisitionType) {
+        this.requisitionType = requisitionType;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     public User getUser() {
         return user;
@@ -112,7 +139,7 @@ public class Requisition implements Serializable {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "createDate", length = 23)
+    @Column(name = "createDate", length = 23, updatable = false)
     public Date getCreateDate() {
         return createDate;
     }
@@ -132,6 +159,48 @@ public class Requisition implements Serializable {
 
     public void setLastUpdateDate(Date lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
+    }
+
+    @DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", iso = DateTimeFormat.ISO.DATE)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "GMT+8")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "receiveDate", length = 23)
+    public Date getReceiveDate() {
+        return receiveDate;
+    }
+
+    public void setReceiveDate(Date receiveDate) {
+        this.receiveDate = receiveDate;
+    }
+
+    @DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", iso = DateTimeFormat.ISO.DATE)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "GMT+8")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "returnDate", length = 23)
+    public Date getReturnDate() {
+        return returnDate;
+    }
+
+    public void setReturnDate(Date returnDate) {
+        this.returnDate = returnDate;
+    }
+
+    @Column(name = "materialType", length = 30)
+    public String getMaterialType() {
+        return materialType;
+    }
+
+    public void setMaterialType(String materialType) {
+        this.materialType = materialType;
+    }
+
+    @Column(name = "remark", length = 150)
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "requisition")

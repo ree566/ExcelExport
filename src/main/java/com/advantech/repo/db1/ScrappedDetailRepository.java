@@ -8,6 +8,7 @@ package com.advantech.repo.db1;
 import com.advantech.model.Floor;
 import com.advantech.model.MaterialNumberSum;
 import com.advantech.model.ScrappedDetail;
+import com.advantech.model.ScrappedDetailCount;
 import com.advantech.model.ScrappedDetailWeekGroup;
 import java.util.Date;
 import java.util.List;
@@ -36,5 +37,9 @@ public interface ScrappedDetailRepository extends JpaRepository<ScrappedDetail, 
 
     @Query(value = "{CALL usp_GetMaterialNumberSum(:sD, :eD)}", nativeQuery = true)
     public List<MaterialNumberSum> findMaterialNumberSum(@Param("sD") Date sD, @Param("eD") Date eD);
+    
+    @Query(value = "{CALL usp_GetUserScrappedDetailCount(:sD, :eD, :startDateOfYear)}", nativeQuery = true)
+    public List<ScrappedDetailCount> findUserScrappedDetailCount(@Param("sD") Date sD, 
+            @Param("eD") Date eD, @Param("startDateOfYear") Date startDateOfYear);
 
 }
