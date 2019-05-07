@@ -325,6 +325,8 @@
 
                 $(".hide_col").hide();
 
+                enterToTab();
+
                 function formatDate(ds) {
 //                    console.log(moment(ds));
                     return moment.utc(ds).format('YY/MM/DD HH:mm'); // October 22nd 2018, 10:37:08 am
@@ -402,6 +404,27 @@
 
                 function refreshTable() {
                     table.ajax.reload();
+                }
+
+                // 按下Enter轉成按下Tab
+                function enterToTab()
+                {
+                    $('input').on("keypress", function (e) {
+                        /* ENTER PRESSED*/
+                        if (e.keyCode == 13) {
+                            /* FOCUS ELEMENT */
+                            var inputs = $(this).parents("table").eq(0).find(":input");
+                            var idx = inputs.index(this);
+
+                            if (idx == inputs.length - 1) {
+                                inputs[0].select()
+                            } else {
+                                inputs[idx + 1].focus(); //  handles submit buttons
+                                inputs[idx + 1].select();
+                            }
+                            return false;
+                        }
+                    });
                 }
 
                 //Websocket connect part
@@ -491,13 +514,14 @@
                                         <input type="number" id="amount">
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td class="lab">原因</td>
-                                    <td>
-                                        <select id="requisitionReason.id"></select>
-                                    </td>
-                                </tr>
+
                                 <c:if test="${isOper || isAdmin}">
+                                    <tr>
+                                        <td class="lab">原因</td>
+                                        <td>
+                                            <select id="requisitionReason.id"></select>
+                                        </td>
+                                    </tr>
                                     <tr class="hide_col">
                                         <td class="lab">user_id</td>
                                         <td>

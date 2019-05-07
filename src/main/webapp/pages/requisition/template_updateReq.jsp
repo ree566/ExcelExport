@@ -39,10 +39,10 @@
             .tooltip {
                 opacity: 1;
             }
-            @media (min-width: 1200px) {
-                .modal-xlg {
-                    width: 90%; 
-                }
+            input[readonly]{
+                background-color:transparent;
+                border: 0;
+                font-size: 1em;
             }
         </style>
         <link rel="stylesheet" href="<c:url value="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" />" />
@@ -74,11 +74,8 @@
                 var isEditor = ${isOper || isAdmin};
 
                 initDropDownOptions();
-                
-                var editWindow;
 
-                var modelTooltipObj = $('#myModal').find(".tooltip-wiget");
-                var otherTooltipObj = $('.container').find(".tooltip-wiget");
+                var modelTooltipObj = $(".tooltip-wiget");
 
                 $(".tooltip-wiget").attr({
                     "data-toggle": "tooltip",
@@ -86,7 +83,18 @@
                 });
 
                 modelTooltipObj.tooltip();
-                otherTooltipObj.tooltip();
+
+                $("#po").val("PC123456");
+                $("#materialNumber").val("965811152");
+                $("#amount").val(3);
+                $("#requisitionReason\\.id").val(2);
+                $("#requisitionState\\.id").val(1);
+                $("#requisitionType\\.id").val(1);
+
+                $("#materialType").val(2);
+                $("#remark").val("test");
+                $("#receiveDate").val("2019-02-01");
+                $("#returnDate").val("2019-04-03");
 
                 var dataTable_config = {
                     "sPaginationType": "full_numbers",
@@ -141,7 +149,7 @@
                             "targets": [2],
                             "searchable": false,
                             'render': function (data, type, full, meta) {
-                                return "<a href='template_updateReq.jsp' rel='noopener noreferrer' target='_blank'>詳細</a>";
+                                return "<a href='#'>詳細</a>";
                             }
                         },
                         {
@@ -207,15 +215,21 @@
                             {
                                 "text": '需求申請',
                                 "attr": {
-
+                                    "data-toggle": "modal",
+                                    "data-target": "#myModal"
                                 },
                                 "action": function (e, dt, node, config) {
-                                    openWindow("<c:url value="template_newReq.jsp" />", '_blank');
+                                    $("#model-table input").val("");
+                                    $("#model-table #id").val(0);
                                 }
                             }
                         ]
                     };
                     $.extend(dataTable_config, extraSetting);
+                    $("#model-table").find("input, select").attr({
+                        "disabled": true,
+                        "readonly": "readonly"
+                    });
                 } else if (${isOper}) {
                     var successHandler = function (response) {
                         console.log("updated");
@@ -237,24 +251,31 @@
                             {
                                 "text": '新增需求',
                                 "attr": {
-
+                                    "data-toggle": "modal",
+                                    "data-target": "#myModal"
                                 },
                                 "action": function (e, dt, node, config) {
-                                    openWindow("<c:url value="template_newReq.jsp" />", '_blank');
+                                    $("#model-table input").val("");
+                                    $("#model-table #id").val(0);
                                 }
                             },
                             {
                                 "text": '編輯',
                                 "attr": {
+                                    "data-toggle": "modal"
+//                                    "data-target": "#myModal2"
                                 },
                                 "action": function (e, dt, node, config) {
-                                    otherTooltipObj.tooltip('hide');
                                     var cnt = table.rows('.selected').count();
                                     if (cnt != 1) {
                                         alert("Please select a row.");
                                         return false;
                                     }
-                                    openWindow("<c:url value="template_updateReq.jsp" />");
+
+                                    $('#myModal2').modal('show');
+                                    var arr = table.rows('.selected').data();
+                                    var data = arr[0];
+
                                 }
                             },
                             {
@@ -316,18 +337,12 @@
 
                 $(".hide_col").hide();
 
-
-
                 $(".show-dialog-tooltip").click(function () {
                     modelTooltipObj.tooltip('toggle');
                 });
 
                 $(".hideAll-dialog-tooltip").click(function () {
                     modelTooltipObj.tooltip('hide');
-                });
-
-                $(".show-outside-tooltip").click(function () {
-                    otherTooltipObj.tooltip('toggle');
                 });
 
                 $("#low-amount-alarm").click(function () {
@@ -338,6 +353,15 @@
                 $("#add-material").click(function () {
                     var clone = materialDetail.clone();
                     materialDetail.after(clone);
+                });
+                
+                $("#save").click(function () {
+                    alert("資料已儲存");
+                    window.close();
+                });
+
+                $("#close").click(function () {
+                    window.close();
                 });
 
 //                $("input, select").addClass("form-control input-sm");
@@ -401,289 +425,139 @@
                     });
                 }
 
-                function openWindow(url) {
-
-                    editWindow = editWindow ||
-                            window.open(url,
-                                    "mywindow", "menubar=0,resizable=0");
-                    editWindow.focus();
-                    editWindow.onbeforeunload = function () {
-                        editWindow = null;
-                    };
-                }
-
             });
 
         </script>
     </head>
     <body>
-        <!-- Modal -->
-        <div id="myModal" class="modal fade" role="dialog">
-            <div class="modal-dialog modal-lg modal-xlg">
 
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 id="titleMessage" class="modal-title"></h4>
-                    </div>
-                    <div class="modal-body">
-                        <div>
-                            <table id="model-table" cellspacing="10" class="table table-bordered">
-                                <tr class="hide_col">
-                                    <td class="lab">id</td>
-                                    <td>
-                                        <input type="text" id="id" value="0" disabled="true" readonly>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="lab">工單</td>
-                                    <td> 
-                                        <input type="text" id="po" placeholder="工單" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="lab">詳細</td>
-                                    <td id="materials">
-                                        <div class="material-detail">
-                                            <table id="material-detail" class="table table-bordered table-sm">
-                                                <thead>
-                                                    <tr>
-                                                        <th>料號</th>
-                                                        <th>數量</th>
-                                                        <th>庫存</th>
-                                                            <c:if test="${isOper || isAdmin}">
-                                                            <th>儲位</th>
-                                                            <th>原因</th>
-                                                            <th>申請狀態</th>
-                                                            <th>料號狀態</th>
-                                                            <th>分類</th>
-                                                            </c:if>
-                                                        <th>備註</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>
-                                                            <input type="text" id="materialNumber" class="tooltip-wiget" placeholder="料號" title="key in料號與SAP工單料號比對是否相符" data-placement="top"/>
-                                                        </td>
-                                                        <td>
-                                                            <input type="number" id="amount"  class="tooltip-wiget" placeholder="數量" title="需求數與庫存數不足時,將缺少數量自動連結掛缺料平台" data-placement="bottom">
-                                                        </td>
-                                                        <td>
-                                                            <h5 class="tooltip-wiget remain-msg" title="顯示SAP庫存數量" data-placement="bottom">N</h5>
-                                                        </td>
-                                                        <c:if test="${isOper || isAdmin}">
-                                                            <td>
-                                                                <input type="text" class="tooltip-wiget" title="key in 料號時自動帶出SAP中設定的儲位" readonly="true" placeholder="readonly" data-placement="top">
-                                                            </td>
-                                                            <td>
-                                                                <select id="requisitionReason.id"></select>
-                                                            </td>
-                                                            <td>
-                                                                <select id="requisitionState.id"></select>
-                                                            </td>
-                                                            <td>
-                                                                <select id="requisitionType.id"></select>
-                                                            </td>
-                                                            <td>
-                                                                <input type="text" id="materialType" class="tooltip-wiget" placeholder="料件分類" title="管理者維護料件分類(鐵件類...etc)">
-                                                            </td>
-                                                        </c:if>
-                                                        <td>
-                                                            <input type="text" id="remark" placeholder="備註" />
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <input type="text" id="materialNumber" placeholder="料號" />
-                                                        </td>
-                                                        <td>
-                                                            <input type="number" id="amount" placeholder="數量">
-                                                        </td>
-                                                        <td>
-                                                            <h5 class="tooltip-wiget remain-msg">N</h5>
-                                                        </td>
-                                                        <c:if test="${isOper || isAdmin}">
-                                                            <td>
-                                                                <input type="text" readonly="true"  placeholder="readonly">
-                                                            </td>
-                                                            <td>
-                                                                <select id="requisitionReason.id"></select>
-                                                            </td>
-                                                            <td>
-                                                                <select id="requisitionState.id"></select>
-                                                            </td>
-                                                            <td>
-                                                                <select id="requisitionType.id"></select>
-                                                            </td>
-                                                            <td>
-                                                                <input type="text" id="materialType" placeholder="料件分類" />
-                                                            </td>
-                                                        </c:if>
-                                                        <td>
-                                                            <input type="text" id="remark" placeholder="備註" />
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <div class="material-detail-footer">
-                                            <button type="button" class="btn btn-default btn-sm" id="add-material">新增料號</button>
-                                        </div>
-                                    </td>
-                                </tr>
+        <div class="container p-3">
+            <table id="model-table" cellspacing="10" class="table table-bordered">
+                <tr class="hide_col">
+                    <td class="lab">id</td>
+                    <td>
+                        <input type="text" id="id" value="0" disabled="true" readonly>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="lab">工單</td>
+                    <td> 
+                        <input type="text" id="po" placeholder="工單" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="lab">詳細</td>
+                    <td id="materials">
+                        <div class="material-detail">
+                            <table id="material-detail" class="table table-bordered table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>料號</th>
+                                        <th>數量</th>
+                                        <th>庫存</th>
+                                        <th>儲位</th>
+                                        <th>原因</th>
+                                        <th>申請狀態</th>
+                                        <th>料號狀態</th>
+                                        <th>分類</th>
+                                        <th>備註</th>
+                                        <th>領料日</th>
+                                        <th>退料日</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <input type="text" id="materialNumber" class="tooltip-wiget" placeholder="料號" title="key in料號與SAP工單料號比對是否相符" data-placement="top"/>
+                                        </td>
+                                        <td>
+                                            <input type="number" id="amount"  class="tooltip-wiget" placeholder="數量" title="需求數與庫存數不足時,將缺少數量自動連結掛缺料平台" data-placement="bottom">
+                                        </td>
+                                        <td>
+                                            <h5 class="tooltip-wiget remain-msg" title="顯示SAP庫存數量" data-placement="bottom">N</h5>
+                                        </td>
 
-                                <c:if test="${isOper || isAdmin}">
-                                    <tr class="hide_col">
-                                        <td class="lab">領料日期</td>
                                         <td>
-                                            <input type="text" id="receiveDate">
+                                            <input type="text" class="tooltip-wiget" title="key in 料號時自動帶出SAP中設定的儲位" readonly="true" placeholder="readonly" data-placement="top">
                                         </td>
-                                    </tr>
-                                    <tr class="hide_col">
-                                        <td class="lab">退料日期</td>
                                         <td>
-                                            <input type="text" id="returnDate">
+                                            <select id="requisitionReason.id"></select>
                                         </td>
+                                        <td>
+                                            <select id="requisitionState.id"></select>
+                                        </td>
+                                        <td>
+                                            <select id="requisitionType.id"></select>
+                                        </td>
+                                        <td>
+                                            <input type="text" id="materialType" class="tooltip-wiget" placeholder="料件分類" title="管理者維護料件分類(鐵件類...etc)">
+                                        </td>
+
+                                        <td>
+                                            <input type="text" id="remark" placeholder="備註" />
+                                        </td>
+                                        <td>
+                                            <input type="text" id="receiveDate" readonly>
+                                        </td>
+                                        <td>
+                                            <input type="text" id="returnDate" readonly>
+                                        </td>
+
                                     </tr>
-                                </c:if>
+                                    <tr>
+                                        <td>
+                                            <input type="text" id="materialNumber" placeholder="料號" />
+                                        </td>
+                                        <td>
+                                            <input type="number" id="amount" placeholder="數量">
+                                        </td>
+                                        <td>
+                                            <h5 class="tooltip-wiget remain-msg">N</h5>
+                                        </td>
+
+                                        <td>
+                                            <input type="text" readonly="true"  placeholder="readonly">
+                                        </td>
+                                        <td>
+                                            <select id="requisitionReason.id"></select>
+                                        </td>
+                                        <td>
+                                            <select id="requisitionState.id"></select>
+                                        </td>
+                                        <td>
+                                            <select id="requisitionType.id"></select>
+                                        </td>
+                                        <td>
+                                            <input type="text" id="materialType" placeholder="料件分類"  />
+                                        </td>
+                                        <td>
+                                            <input type="text" id="remark" placeholder="備註"  />
+                                        </td>
+                                        <td>
+                                            <input type="text" id="receiveDate" readonly>
+                                        </td>
+                                        <td>
+                                            <input type="text" id="returnDate" readonly>
+                                        </td>
+
+                                    </tr>
+                                </tbody>
                             </table>
-                            <div id="dialog-msg" class="alarm"></div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <a class="show-dialog-tooltip" href="#">open hint</a>
-                        <a class="hideAll-dialog-tooltip" href="#">hide all hint</a>
-                        <button type="button" id="save" class="btn btn-default tooltip-wiget" title="儲存後展開成excel格式呈現在Table中">Save</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
+                    </td>
+                </tr>
 
-            </div>
+
+            </table>
+            <div id="dialog-msg" class="alarm"></div>
         </div>
+    </div>
+    <div class="modal-footer">
+        <a class="show-dialog-tooltip" href="#">open hint</a>
+        <a class="hideAll-dialog-tooltip" href="#">hide all hint</a>
+        <button type="button" id="save" class="btn btn-default tooltip-wiget" title="儲存後展開成excel格式呈現在Table中">Save</button>
+        <button type="button" id="close" class="btn btn-default" data-dismiss="modal">Close</button>
+    </div>
 
-        <!-- Modal -->
-        <div id="myModal2" class="modal fade" role="dialog">
-            <div class="modal-dialog modal-lg">
-
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 id="titleMessage" class="modal-title"></h4>
-                    </div>
-                    <div class="modal-body">
-                        <div>
-                            <table id="model-table2" cellspacing="10" class="table table-bordered">
-                                <tr class="hide_col">
-                                    <td class="lab">id</td>
-                                    <td>
-                                        <input type="text" id="id" value="0" disabled="true" readonly>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="lab">工單</td>
-                                    <td> 
-                                        <input type="text" id="po" placeholder="工單" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="lab">料號</td>
-                                    <td> 
-                                        <input type="text" id="materialNumber" class="tooltip-wiget" placeholder="料號" title="key in料號與SAP工單料號比對是否相符" data-placement="top"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="lab">數量</td>
-                                    <td> 
-                                        <input type="number" id="amount"  class="tooltip-wiget" placeholder="數量" title="需求數與庫存數不足時,將缺少數量自動連結掛缺料平台" data-placement="bottom">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="lab">儲位</td>
-                                    <td> 
-                                        <input type="text" class="tooltip-wiget" title="key in 料號時自動帶出SAP中設定的儲位" readonly="true" placeholder="readonly" data-placement="top">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="lab">原因</td>
-                                    <td> 
-                                        <select id="requisitionReason.id"></select>
-                                    </td>
-                                </tr>
-
-                                <c:if test="${isOper || isAdmin}">
-                                    <tr class="hide_col">
-                                        <td class="lab">user_id</td>
-                                        <td>
-                                            <input type="text" id="user.id" disabled="true" readonly>
-                                        </td>
-                                    </tr>
-                                    <tr class="hide_col">
-                                        <td class="lab">領料日期</td>
-                                        <td>
-                                            <input type="text" id="receiveDate">
-                                        </td>
-                                    </tr>
-                                    <tr class="hide_col">
-                                        <td class="lab">退料日期</td>
-                                        <td>
-                                            <input type="text" id="returnDate">
-                                        </td>
-                                    </tr>
-                                </c:if>
-
-                                <tr>
-                                    <td class="lab">備註</td>
-                                    <td> 
-                                        <input type="text" id="remark" placeholder="備註" />
-                                    </td>
-                                </tr>
-                            </table>
-                            <div id="dialog-msg2" class="alarm"></div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <a class="show-dialog-tooltip" href="#">open hint</a>
-                        <a class="hideAll-dialog-tooltip" href="#">hide all hint</a>
-                        <button type="button" id="save2" class="btn btn-default tooltip-wiget" title="儲存後展開成excel格式呈現在Table中">Save</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <div class="container box">
-            <small>
-                <div class="table-responsive">
-                    <!--<h1 align="center">Requisition details search</h1>-->
-
-                    <c:if test="${isLogin}">
-                        <h5>
-                            Hello, <c:out value="${user.username}" /> /
-                            <a href="<c:url value="/logout" />">登出</a>
-                        </h5>
-                    </c:if>
-
-                    <h5 class="text-danger" id="ws-connect-fail-message"></h5>
-                    <div class="row">
-                        <div id="date_filter" class="input-daterange form-inline">
-                            <div class="col-md-12">
-                                <span id="date-label-from" class="date-label">From: </span><input class="date_range_filter date form-control" type="text" id="datepicker_from" placeholder="請選擇起始時間" />
-                                <span id="date-label-to" class="date-label">To:<input class="date_range_filter date form-control" type="text" id="datepicker_to"  placeholder="請選擇結束時間"/>
-                                    <input type="button" id="search" class="form-control" value="搜尋" />
-                                    <input type="button" id="clear" class="form-control  tooltip-wiget" value="清除搜尋" title="針對每個欄位做條件搜尋"/>
-                            </div>
-                        </div>
-                    </div>
-                    <table class="table table-bordered table-hover" id="favourable">
-                    </table>
-
-                    <a href="#" class="show-outside-tooltip">Show hint</a>
-                </div>
-            </small>
-        </div>
-    </body>
+</body>
 </html>
