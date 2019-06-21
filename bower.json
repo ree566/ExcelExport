@@ -32,7 +32,7 @@
       ]
     }
   },
-  "dependencies": {
+  "dependencies": {"font-awesome":"4.7.0",
     "no-bootstrap-notify": "3.1.6",
     "datatables.net": "latest",
     "datatables.net-buttons": "latest",

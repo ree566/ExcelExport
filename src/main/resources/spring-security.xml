@@ -36,6 +36,7 @@
         
         <!--Global system access setting-->
         
+        <intercept-url pattern="/login.jsp" access="permitAll" />
         <intercept-url pattern="/index.jsp" access="permitAll" />
         <intercept-url pattern="/report.jsp" access="permitAll" />
         <intercept-url pattern="/requisition.jsp" access="permitAll" />
@@ -43,7 +44,7 @@
         
         <!--Controller security role setting-->
         
-        <form-login authentication-success-handler-ref="refererHandler" />
+        <form-login login-page="/login.jsp" authentication-success-handler-ref="refererHandler" />
         <csrf disabled="true"/>
 
         <logout invalidate-session="true"

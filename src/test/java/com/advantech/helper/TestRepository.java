@@ -6,6 +6,8 @@
 package com.advantech.helper;
 
 import com.advantech.model.Floor;
+import com.advantech.model.OvertimeRecord;
+import com.advantech.model.OvertimeRecordWeekly;
 import com.advantech.model.Requisition;
 import com.advantech.model.ScrappedDetail;
 import com.advantech.model.ScrappedDetailCount;
@@ -13,12 +15,14 @@ import com.advantech.model.ScrappedDetailWeekGroup;
 import com.advantech.model.User;
 import com.advantech.model.UserNotification;
 import com.advantech.repo.db1.FloorRepository;
+import com.advantech.repo.db1.OvertimeRecordRepository;
 import com.advantech.repo.db1.RequisitionRepository;
 import com.advantech.repo.db1.ScrappedDetailRepository;
 import com.advantech.repo.db1.UserNotificationRepository;
 import com.advantech.repo.db1.UserRepository;
 import com.advantech.repo.db1.WorkingHoursRepository;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -273,7 +277,7 @@ public class TestRepository {
         System.out.println(r.getRequisitionReason().getName());
     }
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testScrappedDetailCount() {
@@ -286,6 +290,25 @@ public class TestRepository {
 
         HibernateObjectPrinter.print(r.get(0));
         HibernateObjectPrinter.print(r.get(1));
+    }
+    
+    @Autowired
+    private OvertimeRecordRepository overtimeRecordRepository;
+    
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testOvertimeRecordRepository() {
+        DateTime sD = new DateTime("2019-06-01");
+        DateTime eD = new DateTime("2019-06-20");
+
+//        List<OvertimeRecord> l2 = overtimeRecordRepository.findOvertimeRecord(sD.toDate(), eD.toDate());
+//        HibernateObjectPrinter.print(l2);
+        
+        Date d1 = sD.toDate(), d2 = eD.toDate();
+        
+        List<OvertimeRecordWeekly> l3 = overtimeRecordRepository.findWeeklyOvertimeRecord(d1, d2);
+        HibernateObjectPrinter.print(l3);
     }
 
 }

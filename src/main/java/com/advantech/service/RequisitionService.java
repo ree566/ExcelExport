@@ -8,14 +8,17 @@ package com.advantech.service;
 import com.advantech.helper.SecurityPropertiesUtils;
 import com.advantech.model.Requisition;
 import com.advantech.model.RequisitionEvent;
+import com.advantech.model.RequisitionReason;
 import com.advantech.model.RequisitionState;
 import com.advantech.model.RequisitionType;
 import com.advantech.model.User;
 import com.advantech.repo.db1.RequisitionEventRepository;
+import com.advantech.repo.db1.RequisitionReasonRepository;
 import com.advantech.repo.db1.RequisitionRepository;
 import com.advantech.repo.db1.RequisitionStateRepository;
 import com.advantech.repo.db1.RequisitionTypeRepository;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +47,9 @@ public class RequisitionService {
 
     @Autowired
     private RequisitionTypeRepository typeRepo;
+    
+    @Autowired
+    private RequisitionReasonRepository reasonRepo;
 
     public DataTablesOutput<Requisition> findAll(DataTablesInput dti) {
         return repo.findAll(dti);
@@ -96,6 +102,26 @@ public class RequisitionService {
         eventRepo.save(e);
 
         return result;
+    }
+
+    public <S extends Requisition> int batchInsert(List<S> l) {
+        User user = SecurityPropertiesUtils.retrieveAndCheckUserInSession();
+
+        RequisitionState defaultState = stateRepo.getOne(3);
+        RequisitionType defaultType = typeRepo.getOne(1);
+        RequisitionReason defaultReason = reasonRepo.getOne(2);
+
+        for (Requisition r : l) {
+            r.setRequisitionState(defaultState);
+            r.setRequisitionType(defaultType);
+            r.setRequisitionReason(defaultReason);
+            r.setUser(user);
+            repo.save(r);
+            RequisitionEvent e = new RequisitionEvent(r, user, defaultState, r.getRemark());
+            eventRepo.save(e);
+        }
+
+        return 1;
     }
 
     public void changeState(int requisition_id, int state_id) {

@@ -5,6 +5,8 @@
  */
 package com.advantech.controller;
 
+import com.advantech.helper.HibernateObjectPrinter;
+import com.advantech.helper.RequisitionListContainer;
 import com.advantech.helper.SecurityPropertiesUtils;
 import com.advantech.model.Floor;
 import com.advantech.model.Requisition;
@@ -43,6 +45,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -127,6 +130,15 @@ public class RequisitionController {
         service.save(requisition, remark);
         return "success";
 
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/batchSave", method = {RequestMethod.POST})
+    protected String batchSave(@ModelAttribute RequisitionListContainer container) {
+        
+        service.batchInsert(container.getMyList());
+        return "success";
+        
     }
 
     @ResponseBody

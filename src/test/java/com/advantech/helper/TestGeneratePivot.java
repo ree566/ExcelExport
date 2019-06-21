@@ -6,8 +6,10 @@
 package com.advantech.helper;
 
 import com.advantech.chart.ExcelChart;
+import com.advantech.chart.ExcelChart2;
 import static com.advantech.helper.DateConversion.fromUSWeekAndYear;
 import com.advantech.model.ScrappedDetailWeekGroup;
+import com.advantech.repo.db1.OvertimeRecordRepository;
 import com.advantech.repo.db1.ScrappedDetailRepository;
 import java.io.IOException;
 import java.util.Comparator;
@@ -30,20 +32,26 @@ import org.springframework.test.context.web.WebAppConfiguration;
  */
 @WebAppConfiguration
 @ContextConfiguration(locations = {
-    "classpath:servlet-context.xml"
+    "classpath:servlet-context_test.xml"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestGeneratePivot {
 
     @Autowired
     ExcelChart excelChart;
+    
+    @Autowired
+    ExcelChart2 excelChart2;
 
     @Autowired
-    private ScrappedDetailRepository repo;
+    private ScrappedDetailRepository scrappedRepo;
+    
+    @Autowired
+    private OvertimeRecordRepository overtimeRepo;
 
-    @Test
+//    @Test
     public void testGroupBy() {
-        List<ScrappedDetailWeekGroup> d = repo.findAllGroupByWeek();
+        List<ScrappedDetailWeekGroup> d = scrappedRepo.findAllGroupByWeek();
 
         //同月, 最大week number, sum
         Map collect = d.stream().collect(
@@ -73,6 +81,14 @@ public class TestGeneratePivot {
     public void test() throws IOException, Exception {
 
         ChartPanel chartPanel = excelChart.createChart();
+        excelChart.saveAsFileDemo(chartPanel.getChart());
+
+    }
+    
+    @Test
+    public void test2() throws IOException, Exception {
+
+        ChartPanel chartPanel = excelChart2.createChart();
         excelChart.saveAsFileDemo(chartPanel.getChart());
 
     }

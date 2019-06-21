@@ -70,11 +70,6 @@ public class TestClass {
     }
 
 //    @Test
-    public void testException() throws BuJamException {
-        throw new BuJamException("Guang is disappear...");
-    }
-
-//    @Test
     public void testCollection() {
         List<Integer> l = newArrayList(1, 3, 4, 5, 2, 7, 8, 9, 2, 33, 14, 56, 0, 1);
         List<Integer> l2 = newArrayList(2, 9, 8, 21, 3, 9, 5, 11, 2, 14);

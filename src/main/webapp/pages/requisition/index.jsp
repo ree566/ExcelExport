@@ -16,9 +16,6 @@
             h1{
                 color: red;
             }
-            thead input {
-                width: 100%;
-            }
             .box {
                 width:1270px;
                 padding:20px;
@@ -43,6 +40,7 @@
         <link rel="stylesheet" href="<c:url value="/libs/datatables.net-select-dt/select.dataTables.css" />"/>
         <link rel="stylesheet" href="<c:url value="/libs/datatables.net-buttons-dt/buttons.dataTables.css" />"/>
         <link rel="stylesheet" href="<c:url value="/libs/bootstrap-datepicker/bootstrap-datepicker3.css" />"/>
+        <link rel="stylesheet" href="<c:url value="/libs/font-awesome/font-awesome.min.css" />" />
 
         <script src="<c:url value="/libs/jQuery/jquery.js" />"></script>
         <script src="<c:url value="/libs/bootstrap/bootstrap.js" />"></script>
@@ -155,11 +153,22 @@
                         "dom": 'Bfrtip',
                         "buttons": [
                             'pageLength',
+//                            {
+//                                "text": '需求申請',
+//                                "attr": {
+//                                    "data-toggle": "modal",
+//                                    "data-target": "#myModal"
+//                                },
+//                                "action": function (e, dt, node, config) {
+//                                    $("#model-table input").val("");
+//                                    $("#model-table #id").val(0);
+//                                }
+//                            },
                             {
                                 "text": '需求申請',
                                 "attr": {
                                     "data-toggle": "modal",
-                                    "data-target": "#myModal"
+                                    "data-target": "#myModal2"
                                 },
                                 "action": function (e, dt, node, config) {
                                     $("#model-table input").val("");
@@ -188,11 +197,22 @@
                         "dom": 'Bfrtip',
                         "buttons": [
                             'pageLength',
+//                            {
+//                                "text": '新增需求',
+//                                "attr": {
+//                                    "data-toggle": "modal",
+//                                    "data-target": "#myModal"
+//                                },
+//                                "action": function (e, dt, node, config) {
+//                                    $("#model-table input").val("");
+//                                    $("#model-table #id").val(0);
+//                                }
+//                            },
                             {
                                 "text": '新增需求',
                                 "attr": {
                                     "data-toggle": "modal",
-                                    "data-target": "#myModal"
+                                    "data-target": "#myModal2"
                                 },
                                 "action": function (e, dt, node, config) {
                                     $("#model-table input").val("");
@@ -202,8 +222,6 @@
                             {
                                 "text": '編輯',
                                 "attr": {
-                                    "data-toggle": "modal",
-                                    "data-target": "#myModal2"
                                 },
                                 "action": function (e, dt, node, config) {
 //                                    if (isEditor) {
@@ -284,12 +302,12 @@
                 });
 
                 $(document).ajaxStart(function () {
-                    $("input").not(".search_disabled").attr("disabled", true);
+                    $("input").not(".search_disabled, div.dataTables_filter input").attr("disabled", true);
                 }).ajaxStop(function () {
                     $("input").not(".search_disabled").removeAttr("disabled");
                 });
 
-                $("#save").click(function () {
+                $("#myModal #save").click(function () {
                     if (confirm("Confirm save?")) {
                         var amount = $("#model-table #amount").val();
                         var po = $("#model-table #po").val(), m = $("#model-table #materialNumber").val();
@@ -315,7 +333,30 @@
                             receiveDate: $("#model-table #receiveDate").val(),
                             returnDate: $("#model-table #returnDate").val()
                         };
+                        if (data.id == 0) {
+                            delete data["user.id"];
+                        }
                         save(data);
+                    }
+                });
+
+                $("#myModal2 #save").click(function () {
+                    if (confirm("Confirm save?")) {
+                        var tb = $("#material-detail tbody tr");
+                        var po = $("#model-table2 #po").val();
+                        var myArray = tb.map(function () {
+                            var o = {
+                                po: po,
+                                materialNumber: $(this).find("input").eq(0).val(),
+                                amount: $(this).find("input").eq(1).val(),
+                                remark: $(this).find("#remark").val()
+                            };
+                            return o;
+                        }).get();
+                        var data = {
+                            "myList": myArray
+                        };
+                        batchSave(data);
                     }
                 });
 
@@ -323,9 +364,26 @@
                     $(this).val($(this).val().trim().toLocaleUpperCase());
                 });
 
+                $("#myModal2 #add-material").click(function () {
+                    var first = $("#myModal2 #material-detail").find("tbody>tr").eq(0);
+                    var clone = first.clone(true);
+                    clone.find("input").val("");
+                    clone.find("textarea").html("");
+                    first.after(clone);
+                });
+
+                $("#myModal2 .remove-material").click(function () {
+                    var length = $("#myModal2 #material-detail").find("tbody>tr").length;
+                    if (length > 1) {
+                        $(this).closest("tr").remove();
+                    }
+                });
+
                 $(".hide_col").hide();
 
                 enterToTab();
+
+                $("#myModal2").find("input, select, textarea").addClass("form-control");
 
                 function formatDate(ds) {
 //                    console.log(moment(ds));
@@ -350,6 +408,29 @@
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
                             $("#dialog-msg").val(xhr.responseText);
+                        }
+                    });
+                }
+
+                function batchSave(data) {
+                    $.ajax({
+                        type: "POST",
+                        url: "<c:url value="/RequisitionController/batchSave" />",
+                        dataType: "json",
+                        data: data,
+                        success: function (response) {
+                            alert(response);
+                            $('#myModal2').modal('toggle');
+                            refreshTable();
+                            ws.send("ADD");
+                            $.notify('資料已更新', {placement: {
+                                    from: "bottom",
+                                    align: "right"
+                                }
+                            });
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            $("#dialog-msg2").val(xhr.responseText);
                         }
                     });
                 }
@@ -417,7 +498,7 @@
                             var idx = inputs.index(this);
 
                             if (idx == inputs.length - 1) {
-                                inputs[0].select()
+                                inputs[0].select();
                             } else {
                                 inputs[idx + 1].focus(); //  handles submit buttons
                                 inputs[idx + 1].select();
@@ -515,6 +596,15 @@
                                     </td>
                                 </tr>
 
+                                <c:if test="${isUser && (!isOper || !isAdmin)}">
+                                    <tr class="hide_col">
+                                        <td class="lab">原因</td>
+                                        <td>
+                                            <select id="requisitionReason.id"></select>
+                                        </td>
+                                    </tr>
+                                </c:if>
+
                                 <c:if test="${isOper || isAdmin}">
                                     <tr>
                                         <td class="lab">原因</td>
@@ -572,6 +662,80 @@
                     <div class="modal-footer">
                         <button type="button" id="save" class="btn btn-default">Save</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div id="myModal2" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-lg">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 id="titleMessage2" class="modal-title">Batch update</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <table id="model-table2" cellspacing="10" class="table table-bordered">
+                                <tr class="hide_col">
+                                    <td class="lab">id</td>
+                                    <td>
+                                        <input type="text" id="id" value="0" disabled="true" readonly>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="lab">工單</td>
+                                    <td> 
+                                        <input type="text" id="po">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="lab">詳細</td>
+                                    <td>
+                                        <table id="material-detail" class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>料號</th>
+                                                    <th>數量</th>
+                                                    <th>備註</th>
+                                                    <th>動作</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <input type="text" id="materialNumber" />
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" id="amount" />
+                                                    </td>
+                                                    <td>
+                                                        <textarea id="remark" ></textarea>
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-default btn-sm remove-material btn-outline-dark" aria-label="Left Align">
+                                                            <span class="fa fa-remove" aria-hidden="true"></span>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <div class="material-detail-footer">
+                                            <button type="button" class="btn btn-default btn-sm btn-outline-dark" id="add-material">新增料號</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div id="dialog-msg2" class="alarm"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="save" class="btn btn-default btn-outline-dark">Save</button>
+                        <button type="button" class="btn btn-default btn-outline-dark" data-dismiss="modal">Close</button>
                     </div>
                 </div>
 
