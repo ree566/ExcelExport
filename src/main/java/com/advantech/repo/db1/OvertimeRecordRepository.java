@@ -8,7 +8,7 @@ package com.advantech.repo.db1;
 import com.advantech.model.Floor;
 import com.advantech.model.OvertimeRecord;
 import com.advantech.model.OvertimeRecordWeekly;
-import com.advantech.model.WorkingHoursReport;
+import com.advantech.model.OvertimeRecordWeeklyChart;
 import java.util.Date;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,12 +24,16 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OvertimeRecordRepository extends JpaRepository<Floor, Integer> {
 
-    @Query(value = "{CALL usp_OvertimeRecord_1(:sD, :eD)}",
+    @Query(value = "{CALL usp_OvertimeRecord_rank(:sD, :eD)}",
             nativeQuery = true)
     public List<OvertimeRecord> findOvertimeRecord(@Param("sD") Date sD, @Param("eD") Date eD);
 
     @Query(value = "{CALL usp_OvertimeRecord_Weekly(:sD, :eD)}",
             nativeQuery = true)
     public List<OvertimeRecordWeekly> findWeeklyOvertimeRecord(@Param("sD") Date sD, @Param("eD") Date eD);
+    
+    @Query(value = "{CALL usp_OvertimeRecord_Weekly_Chart(:sD, :eD)}",
+            nativeQuery = true)
+    public List<OvertimeRecordWeeklyChart> findWeeklyOvertimeChart(@Param("sD") Date sD, @Param("eD") Date eD);
 
 }

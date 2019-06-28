@@ -40,7 +40,7 @@
         <property name="cronExpression" value="0 50 14 ? * FRI *" />
     </bean>
     
-    <!--job3 setting-->
+    <!--job4 setting-->
     <bean name="SendWhReports-Job" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
         <property name="targetObject" ref="sendWhReports" />
         <property name="targetMethod" value="execute"/>  
@@ -51,6 +51,18 @@
         <property name="jobDetail" ref="SendWhReports-Job" />
         <property name="cronExpression" value="0 30 8 ? * MON-FRI *" />
     </bean>
+    
+    <!--job5 setting-->
+    <bean name="SendOvertimeReport-Job" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="sendOvertimeReport" />
+        <property name="targetMethod" value="execute"/>  
+        <property name="concurrent" value="false"/>
+    </bean>
+    
+    <bean id="SendOvertimeReport-Trig" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="SendOvertimeReport-Job" />
+        <property name="cronExpression" value="0 0 10 ? * MON *" />
+    </bean>
 
     <!--schedule jobs-->
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
@@ -60,6 +72,7 @@
                 <ref bean="SyncData-Trig"/>
                 <ref bean="SyncDataBeforeSendMail-Trig"/>
                 <ref bean="SendWhReports-Trig"/>
+                <ref bean="SendOvertimeReport-Trig"/>
             </list>
         </property>
         <property name="schedulerName">

@@ -9,17 +9,11 @@ package com.advantech.model;
  *
  * @author Wei.Cheng
  */
-public interface OvertimeRecord {
-
-    public String getEmplrId();
-    
-    public String getLocalName();
+public interface OvertimeRecordWeeklyChart {
     
     public Integer getWeekOfMonth();
     
     public String getSitefloor();
-    
-    public String getSum();
-    
-    public int getRankNum();
+
+    public String getSumAMultiple();
 }

@@ -7,7 +7,9 @@ package com.advantech.service;
 
 import com.advantech.model.OvertimeRecord;
 import com.advantech.model.OvertimeRecordWeekly;
+import com.advantech.model.OvertimeRecordWeeklyChart;
 import com.advantech.repo.db1.OvertimeRecordRepository;
+import java.util.Date;
 import java.util.List;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,10 @@ public class OvertimeRecordService {
 
     public List<OvertimeRecordWeekly> findWeeklyOvertimeRecord(DateTime sD, DateTime eD) {
         return repo.findWeeklyOvertimeRecord(sD.toDate(), eD.toDate());
+    }
+
+    public List<OvertimeRecordWeeklyChart> findWeeklyOvertimeChart(Date sD, Date eD) {
+        return repo.findWeeklyOvertimeChart(sD, eD);
     }
 
 }

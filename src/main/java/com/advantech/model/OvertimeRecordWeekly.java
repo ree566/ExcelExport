@@ -5,8 +5,6 @@
  */
 package com.advantech.model;
 
-import java.math.BigDecimal;
-
 /**
  *
  * @author Wei.Cheng
@@ -16,6 +14,8 @@ public interface OvertimeRecordWeekly {
     public Integer getWeekOfMonth();
     
     public String getSitefloor();
+    
+    public String getDep();
     
     public String getSumAMultiple();
 }

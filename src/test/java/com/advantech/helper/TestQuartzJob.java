@@ -5,6 +5,7 @@
  */
 package com.advantech.helper;
 
+import com.advantech.job.SendOvertimeReport;
 import com.advantech.job.SendReport;
 import com.advantech.job.SendWhReports;
 import com.advantech.job.SyncData;
@@ -39,10 +40,13 @@ public class TestQuartzJob {
     @Autowired
     private SendWhReports whReportJob;
     
+    @Autowired
+    private SendOvertimeReport sendOvertimeReport;
+    
     @Value("${floor.five.fileLocation}")
     private String fileLocation;
 
-    @Test
+//    @Test
     public void testMail() {
         reportJob.execute();
     }
@@ -55,6 +59,11 @@ public class TestQuartzJob {
 //    @Test
     public void testSendWhReports() {
         whReportJob.execute();
+    }
+    
+    @Test
+    public void testSendSendOvertimeReport() {
+        sendOvertimeReport.execute();
     }
    
 }

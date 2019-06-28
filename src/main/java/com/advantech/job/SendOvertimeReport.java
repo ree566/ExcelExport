@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import javax.mail.MessagingException;
@@ -31,6 +32,7 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
@@ -72,10 +74,10 @@ public class SendOvertimeReport {
     DateTimeFormatter fmt2 = DateTimeFormat.forPattern("M/d");
 
     public void execute() {
-        sendMail(new DateTime());
+        sendMail();
     }
 
-    public void sendMail(DateTime d) {
+    public void sendMail() {
         try {
             UserNotification notifi = notificationService.findById(1).get();
             UserNotification notifiCc = notificationService.findById(2).get();
@@ -90,7 +92,7 @@ public class SendOvertimeReport {
                 return;
             }
 
-            updateDateRange(d);
+            updateDateRange();
 
             ChartPanel chartPanel = excelChart2.createChart();
             JFreeChart chart = chartPanel.getChart();
@@ -114,14 +116,19 @@ public class SendOvertimeReport {
         return l.stream().map(u -> u.getEmail()).toArray(size -> new String[size]);
     }
 
-    private void updateDateRange(DateTime d) {
-        sDOW = d.minusWeeks(4).withTime(0, 0, 0, 0);
-        eDOW = sDOW.withTime(23, 59, 59, 0);
+    private void updateDateRange() {
+        DateTime lastDayOfPrevWeek = new DateTime().minusWeeks(1).withDayOfWeek(DateTimeConstants.SATURDAY);
+        sDOW = new DateTime(lastDayOfPrevWeek).minusWeeks(4).withTime(0, 0, 0, 0);
+        eDOW = new DateTime(lastDayOfPrevWeek).withTime(23, 0, 0, 0);
     }
 
-    private String generateMailBody() throws IOException, SAXException, InvalidFormatException {
+    public String generateMailBody() throws IOException, SAXException, InvalidFormatException {
+
+        int weekOfWeekyear = eDOW.getWeekOfWeekyear();
 
         List<OvertimeRecordWeekly> l = overtimeRecordService.findWeeklyOvertimeRecord(sDOW, eDOW);
+        l = l.stream().filter(o -> o.getWeekOfMonth() == weekOfWeekyear).collect(toList());
+
         List<OvertimeRecord> l2 = overtimeRecordService.findOvertimeRecord(sDOW, eDOW);
 
         StringBuilder sb = new StringBuilder();
@@ -136,13 +143,14 @@ public class SendOvertimeReport {
         sb.append("</style>");
         sb.append("<div id='mailBody'>");
         sb.append("<h3>Dear User:</h3>");
-        sb.append("<h3>本週報廢明細如下:</h3>");
+        sb.append("<h3>本週加班明細如下:</h3>");
 
         sb.append("<h5 class='alert'>僅列出四週內資料</h5>");
         sb.append("<table>");
         sb.append("<tr>");
         sb.append("<th>週別</th>");
         sb.append("<th>樓層</th>");
+        sb.append("<th>直/間接</th>");
         sb.append("<th>時數</th>");
         sb.append("</tr>");
 
@@ -156,6 +164,9 @@ public class SendOvertimeReport {
             sb.append(orw.getSitefloor());
             sb.append("</td>");
             sb.append("<td>");
+            sb.append(orw.getDep());
+            sb.append("</td>");
+            sb.append("<td>");
             sb.append(orw.getSumAMultiple());
             sb.append("</td>");
             sb.append("</tr>");
@@ -164,21 +175,30 @@ public class SendOvertimeReport {
         sb.append("</table>");
         sb.append("<hr />");
 
+        //Chart data
+        sb.append("<h5>統計圖:</h5>");
+        sb.append("<img src=\"cid:img1\"></img>");
+        sb.append("<hr />");
+
+        int rankNumLimit = 5;
+
         List<OvertimeRecord> floorFiveTopN = l2.stream()
-                .filter(o -> o.getSitefloor().equals("5") && o.getWeekOfMonth().equals(eDOW.getWeekOfWeekyear()))
+                .filter(o -> o.getSitefloor().equals("5") && (o.getWeekOfMonth() == null || Objects.equals(o.getWeekOfMonth(), weekOfWeekyear)) && o.getRankNum() <= rankNumLimit)
                 .sorted((OvertimeRecord o1, OvertimeRecord o2) -> new BigDecimal(o1.getSum()).compareTo(new BigDecimal(o2.getSum())))
-                .limit(5)
                 .collect(toList());
 
         List<OvertimeRecord> floorSixTopN = l2.stream()
-                .filter(o -> o.getSitefloor().equals("6") && o.getWeekOfMonth().equals(eDOW.getWeekOfWeekyear()))
+                .filter(o -> o.getSitefloor().equals("6") && (o.getWeekOfMonth() == null || Objects.equals(o.getWeekOfMonth(), weekOfWeekyear)) && o.getRankNum() <= rankNumLimit)
                 .sorted((OvertimeRecord o1, OvertimeRecord o2) -> new BigDecimal(o1.getSum()).compareTo(new BigDecimal(o2.getSum())))
-                .limit(5)
                 .collect(toList());
+
+        sb.append("<h5 class='alert'>週別為n/a代表期間內從未加班</h5>");
 
         //各樓層top 5 order by sum
         if (!floorFiveTopN.isEmpty()) {
-            sb.append("<h5>5F top 5</h5>");
+            sb.append("<h5>");
+            sb.append(weekOfWeekyear);
+            sb.append("週 5F top 5</h5>");
             sb.append("<table>");
 
             //Add header
@@ -202,16 +222,19 @@ public class SendOvertimeReport {
                 sb.append(row.getSum());
                 sb.append("</td>");
                 sb.append("<td>");
-                sb.append(row.getWeekOfMonth());
+                sb.append(row.getWeekOfMonth() == null ? "n/a" : row.getWeekOfMonth());
                 sb.append("</td>");
                 sb.append("</tr>");
             });
 
             sb.append("</table>");
         }
-        
+
         if (!floorSixTopN.isEmpty()) {
-            sb.append("<h5>6F top 5</h5>");
+            sb.append("<h5>");
+            sb.append(weekOfWeekyear);
+            sb.append("週 6F top 5</h5>");
+
             sb.append("<table>");
 
             //Add header
@@ -235,13 +258,15 @@ public class SendOvertimeReport {
                 sb.append(row.getSum());
                 sb.append("</td>");
                 sb.append("<td>");
-                sb.append(row.getWeekOfMonth());
+                sb.append(row.getWeekOfMonth() == null ? "n/a" : row.getWeekOfMonth());
                 sb.append("</td>");
                 sb.append("</tr>");
             });
 
             sb.append("</table>");
         }
+
+        sb.append("</div>");
 
         return sb.toString();
 

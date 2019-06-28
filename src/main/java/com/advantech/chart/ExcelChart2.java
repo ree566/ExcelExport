@@ -7,14 +7,11 @@ package com.advantech.chart;
 
 import com.advantech.helper.ChartUtils;
 import com.advantech.helper.Serie;
-import com.advantech.model.OvertimeRecord;
-import com.advantech.model.OvertimeRecordWeekly;
-import com.advantech.model.ScrappedDetailWeekGroup;
+import com.advantech.model.OvertimeRecordWeeklyChart;
 import com.advantech.repo.db1.OvertimeRecordRepository;
 import static com.google.common.collect.Lists.newArrayList;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Paint;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -37,9 +34,9 @@ import org.jfree.chart.block.BlockBorder;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
-import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -68,20 +65,21 @@ public class ExcelChart2 {
     private OvertimeRecordRepository repo;
 
     private void excelToData() {
-        DateTime sD = new DateTime("2019-06-01");
-        DateTime eD = new DateTime("2019-06-20");
+        DateTime lastDayOfPrevWeek = new DateTime().minusWeeks(1).withDayOfWeek(DateTimeConstants.SATURDAY);
+        DateTime sD = new DateTime(lastDayOfPrevWeek).minusWeeks(4).withTime(0, 0, 0, 0);
+        DateTime eD = new DateTime(lastDayOfPrevWeek).withTime(23, 0, 0, 0);
 
-        List<OvertimeRecordWeekly> d = repo.findWeeklyOvertimeRecord(sD.toDate(), eD.toDate());
+        List<OvertimeRecordWeeklyChart> d = repo.findWeeklyOvertimeChart(sD.toDate(), eD.toDate());
 
         cate = newArrayList();
         ser = new ArrayList();
 
         //先分樓層
-        Map<String, List<OvertimeRecordWeekly>> dGroup = d.stream()
-                .collect(groupingBy(OvertimeRecordWeekly::getSitefloor));
+        Map<String, List<OvertimeRecordWeeklyChart>> dGroup = d.stream()
+                .collect(groupingBy(OvertimeRecordWeeklyChart::getSitefloor));
 
-        List<OvertimeRecordWeekly> floorFiveD = dGroup.get("5");
-        List<OvertimeRecordWeekly> floorSixD = dGroup.get("6");
+        List<OvertimeRecordWeeklyChart> floorFiveD = dGroup.get("5");
+        List<OvertimeRecordWeeklyChart> floorSixD = dGroup.get("6");
 
         //取得兩邊都有的week
         List<Integer> c1 = dGroup.get("5").stream()
@@ -99,7 +97,7 @@ public class ExcelChart2 {
         List<Integer> floorSixSub = (List<Integer>) CollectionUtils.subtract(totalWeek, c2);
 
         floorFiveSub.forEach(s -> {
-            floorFiveD.add(new OvertimeRecordWeekly() {
+            floorFiveD.add(new OvertimeRecordWeeklyChart() {
                 @Override
                 public Integer getWeekOfMonth() {
                     return s;
@@ -114,11 +112,12 @@ public class ExcelChart2 {
                 public String getSumAMultiple() {
                     return "0";
                 }
+
             });
         });
 
         floorSixSub.forEach(s -> {
-            floorSixD.add(new OvertimeRecordWeekly() {
+            floorSixD.add(new OvertimeRecordWeeklyChart() {
                 @Override
                 public Integer getWeekOfMonth() {
                     return s;
@@ -140,13 +139,13 @@ public class ExcelChart2 {
         cate = totalWeek.stream().map(s -> s.toString()).collect(Collectors.toList());
 
         List<String> floorFiveTotal = floorFiveD.stream()
-                .sorted((OvertimeRecordWeekly o1, OvertimeRecordWeekly o2) -> o1.getWeekOfMonth() - o2.getWeekOfMonth())
-                .map(OvertimeRecordWeekly::getSumAMultiple)
+                .sorted((OvertimeRecordWeeklyChart o1, OvertimeRecordWeeklyChart o2) -> o1.getWeekOfMonth() - o2.getWeekOfMonth())
+                .map(OvertimeRecordWeeklyChart::getSumAMultiple)
                 .collect(Collectors.toList());
 
         List<String> floorSixTotal = floorSixD.stream()
-                .sorted((OvertimeRecordWeekly o1, OvertimeRecordWeekly o2) -> o1.getWeekOfMonth() - o2.getWeekOfMonth())
-                .map(OvertimeRecordWeekly::getSumAMultiple)
+                .sorted((OvertimeRecordWeeklyChart o1, OvertimeRecordWeeklyChart o2) -> o1.getWeekOfMonth() - o2.getWeekOfMonth())
+                .map(OvertimeRecordWeeklyChart::getSumAMultiple)
                 .collect(Collectors.toList());
 
         List<Integer> total = new ArrayList();

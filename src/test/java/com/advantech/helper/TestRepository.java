@@ -26,7 +26,9 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import static java.util.stream.Collectors.toList;
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.DateTime;
 import static org.junit.Assert.*;
@@ -285,30 +287,43 @@ public class TestRepository {
         DateTime eD = new DateTime("2019-04-26");
         DateTime startDateOfYear = new DateTime("2019-01-01");
         List<ScrappedDetailCount> r = scrappedRepo.findUserScrappedDetailCount(sD.toDate(), eD.toDate(), startDateOfYear.toDate());
-        
+
         assertTrue(r.size() > 0);
 
         HibernateObjectPrinter.print(r.get(0));
         HibernateObjectPrinter.print(r.get(1));
     }
-    
+
     @Autowired
     private OvertimeRecordRepository overtimeRecordRepository;
-    
+
     @Test
     @Transactional
     @Rollback(true)
     public void testOvertimeRecordRepository() {
         DateTime sD = new DateTime("2019-06-01");
         DateTime eD = new DateTime("2019-06-20");
-
-//        List<OvertimeRecord> l2 = overtimeRecordRepository.findOvertimeRecord(sD.toDate(), eD.toDate());
-//        HibernateObjectPrinter.print(l2);
         
-        Date d1 = sD.toDate(), d2 = eD.toDate();
+//        List<OvertimeRecordWeekly> l2 = overtimeRecordRepository.findWeeklyOvertimeRecord(sD.toDate(), eD.toDate());
+        List<OvertimeRecord> l2 = overtimeRecordRepository.findOvertimeRecord(sD.toDate(), eD.toDate());
+//        List<Map> l3 = overtimeRecordRepository.findOvertimeRecord2(sD.toDate(), eD.toDate());
+//
+//        List<OvertimeRecord> floorFiveTopN = l2.stream()
+//                .sorted((OvertimeRecord o1, OvertimeRecord o2) -> new BigDecimal(o1.getSum()).compareTo(new BigDecimal(o2.getSum())))
+//                .filter(o -> o.getSitefloor().equals("5") && Objects.equals(o.getWeekOfMonth(), eD.getWeekOfWeekyear()))
+//                .limit(5)
+//                .collect(toList());
+//
+//        List<OvertimeRecord> floorSixTopN = l2.stream()
+//                .sorted((OvertimeRecord o1, OvertimeRecord o2) -> new BigDecimal(o1.getSum()).compareTo(new BigDecimal(o2.getSum())))
+//                .filter(o -> o.getSitefloor().equals("6") && Objects.equals(o.getWeekOfMonth(), eD.getWeekOfWeekyear()))
+//                .limit(5)
+//                .collect(toList());
         
-        List<OvertimeRecordWeekly> l3 = overtimeRecordRepository.findWeeklyOvertimeRecord(d1, d2);
-        HibernateObjectPrinter.print(l3);
+        HibernateObjectPrinter.print(l2);
+//        HibernateObjectPrinter.print(l3.get(1));
+//        HibernateObjectPrinter.print(floorFiveTopN);
+//        HibernateObjectPrinter.print(floorSixTopN);
     }
 
 }
