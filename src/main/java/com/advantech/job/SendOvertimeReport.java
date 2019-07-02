@@ -145,7 +145,7 @@ public class SendOvertimeReport {
         sb.append("<h3>Dear User:</h3>");
         sb.append("<h3>本週加班明細如下:</h3>");
 
-        sb.append("<h5 class='alert'>僅列出四週內資料</h5>");
+        sb.append("<h5 class='alert'>僅列出當週資料</h5>");
         sb.append("<table>");
         sb.append("<tr>");
         sb.append("<th>週別</th>");
@@ -192,8 +192,6 @@ public class SendOvertimeReport {
                 .sorted((OvertimeRecord o1, OvertimeRecord o2) -> new BigDecimal(o1.getSum()).compareTo(new BigDecimal(o2.getSum())))
                 .collect(toList());
 
-        sb.append("<h5 class='alert'>週別為n/a代表期間內從未加班</h5>");
-
         //各樓層top 5 order by sum
         if (!floorFiveTopN.isEmpty()) {
             sb.append("<h5>");
@@ -206,7 +204,6 @@ public class SendOvertimeReport {
             sb.append("<th>工號</th>");
             sb.append("<th>名稱</th>");
             sb.append("<th>時數</th>");
-            sb.append("<th>週別</th>");
             sb.append("</tr>");
 
             //Add row
@@ -220,9 +217,6 @@ public class SendOvertimeReport {
                 sb.append("</td>");
                 sb.append("<td>");
                 sb.append(row.getSum());
-                sb.append("</td>");
-                sb.append("<td>");
-                sb.append(row.getWeekOfMonth() == null ? "n/a" : row.getWeekOfMonth());
                 sb.append("</td>");
                 sb.append("</tr>");
             });
@@ -242,7 +236,6 @@ public class SendOvertimeReport {
             sb.append("<th>工號</th>");
             sb.append("<th>名稱</th>");
             sb.append("<th>時數</th>");
-            sb.append("<th>週別</th>");
             sb.append("</tr>");
 
             //Add row
@@ -256,9 +249,6 @@ public class SendOvertimeReport {
                 sb.append("</td>");
                 sb.append("<td>");
                 sb.append(row.getSum());
-                sb.append("</td>");
-                sb.append("<td>");
-                sb.append(row.getWeekOfMonth() == null ? "n/a" : row.getWeekOfMonth());
                 sb.append("</td>");
                 sb.append("</tr>");
             });
