@@ -20,6 +20,7 @@
         <ol>
             <li><a href="report.jsp">報廢統計</a></li>
             <li><a href="pages/requisition">快速領料平台</a></li>
+            <li><a href="pages/report/">IE mail設定</a></li>
         </ol>
     </body>
 </html>

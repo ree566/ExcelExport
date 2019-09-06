@@ -54,6 +54,8 @@ public class SendWhReports {
 
     private final DecimalFormat df = new DecimalFormat("$#,##0");
 
+    private final DecimalFormat df2 = new DecimalFormat("#.##%");
+
     public void execute() {
         sendMail();
     }
@@ -106,7 +108,7 @@ public class SendWhReports {
         return l.stream().map(u -> u.getEmail()).toArray(size -> new String[size]);
     }
 
-    private String generateMailBody(DateTime dt) throws IOException, SAXException, InvalidFormatException {
+    public String generateMailBody(DateTime dt) throws IOException, SAXException, InvalidFormatException {
 
         StringBuilder sb = new StringBuilder();
 
@@ -145,7 +147,7 @@ public class SendWhReports {
         //Generate monthly table
         List monthlyList = whService.findMonthlyWhReport(dt);
         sb.append("<h5>Monthly report(當月累積)</h5>");
-        addTable("月份", monthlyList, sb);
+        addTable2("月份", monthlyList, sb);
 
         return sb.toString();
 
@@ -204,6 +206,86 @@ public class SendWhReports {
         sb.append("</td>");
         sb.append("<td class='rightAlign'>");
         sb.append(df.format(totalSapOutputValue));
+        sb.append("</td>");
+        sb.append("<td>");
+        sb.append("");
+        sb.append("</td>");
+        sb.append("</tr>");
+
+        sb.append("</table>");
+        sb.append("<hr />");
+    }
+
+    private void addTable2(String dateTitleName, List<WorkingHoursReport> l, StringBuilder sb) {
+        sb.append("<table>");
+        sb.append("<tr>");
+        sb.append("<th>");
+        sb.append(dateTitleName);
+        sb.append("</th>");
+        sb.append("<th>Quantity</th>");
+        sb.append("<th>SAP工時</th>");
+        sb.append("<th>SAP產值</th>");
+        sb.append("<th>本月產值預估</th>");
+        sb.append("<th>累積達成率</th>");
+        sb.append("<th>廠別</th>");
+        sb.append("</tr>");
+
+        int totalQuantity = 0;
+        BigDecimal totalSapWorktime = BigDecimal.ZERO,
+                totalSapOutputValue = BigDecimal.ZERO,
+                totalEstimated = BigDecimal.ZERO;
+
+        for (WorkingHoursReport whr : l) {
+            totalQuantity = totalQuantity + whr.getQuantity();
+            totalSapWorktime = totalSapWorktime.add(whr.getSapWorktime());
+            totalEstimated = totalEstimated.add(whr.getEstimated());
+
+            BigDecimal outputValue = cutOutDigits(whr.getSapOutputValue());
+            totalSapOutputValue = totalSapOutputValue.add(outputValue);
+
+            sb.append("<tr>");
+            sb.append("<td>");
+            sb.append(whr.getDateField());
+            sb.append("</td>");
+            sb.append("<td class='rightAlign'>");
+            sb.append(whr.getQuantity());
+            sb.append("</td>");
+            sb.append("<td class='rightAlign'>");
+            sb.append(whr.getSapWorktime());
+            sb.append("</td>");
+            sb.append("<td class='rightAlign'>");
+            sb.append(df.format(outputValue));
+            sb.append("</td>");
+            sb.append("<td class='rightAlign'>");
+            sb.append(df.format(whr.getEstimated()));
+            sb.append("</td>");
+            sb.append("<td class='rightAlign'>");
+            sb.append(df2.format(whr.getPercentage()));
+            sb.append("</td>");
+            sb.append("<td>");
+            sb.append(whr.getPlant());
+            sb.append("</td>");
+            sb.append("</tr>");
+        }
+
+        sb.append("<tr class='total'>");
+        sb.append("<td>");
+        sb.append("Total:");
+        sb.append("</td>");
+        sb.append("<td class='rightAlign'>");
+        sb.append(totalQuantity);
+        sb.append("</td>");
+        sb.append("<td class='rightAlign'>");
+        sb.append(totalSapWorktime);
+        sb.append("</td>");
+        sb.append("<td class='rightAlign'>");
+        sb.append(df.format(totalSapOutputValue));
+        sb.append("</td>");
+        sb.append("<td class='rightAlign'>");
+        sb.append(df.format(totalEstimated));
+        sb.append("</td>");
+        sb.append("<td class='rightAlign'>");
+        sb.append(df2.format(totalSapOutputValue.divide(totalEstimated, 4, BigDecimal.ROUND_HALF_EVEN)));
         sb.append("</td>");
         sb.append("<td>");
         sb.append("");

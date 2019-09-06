@@ -5,15 +5,16 @@
  */
 package com.advantech.helper;
 
+import com.advantech.model.Achieving;
 import com.advantech.model.Floor;
 import com.advantech.model.OvertimeRecord;
-import com.advantech.model.OvertimeRecordWeekly;
 import com.advantech.model.Requisition;
 import com.advantech.model.ScrappedDetail;
 import com.advantech.model.ScrappedDetailCount;
 import com.advantech.model.ScrappedDetailWeekGroup;
 import com.advantech.model.User;
 import com.advantech.model.UserNotification;
+import com.advantech.repo.db1.AchievingRepository;
 import com.advantech.repo.db1.FloorRepository;
 import com.advantech.repo.db1.OvertimeRecordRepository;
 import com.advantech.repo.db1.RequisitionRepository;
@@ -22,13 +23,10 @@ import com.advantech.repo.db1.UserNotificationRepository;
 import com.advantech.repo.db1.UserRepository;
 import com.advantech.repo.db1.WorkingHoursRepository;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
-import static java.util.stream.Collectors.toList;
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.DateTime;
 import static org.junit.Assert.*;
@@ -297,7 +295,7 @@ public class TestRepository {
     @Autowired
     private OvertimeRecordRepository overtimeRecordRepository;
 
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testOvertimeRecordRepository() {
@@ -324,6 +322,18 @@ public class TestRepository {
 //        HibernateObjectPrinter.print(l3.get(1));
 //        HibernateObjectPrinter.print(floorFiveTopN);
 //        HibernateObjectPrinter.print(floorSixTopN);
+    }
+    
+    @Autowired
+    private AchievingRepository achievingRepository;
+    
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testAchievingRepository(){
+        Achieving pojo = achievingRepository.getOne(1);
+        assertNotNull(pojo);
+        assertEquals("TWM2", pojo.getFactory());
     }
 
 }

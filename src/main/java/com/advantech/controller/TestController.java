@@ -6,7 +6,6 @@
 package com.advantech.controller;
 
 import com.advantech.helper.HibernateObjectPrinter;
-import com.advantech.job.SendOvertimeReport;
 import com.advantech.job.SendWhReports;
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,12 +56,12 @@ public class TestController {
     }
     
     @Autowired
-    private SendOvertimeReport job3;
+    private SendWhReports job3;
 
     @ResponseBody
     @RequestMapping(value = "/testSendOvertimeReport", method = {RequestMethod.GET})
     public String testSendOvertimeReport() throws Exception {
-        return job3.generateMailBody();
+        return job3.generateMailBody(new DateTime());
     }
 
 }

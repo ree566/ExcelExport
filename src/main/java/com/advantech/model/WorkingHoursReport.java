@@ -22,4 +22,8 @@ public interface WorkingHoursReport {
     public BigDecimal getSapOutputValue();
 
     public String getPlant();
+    
+    public BigDecimal getEstimated();
+    
+    public BigDecimal getPercentage();
 }

@@ -41,6 +41,7 @@
         <intercept-url pattern="/report.jsp" access="permitAll" />
         <intercept-url pattern="/requisition.jsp" access="permitAll" />
         <intercept-url pattern="/pages/requisition/**" access="isAuthenticated()" />
+        <intercept-url pattern="/pages/report/**" access="hasAnyRole('OPER_IE', 'ADMIN')" />
         
         <!--Controller security role setting-->
         
