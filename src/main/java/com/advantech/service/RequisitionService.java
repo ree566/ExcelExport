@@ -79,7 +79,7 @@ public class RequisitionService {
         RequisitionState stat;
         User user = SecurityPropertiesUtils.retrieveAndCheckUserInSession();
         if (s.getId() == 0) {
-            stat = stateRepo.getOne(3);
+            stat = stateRepo.getOne(4);
             RequisitionType rType = typeRepo.getOne(1);
 
             s.setRequisitionState(stat);
@@ -107,7 +107,7 @@ public class RequisitionService {
     public <S extends Requisition> int batchInsert(List<S> l) {
         User user = SecurityPropertiesUtils.retrieveAndCheckUserInSession();
 
-        RequisitionState defaultState = stateRepo.getOne(3);
+        RequisitionState defaultState = stateRepo.getOne(4);
         RequisitionType defaultType = typeRepo.getOne(1);
         RequisitionReason defaultReason = reasonRepo.getOne(2);
 

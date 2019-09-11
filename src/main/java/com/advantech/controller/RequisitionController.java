@@ -172,7 +172,7 @@ public class RequisitionController {
     protected List<RequisitionState> findRequisitionStateOptions() {
         return requisitionStateService.findAll((Root<RequisitionState> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
             Path<Integer> idEntryPath = root.get(RequisitionState_.ID);
-            return cb.not(idEntryPath.in(newArrayList(1, 3)));
+            return cb.not(idEntryPath.in(newArrayList(1, 3, 4)));
         });
     }
 

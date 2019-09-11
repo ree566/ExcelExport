@@ -126,7 +126,7 @@
                     ],
                     "createdRow": function (row, data, dataIndex) {
                         var state = data.requisitionState.id;
-                        $(row).addClass('text text-' + (state == 7 || state == 2 ? 'muted' : (state == 3 ? 'danger' : 'primary')));
+                        $(row).addClass('text text-' + (state == 7 || state == 2 ? 'muted' : (state == 4 ? 'danger' : 'primary')));
                     },
                     "oLanguage": {
                         "sLengthMenu": "顯示 _MENU_ 筆記錄",
