@@ -42,6 +42,7 @@
         <intercept-url pattern="/requisition.jsp" access="permitAll" />
         <intercept-url pattern="/pages/requisition/**" access="isAuthenticated()" />
         <intercept-url pattern="/pages/report/**" access="hasAnyRole('OPER_IE', 'ADMIN')" />
+        <intercept-url pattern="/pages/fqcKanBan/**" access="hasAnyRole('OPER_FQC', 'ADMIN')" />
         
         <!--Controller security role setting-->
         

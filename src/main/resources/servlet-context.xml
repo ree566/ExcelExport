@@ -102,6 +102,7 @@
             com.advantech.chart, 
             com.advantech.controller, 
             com.advantech.job,
+            com.advantech.webservice,
             com.advantech.helper
     " />
 
@@ -165,8 +166,26 @@
     </bean>
     
     <!--other import-->
+    <oxm:jaxb2-marshaller id="marshaller" context-path="org.tempuri"/>
+    
+    <bean id="soapMessageFactory" class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory">
+        <property name="soapVersion">
+            <util:constant static-field="org.springframework.ws.soap.SoapVersion.SOAP_12"/>
+        </property>
+    </bean>
+    
+    <!--M3 webservice wsdl-->
+    <bean id="webServiceTemplate" class="org.springframework.ws.client.core.WebServiceTemplate">
+        <constructor-arg ref="soapMessageFactory"/>
+        <property name="marshaller" ref="marshaller" />
+        <property name="unmarshaller" ref="marshaller" />
+        <property name="defaultUri" value="http://172.20.131.245/auto_testing_service/Service.asmx?WSDL"/>
+    </bean>
+    
+    <!--regist for WsClient.class use, -->
+    <bean id="objectFactory" class="org.tempuri.ObjectFactory" />
 
     <import resource="classpath:spring-security.xml"/>
     <import resource="classpath:spring-quartz.xml"/>
-    <import resource="classpath:spring-websocket.xml"/>
+    <!--<import resource="classpath:spring-websocket.xml"/>-->
 </beans>

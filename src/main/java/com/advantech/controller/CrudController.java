@@ -5,6 +5,10 @@
  */
 package com.advantech.controller;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
+import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -24,6 +28,8 @@ public abstract class CrudController<T> {
     protected final String SELECT_URL = "/read", INSERT_URL = "/create", UPDATE_URL = "/update", DELETE_URL = "/delete";
 
 //    protected abstract JqGridResponse read(@ModelAttribute PageInfo info);
+    
+    protected abstract DataTablesOutput<T> findAll(HttpServletRequest request, @Valid DataTablesInput input);
 
     protected abstract ResponseEntity insert(@ModelAttribute T pojo, BindingResult bindingResult) throws Exception;
 

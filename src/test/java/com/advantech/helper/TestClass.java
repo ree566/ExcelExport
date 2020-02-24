@@ -9,6 +9,7 @@ import static com.advantech.helper.DateConversion.*;
 import com.google.common.collect.ImmutableMap;
 import static com.google.common.collect.Lists.newArrayList;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,10 +132,19 @@ public class TestClass {
         System.out.println(LocalDate.now().compareTo(new LocalDate(lastDateOfWeek)) == 0);
     }
     
-    @Test
+//    @Test
     public void testDateTime3(){
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy/M/d");
         DateTime firstDateOfWeek = new DateTime().withDayOfMonth(14).withTime(0, 0, 0, 0).dayOfWeek().withMinimumValue();
         System.out.println(fmt.print(firstDateOfWeek));
+    }
+    
+    @Test
+    public void testDate(){
+        Date d = new Date("2019-10-15T10:45:39+08:00");
+        HibernateObjectPrinter.print(d);
+        DateTime dt = new DateTime(d);
+        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy/M/d H:m:s");
+        System.out.println(fmt.print(dt));
     }
 }

@@ -12,7 +12,10 @@ import com.advantech.security.UserProfileType;
 import com.advantech.service.UserService;
 import java.util.List;
 import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
+import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -112,6 +115,11 @@ public class UserProfileController extends CrudController<User> {
     public List<UserProfile> findUserNotification(@RequestParam int userId) {
 //        return userService.findUserNotifications(userId);
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected DataTablesOutput<User> findAll(HttpServletRequest request, DataTablesInput input) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

@@ -7,8 +7,10 @@ package com.advantech.helper;
 
 import com.advantech.model.ScrappedDetail;
 import com.advantech.model.User;
+import com.advantech.repo.db1.FqcKanBanRepository;
 import com.advantech.repo.db1.ScrappedDetailRepository;
 import com.advantech.repo.db1.UserRepository;
+import com.advantech.webservice.port.FqcKanBanQueryPort;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -29,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @WebAppConfiguration
 @ContextConfiguration(locations = {
-    "classpath:servlet-context.xml"
+    "classpath:servlet-context_test.xml"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class TestHibernate {
@@ -75,7 +77,7 @@ public class TestHibernate {
 
     }
 
-    @Test
+//    @Test
     @Rollback(false)
     public void testResetPassword() {
         List<User> users = userRepo.findAll();
@@ -84,6 +86,22 @@ public class TestHibernate {
             u.setPassword(e.encode(u.getJobnumber()));
         });
         userRepo.saveAll(users);
+    }
+    
+    @Autowired
+    private FqcKanBanQueryPort kanbanPort;
+    
+    @Autowired
+    private FqcKanBanRepository fqcKanBanRepo;
+    
+    @Test
+    @Rollback(false)
+    public void testFqcKanban() throws Exception {
+        List l = kanbanPort.query();
+        
+        assertTrue(!l.isEmpty());
+        
+        fqcKanBanRepo.saveAll(l);
     }
 
 }
