@@ -33,5 +33,17 @@ public interface WorkingHoursRepository extends JpaRepository<Floor, Integer> {
     @Query(value = "{CALL usp_Monthly_WH_Report(:specDate)}",
             nativeQuery = true)
     public List<WorkingHoursReport> findMonthlyWhReport(@Param("specDate") Date sD);
+    
+    @Query(value = "{CALL usp_Daily_WH_Report_M8(:specDate)}",
+            nativeQuery = true)
+    public List<WorkingHoursReport> findDailyWhReportM8(@Param("specDate") Date sD);
+
+    @Query(value = "{CALL usp_Weekly_WH_Report_M8(:specDate)}",
+            nativeQuery = true)
+    public List<WorkingHoursReport> findWeeklyWhReportM8(@Param("specDate") Date sD);
+
+    @Query(value = "{CALL usp_Monthly_WH_Report_M8(:specDate)}",
+            nativeQuery = true)
+    public List<WorkingHoursReport> findMonthlyWhReportM8(@Param("specDate") Date sD);
 
 }
