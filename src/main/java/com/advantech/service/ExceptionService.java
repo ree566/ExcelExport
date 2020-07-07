@@ -5,8 +5,8 @@
  */
 package com.advantech.service;
 
-import com.advantech.model.ScrappedDetail;
-import com.advantech.model.User;
+import com.advantech.model.db1.ScrappedDetail;
+import com.advantech.model.db1.User;
 import com.advantech.repo.db1.ScrappedDetailRepository;
 import com.advantech.repo.db1.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Wei.Cheng
  */
 @Service
-@Transactional
+@Transactional("tx1")
 public class ExceptionService {
 
     @Autowired

@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.model.Achieving;
+import com.advantech.model.db1.Achieving;
 import com.advantech.repo.db1.AchievingRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Wei.Cheng
  */
 @Service
-@Transactional
+@Transactional("tx1")
 public class AchievingService {
 
     @Autowired

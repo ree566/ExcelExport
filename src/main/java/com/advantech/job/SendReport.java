@@ -7,11 +7,11 @@ package com.advantech.job;
 
 import com.advantech.chart.ExcelChart;
 import com.advantech.helper.MailManager;
-import com.advantech.model.MaterialNumberSum;
-import com.advantech.model.ScrappedDetail;
-import com.advantech.model.ScrappedDetailCount;
-import com.advantech.model.User;
-import com.advantech.model.UserNotification;
+import com.advantech.model.db1.MaterialNumberSum;
+import com.advantech.model.db1.ScrappedDetail;
+import com.advantech.model.db1.ScrappedDetailCount;
+import com.advantech.model.db1.User;
+import com.advantech.model.db1.UserNotification;
 import com.advantech.service.ScrappedDetailService;
 import com.advantech.service.UserNotificationService;
 import com.advantech.service.UserService;

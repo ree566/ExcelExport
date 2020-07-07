@@ -6,9 +6,9 @@
 package com.advantech.job;
 
 import com.advantech.helper.MailManager;
-import com.advantech.model.User;
-import com.advantech.model.UserNotification;
-import com.advantech.model.WorkingHoursReport;
+import com.advantech.model.db1.User;
+import com.advantech.model.db1.UserNotification;
+import com.advantech.model.db1.WorkingHoursReport;
 import com.advantech.service.UserNotificationService;
 import com.advantech.service.UserService;
 import com.advantech.service.WorkingHoursService;

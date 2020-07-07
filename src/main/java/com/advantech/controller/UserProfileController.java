@@ -6,8 +6,8 @@
 package com.advantech.controller;
 
 import com.advantech.helper.CustomPasswordEncoder;
-import com.advantech.model.User;
-import com.advantech.model.UserProfile;
+import com.advantech.model.db1.User;
+import com.advantech.model.db1.UserProfile;
 import com.advantech.security.UserProfileType;
 import com.advantech.service.UserService;
 import java.util.List;

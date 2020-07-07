@@ -5,15 +5,15 @@
  */
 package com.advantech.helper;
 
-import com.advantech.model.Achieving;
-import com.advantech.model.Floor;
-import com.advantech.model.OvertimeRecord;
-import com.advantech.model.Requisition;
-import com.advantech.model.ScrappedDetail;
-import com.advantech.model.ScrappedDetailCount;
-import com.advantech.model.ScrappedDetailWeekGroup;
-import com.advantech.model.User;
-import com.advantech.model.UserNotification;
+import com.advantech.model.db1.Achieving;
+import com.advantech.model.db1.Floor;
+import com.advantech.model.db1.OvertimeRecord;
+import com.advantech.model.db1.Requisition;
+import com.advantech.model.db1.ScrappedDetail;
+import com.advantech.model.db1.ScrappedDetailCount;
+import com.advantech.model.db1.ScrappedDetailWeekGroup;
+import com.advantech.model.db1.User;
+import com.advantech.model.db1.UserNotification;
 import com.advantech.repo.db1.AchievingRepository;
 import com.advantech.repo.db1.FloorRepository;
 import com.advantech.repo.db1.OvertimeRecordRepository;

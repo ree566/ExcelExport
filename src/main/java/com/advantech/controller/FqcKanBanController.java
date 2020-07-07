@@ -6,8 +6,8 @@
 package com.advantech.controller;
 
 import com.advantech.helper.SecurityPropertiesUtils;
-import com.advantech.model.FqcKanBan;
-import com.advantech.model.User;
+import com.advantech.model.db1.FqcKanBan;
+import com.advantech.model.db1.User;
 import com.advantech.service.FqcKanBanService;
 import com.advantech.webservice.port.FqcKanBanQueryPort;
 import com.fasterxml.jackson.annotation.JsonView;

@@ -6,7 +6,7 @@
 package com.advantech.webservice.port;
 
 import com.advantech.webservice.root.FqcKanBanQueryRoot;
-import com.advantech.model.FqcKanBan;
+import com.advantech.model.db1.FqcKanBan;
 import com.advantech.webservice.unmarshallclass.FqcKanBans;
 import java.util.List;
 import javax.xml.bind.JAXBException;

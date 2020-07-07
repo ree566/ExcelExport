@@ -6,12 +6,12 @@
 package com.advantech.service;
 
 import com.advantech.helper.SecurityPropertiesUtils;
-import com.advantech.model.Requisition;
-import com.advantech.model.RequisitionEvent;
-import com.advantech.model.RequisitionReason;
-import com.advantech.model.RequisitionState;
-import com.advantech.model.RequisitionType;
-import com.advantech.model.User;
+import com.advantech.model.db1.Requisition;
+import com.advantech.model.db1.RequisitionEvent;
+import com.advantech.model.db1.RequisitionReason;
+import com.advantech.model.db1.RequisitionState;
+import com.advantech.model.db1.RequisitionType;
+import com.advantech.model.db1.User;
 import com.advantech.repo.db1.RequisitionEventRepository;
 import com.advantech.repo.db1.RequisitionReasonRepository;
 import com.advantech.repo.db1.RequisitionRepository;
@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Wei.Cheng
  */
 @Service
-@Transactional
+@Transactional("tx1")
 public class RequisitionService {
 
     @Autowired

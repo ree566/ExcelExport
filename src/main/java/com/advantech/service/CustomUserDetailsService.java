@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.model.User;
+import com.advantech.model.db1.User;
 import com.advantech.security.State;
 import java.util.ArrayList;
 import java.util.List;

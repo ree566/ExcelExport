@@ -48,7 +48,7 @@ public class TestQuartzJob {
         reportJob.execute();
     }
     
-//    @Test
+    @Test
     public void testSync() {
         syncJob.execute();
     }
@@ -58,7 +58,7 @@ public class TestQuartzJob {
         whReportJob.execute();
     }
     
-    @Test
+//    @Test
     public void testSendSendOvertimeReport() {
         sendOvertimeReport.execute();
     }

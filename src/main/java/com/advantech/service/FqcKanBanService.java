@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.model.FqcKanBan;
+import com.advantech.model.db1.FqcKanBan;
 import com.advantech.repo.db1.FqcKanBanRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Wei.Cheng
  */
 @Service
-@Transactional
+@Transactional("tx1")
 public class FqcKanBanService {
 
     @Autowired

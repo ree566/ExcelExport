@@ -3,18 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.model;
+package com.advantech.model.db1;
 
 /**
  *
  * @author Wei.Cheng
  */
-public enum State {
-    Open(1), Close(0);
+public interface OvertimeRecordWeeklyChart {
     
-    private final Integer value;
+    public Integer getWeekOfMonth();
     
-    private State(Integer value) {
-        this.value = value;
-    }
+    public String getSitefloor();
+
+    public String getSumAMultiple();
 }

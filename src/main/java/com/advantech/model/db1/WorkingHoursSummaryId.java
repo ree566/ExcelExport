@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.model;
+package com.advantech.model.db1;
 
 import java.io.Serializable;
 import javax.persistence.Column;

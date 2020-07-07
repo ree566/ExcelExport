@@ -3,18 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.model;
+package com.advantech.model.db1;
 
 /**
  *
  * @author Wei.Cheng
  */
-public interface ScrappedDetailWeekGroup {
+public interface MaterialNumberSum {
 
-    public int getWeek();
+    public String getMaterialNumber();
 
-    public String getFloorName();
+    public String getPrice();
 
-    public int getTotal();
+    public int getCnt();
+
+    public int getTotalPrice();
 
 }

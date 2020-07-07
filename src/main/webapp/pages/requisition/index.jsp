@@ -89,6 +89,7 @@
                         {data: "amount", title: "數量"},
                         {data: "requisitionReason.name", "defaultContent": "n/a", title: "原因"},
                         {data: "user.username", "defaultContent": "n/a", title: "申請人"},
+                        {data: "user.floor.name", "defaultContent": "n/a", title: "樓層"},
                         {data: "requisitionState.name", "defaultContent": "n/a", title: "申請狀態"},
                         {data: "createDate", title: "申請日期"},
                         {data: "receiveDate", title: "領料日期"},
@@ -100,24 +101,24 @@
                     ],
                     "columnDefs": [
                         {
-                            "targets": [0, 7],
+                            "targets": [0, 8],
                             "visible": false,
                             "searchable": false
                         },
                         {
-                            "targets": [11, 12],
+                            "targets": [12, 13],
                             "visible": isEditor,
                             "searchable": false
                         },
                         {
-                            "targets": [7, 8, 9],
+                            "targets": [8, 9, 10],
                             "searchable": false,
                             'render': function (data, type, full, meta) {
                                 return data == null ? "n/a" : formatDate(data);
                             }
                         },
                         {
-                            "targets": [13],
+                            "targets": [14],
                             "searchable": false,
                             'render': function (data, type, full, meta) {
                                 return "<a href='event.jsp?requisition_id=" + data + "' target='_blank'>紀錄</a>";
@@ -385,6 +386,12 @@
 
                 $("#myModal2").find("input, select, textarea").addClass("form-control");
 
+                $(":text").keyup(function () {
+                    textBoxToUpperCase($(this));
+                }).focus(function () {
+                    $(this).select();
+                });
+
                 function formatDate(ds) {
 //                    console.log(moment(ds));
                     return moment.utc(ds).format('YY/MM/DD HH:mm'); // October 22nd 2018, 10:37:08 am
@@ -485,6 +492,11 @@
 
                 function refreshTable() {
                     table.ajax.reload();
+                }
+
+                //auto uppercase the textbox value(PO, ModelName)
+                function textBoxToUpperCase(obj) {
+                    obj.val(obj.val().trim().toLocaleUpperCase());
                 }
 
                 // 按下Enter轉成按下Tab
@@ -741,8 +753,82 @@
 
             </div>
         </div>
+        
+        <!-- Modal -->
+        <div id="myModal3" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-lg">
 
-        <div class="container box">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 id="titleMessage3" class="modal-title">Batch update</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <table id="model-table3" cellspacing="10" class="table table-bordered">
+                                <tr class="hide_col">
+                                    <td class="lab">id</td>
+                                    <td>
+                                        <input type="text" id="id" value="0" disabled="true" readonly>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="lab">工單</td>
+                                    <td> 
+                                        <input type="text" id="po">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="lab">詳細</td>
+                                    <td>
+                                        <table id="material-detail" class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>料號</th>
+                                                    <th>數量</th>
+                                                    <th>備註</th>
+                                                    <th>動作</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <input type="text" id="materialNumber" />
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" id="amount" />
+                                                    </td>
+                                                    <td>
+                                                        <textarea id="remark" ></textarea>
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-default btn-sm remove-material btn-outline-dark" aria-label="Left Align">
+                                                            <span class="fa fa-remove" aria-hidden="true"></span>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <div class="material-detail-footer">
+                                            <button type="button" class="btn btn-default btn-sm btn-outline-dark" id="add-material">新增料號</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div id="dialog-msg3" class="alarm"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="save" class="btn btn-default btn-outline-dark">Save</button>
+                        <button type="button" class="btn btn-default btn-outline-dark" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="container-fluid box">
             <small>
                 <div class="table-responsive">
                     <!--<h1 align="center">Requisition details search</h1>-->

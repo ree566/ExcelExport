@@ -5,7 +5,7 @@
  */
 package com.advantech.controller;
 
-import com.advantech.model.User;
+import com.advantech.model.db1.User;
 import com.advantech.repo.db1.UserRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -5,7 +5,7 @@
  */
 package com.advantech.helper;
 
-import com.advantech.model.User;
+import com.advantech.model.db1.User;
 import static com.google.common.base.Preconditions.checkState;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;

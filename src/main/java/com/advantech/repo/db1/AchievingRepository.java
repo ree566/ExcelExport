@@ -5,7 +5,7 @@
  */
 package com.advantech.repo.db1;
 
-import com.advantech.model.Achieving;
+import com.advantech.model.db1.Achieving;
 import org.springframework.data.jpa.datatables.repository.DataTablesRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

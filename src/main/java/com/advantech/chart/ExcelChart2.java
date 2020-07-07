@@ -7,7 +7,7 @@ package com.advantech.chart;
 
 import com.advantech.helper.ChartUtils;
 import com.advantech.helper.Serie;
-import com.advantech.model.OvertimeRecordWeeklyChart;
+import com.advantech.model.db1.OvertimeRecordWeeklyChart;
 import com.advantech.repo.db1.OvertimeRecordRepository;
 import static com.google.common.collect.Lists.newArrayList;
 import java.awt.Color;

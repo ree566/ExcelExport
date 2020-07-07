@@ -5,7 +5,7 @@
  */
 package com.advantech.repo.db1;
 
-import com.advantech.model.Floor;
+import com.advantech.model.db1.Floor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

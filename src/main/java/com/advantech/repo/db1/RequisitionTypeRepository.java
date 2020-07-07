@@ -5,7 +5,7 @@
  */
 package com.advantech.repo.db1;
 
-import com.advantech.model.RequisitionType;
+import com.advantech.model.db1.RequisitionType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

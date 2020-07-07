@@ -6,8 +6,8 @@
 package com.advantech.job;
 
 import com.advantech.helper.ExcelDataTransformer;
-import com.advantech.model.Floor;
-import com.advantech.model.ScrappedDetail;
+import com.advantech.model.db1.Floor;
+import com.advantech.model.db1.ScrappedDetail;
 import com.advantech.repo.db1.FloorRepository;
 import com.advantech.repo.db1.ScrappedDetailRepository;
 import java.io.IOException;

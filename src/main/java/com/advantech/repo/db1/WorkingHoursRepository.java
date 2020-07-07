@@ -5,8 +5,8 @@
  */
 package com.advantech.repo.db1;
 
-import com.advantech.model.Floor;
-import com.advantech.model.WorkingHoursReport;
+import com.advantech.model.db1.Floor;
+import com.advantech.model.db1.WorkingHoursReport;
 import java.util.Date;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

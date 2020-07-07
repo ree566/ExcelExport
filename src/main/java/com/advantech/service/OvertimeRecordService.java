@@ -5,9 +5,9 @@
  */
 package com.advantech.service;
 
-import com.advantech.model.OvertimeRecord;
-import com.advantech.model.OvertimeRecordWeekly;
-import com.advantech.model.OvertimeRecordWeeklyChart;
+import com.advantech.model.db1.OvertimeRecord;
+import com.advantech.model.db1.OvertimeRecordWeekly;
+import com.advantech.model.db1.OvertimeRecordWeeklyChart;
 import com.advantech.repo.db1.OvertimeRecordRepository;
 import java.util.Date;
 import java.util.List;
@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Wei.Cheng
  */
 @Service
-@Transactional
+@Transactional("tx1")
 public class OvertimeRecordService {
 
     @Autowired

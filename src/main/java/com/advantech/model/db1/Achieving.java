@@ -3,10 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.model;
+package com.advantech.model.db1;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
+import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,12 +21,13 @@ import javax.persistence.Table;
  * @author Wei.Cheng
  */
 @Entity
-@Table(name = "ReturnReason")
+@Table(name = "Achieving")
 @JsonIdentityInfo(generator = JSOGGenerator.class)
-public class ReturnReason implements java.io.Serializable {
+public class Achieving implements Serializable {
 
     private int id;
-    private String name;
+    private BigDecimal estimated;
+    private String factory;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -37,13 +40,22 @@ public class ReturnReason implements java.io.Serializable {
         this.id = id;
     }
 
-    @Column(name = "name", nullable = false, length = 50)
-    public String getName() {
-        return name;
+    @Column(name = "estimated", precision = 10, scale = 1)
+    public BigDecimal getEstimated() {
+        return estimated;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setEstimated(BigDecimal estimated) {
+        this.estimated = estimated;
+    }
+
+    @Column(name = "factory")
+    public String getFactory() {
+        return factory;
+    }
+
+    public void setFactory(String factory) {
+        this.factory = factory;
     }
 
 }

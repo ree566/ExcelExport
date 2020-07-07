@@ -5,7 +5,7 @@
  */
 package com.advantech.repo.db1;
 
-import com.advantech.model.FqcKanBan;
+import com.advantech.model.db1.FqcKanBan;
 import org.springframework.data.jpa.datatables.repository.DataTablesRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

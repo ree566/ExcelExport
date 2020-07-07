@@ -5,7 +5,7 @@
  */
 package com.advantech.service;
 
-import com.advantech.model.RequisitionType;
+import com.advantech.model.db1.RequisitionType;
 import com.advantech.repo.db1.RequisitionTypeRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Wei.Cheng
  */
 @Service
-@Transactional
+@Transactional("tx1")
 public class RequisitionTypeService {
 
     @Autowired

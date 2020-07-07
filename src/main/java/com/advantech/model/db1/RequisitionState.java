@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.model;
+package com.advantech.model.db1;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -25,15 +25,18 @@ import javax.persistence.Table;
  * @author Wei.Cheng
  */
 @Entity
-@Table(name = "Requisition_Type")
+@Table(name = "Requisition_State")
 @JsonIdentityInfo(generator = JSOGGenerator.class)
-public class RequisitionType implements Serializable {
+public class RequisitionState implements Serializable {
 
     private int id;
     private String name;
 
     @JsonIgnore
     private Set<Requisition> requisitions = new HashSet(0);
+    
+    @JsonIgnore
+    private Set<RequisitionEvent> requisitionEvents = new HashSet();
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -55,13 +58,22 @@ public class RequisitionType implements Serializable {
         this.name = name;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "requisitionType")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "requisitionState")
     public Set<Requisition> getRequisitions() {
         return requisitions;
     }
 
     public void setRequisitions(Set<Requisition> requisitions) {
         this.requisitions = requisitions;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "requisitionState")
+    public Set<RequisitionEvent> getRequisitionEvents() {
+        return requisitionEvents;
+    }
+
+    public void setRequisitionEvents(Set<RequisitionEvent> requisitionEvents) {
+        this.requisitionEvents = requisitionEvents;
     }
 
 }

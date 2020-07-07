@@ -5,11 +5,13 @@
  */
 package com.advantech.helper;
 
-import com.advantech.model.ScrappedDetail;
-import com.advantech.model.User;
+import com.advantech.model.db1.ScrappedDetail;
+import com.advantech.model.db1.User;
+import com.advantech.model.db2.Users;
 import com.advantech.repo.db1.FqcKanBanRepository;
 import com.advantech.repo.db1.ScrappedDetailRepository;
 import com.advantech.repo.db1.UserRepository;
+import com.advantech.repo.db2.UsersRepository;
 import com.advantech.webservice.port.FqcKanBanQueryPort;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -44,7 +46,7 @@ public class TestHibernate {
     private EntityManagerFactory factory;
 
     @Autowired
-//    @Qualifier("entityManagerFactory2")
+    @Qualifier("entityManagerFactory2")
     private EntityManagerFactory factory2;
 
     @Autowired
@@ -94,7 +96,7 @@ public class TestHibernate {
     @Autowired
     private FqcKanBanRepository fqcKanBanRepo;
     
-    @Test
+//    @Test
     @Rollback(false)
     public void testFqcKanban() throws Exception {
         List l = kanbanPort.query();
@@ -102,6 +104,27 @@ public class TestHibernate {
         assertTrue(!l.isEmpty());
         
         fqcKanBanRepo.saveAll(l);
+    }
+    
+    @Test
+    @Transactional("tx1")
+    @Rollback(true)
+    public void testDb1() throws Exception {
+        ScrappedDetail o = repo.findById(2958).get();
+        assertNotNull(o);
+        HibernateObjectPrinter.print(o);
+    }
+    
+    @Autowired
+    private UsersRepository usersRepo;
+    
+    @Test
+    @Transactional("tx2")
+    @Rollback(true)
+    public void testDb2() throws Exception {
+        Users u = usersRepo.findById("A-0023").get();
+        assertNotNull(u);
+        HibernateObjectPrinter.print(u);
     }
 
 }

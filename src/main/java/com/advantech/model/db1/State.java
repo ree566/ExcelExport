@@ -3,20 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.model;
+package com.advantech.model.db1;
 
 /**
  *
  * @author Wei.Cheng
  */
-public interface MaterialNumberSum {
-
-    public String getMaterialNumber();
-
-    public String getPrice();
-
-    public int getCnt();
-
-    public int getTotalPrice();
-
+public enum State {
+    Open(1), Close(0);
+    
+    private final Integer value;
+    
+    private State(Integer value) {
+        this.value = value;
+    }
 }

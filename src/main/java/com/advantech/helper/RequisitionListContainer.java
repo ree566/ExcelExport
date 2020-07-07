@@ -5,7 +5,7 @@
  */
 package com.advantech.helper;
 
-import com.advantech.model.Requisition;
+import com.advantech.model.db1.Requisition;
 import java.util.List;
 
 /**

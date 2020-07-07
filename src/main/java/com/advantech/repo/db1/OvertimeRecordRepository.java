@@ -5,10 +5,10 @@
  */
 package com.advantech.repo.db1;
 
-import com.advantech.model.Floor;
-import com.advantech.model.OvertimeRecord;
-import com.advantech.model.OvertimeRecordWeekly;
-import com.advantech.model.OvertimeRecordWeeklyChart;
+import com.advantech.model.db1.Floor;
+import com.advantech.model.db1.OvertimeRecord;
+import com.advantech.model.db1.OvertimeRecordWeekly;
+import com.advantech.model.db1.OvertimeRecordWeeklyChart;
 import java.util.Date;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

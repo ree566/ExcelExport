@@ -5,11 +5,11 @@
  */
 package com.advantech.repo.db1;
 
-import com.advantech.model.Floor;
-import com.advantech.model.MaterialNumberSum;
-import com.advantech.model.ScrappedDetail;
-import com.advantech.model.ScrappedDetailCount;
-import com.advantech.model.ScrappedDetailWeekGroup;
+import com.advantech.model.db1.Floor;
+import com.advantech.model.db1.MaterialNumberSum;
+import com.advantech.model.db1.ScrappedDetail;
+import com.advantech.model.db1.ScrappedDetailCount;
+import com.advantech.model.db1.ScrappedDetailWeekGroup;
 import java.util.Date;
 import java.util.List;
 import org.springframework.data.jpa.datatables.repository.DataTablesRepository;

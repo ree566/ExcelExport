@@ -6,6 +6,8 @@
 package com.advantech.controller;
 
 import com.advantech.helper.HibernateObjectPrinter;
+import com.advantech.job.SendOvertimeReport;
+import com.advantech.job.SendReport;
 import com.advantech.job.SendWhReports;
 import java.io.File;
 import java.io.FileInputStream;
@@ -54,14 +56,26 @@ public class TestController {
         job.testSendMail(targetUserId, dt);
         return "success";
     }
-    
+
     @Autowired
-    private SendWhReports job3;
+    private SendOvertimeReport job3;
 
     @ResponseBody
     @RequestMapping(value = "/testSendOvertimeReport", method = {RequestMethod.GET})
     public String testSendOvertimeReport() throws Exception {
-        return job3.generateMailBody(new DateTime());
+        job3.sendMail();
+        return "success";
     }
 
+    @Autowired
+    private SendReport job4;
+
+    @ResponseBody
+    @RequestMapping(value = "/testSendScrappedDetailReport", method = {RequestMethod.GET})
+    public String testSendScrappedDetailReport(@RequestParam int targetUserId, @RequestParam int year,
+            @RequestParam int month, @RequestParam int day) throws Exception {
+        DateTime dt = new DateTime(year, month, day, 0, 0, 0);
+        job4.sendMail(dt);
+        return "success";
+    }
 }

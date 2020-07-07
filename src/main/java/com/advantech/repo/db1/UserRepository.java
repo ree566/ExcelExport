@@ -5,8 +5,8 @@
  */
 package com.advantech.repo.db1;
 
-import com.advantech.model.User;
-import com.advantech.model.UserNotification;
+import com.advantech.model.db1.User;
+import com.advantech.model.db1.UserNotification;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;

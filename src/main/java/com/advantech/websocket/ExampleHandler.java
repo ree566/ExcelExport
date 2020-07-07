@@ -5,7 +5,7 @@
  */
 package com.advantech.websocket;
 
-import com.advantech.model.UserProfile;
+import com.advantech.model.db1.UserProfile;
 import com.advantech.service.UserProfileService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashSet;

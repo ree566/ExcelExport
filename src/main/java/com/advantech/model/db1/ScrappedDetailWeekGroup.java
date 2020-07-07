@@ -3,17 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.model;
+package com.advantech.model.db1;
 
 /**
  *
  * @author Wei.Cheng
  */
-public interface OvertimeRecordWeeklyChart {
-    
-    public Integer getWeekOfMonth();
-    
-    public String getSitefloor();
+public interface ScrappedDetailWeekGroup {
 
-    public String getSumAMultiple();
+    public int getWeek();
+
+    public String getFloorName();
+
+    public int getTotal();
+
 }

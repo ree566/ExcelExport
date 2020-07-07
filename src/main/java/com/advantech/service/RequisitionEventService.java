@@ -5,8 +5,8 @@
  */
 package com.advantech.service;
 
-import com.advantech.model.Requisition;
-import com.advantech.model.RequisitionEvent;
+import com.advantech.model.db1.Requisition;
+import com.advantech.model.db1.RequisitionEvent;
 import com.advantech.repo.db1.RequisitionEventRepository;
 import java.util.List;
 import java.util.function.Function;
@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Wei.Cheng
  */
 @Service
-@Transactional
+@Transactional("tx1")
 public class RequisitionEventService {
 
     @Autowired

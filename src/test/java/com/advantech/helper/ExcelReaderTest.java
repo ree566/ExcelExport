@@ -5,11 +5,11 @@
  */
 package com.advantech.helper;
 
-import com.advantech.model.Floor;
-import com.advantech.model.ScrappedDetail;
-import com.advantech.model.Unit;
-import com.advantech.model.User;
-import com.advantech.model.UserProfile;
+import com.advantech.model.db1.Floor;
+import com.advantech.model.db1.ScrappedDetail;
+import com.advantech.model.db1.Unit;
+import com.advantech.model.db1.User;
+import com.advantech.model.db1.UserProfile;
 import com.advantech.repo.db1.FloorRepository;
 import com.advantech.repo.db1.UnitRepository;
 import com.advantech.repo.db1.UserProfileRepository;

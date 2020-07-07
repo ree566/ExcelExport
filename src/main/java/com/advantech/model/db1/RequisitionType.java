@@ -3,17 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.model;
+package com.advantech.model.db1;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import java.io.Serializable;
-import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -21,13 +25,15 @@ import javax.persistence.Table;
  * @author Wei.Cheng
  */
 @Entity
-@Table(name = "Achieving")
+@Table(name = "Requisition_Type")
 @JsonIdentityInfo(generator = JSOGGenerator.class)
-public class Achieving implements Serializable {
+public class RequisitionType implements Serializable {
 
     private int id;
-    private BigDecimal estimated;
-    private String factory;
+    private String name;
+
+    @JsonIgnore
+    private Set<Requisition> requisitions = new HashSet(0);
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -40,22 +46,22 @@ public class Achieving implements Serializable {
         this.id = id;
     }
 
-    @Column(name = "estimated", precision = 10, scale = 1)
-    public BigDecimal getEstimated() {
-        return estimated;
+    @Column(name = "[name]", length = 20, nullable = false)
+    public String getName() {
+        return name;
     }
 
-    public void setEstimated(BigDecimal estimated) {
-        this.estimated = estimated;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    @Column(name = "factory")
-    public String getFactory() {
-        return factory;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "requisitionType")
+    public Set<Requisition> getRequisitions() {
+        return requisitions;
     }
 
-    public void setFactory(String factory) {
-        this.factory = factory;
+    public void setRequisitions(Set<Requisition> requisitions) {
+        this.requisitions = requisitions;
     }
 
 }

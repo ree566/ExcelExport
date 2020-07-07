@@ -5,8 +5,8 @@
  */
 package com.advantech.service;
 
-import com.advantech.model.User;
-import com.advantech.model.UserNotification;
+import com.advantech.model.db1.User;
+import com.advantech.model.db1.UserNotification;
 import com.advantech.repo.db1.UserRepository;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Wei.Cheng
  */
 @Service
-@Transactional
+@Transactional("tx1")
 public class UserService {
 
     @Autowired

@@ -6,7 +6,7 @@
 package com.advantech.websocket;
 
 import com.advantech.helper.SecurityPropertiesUtils;
-import com.advantech.model.User;
+import com.advantech.model.db1.User;
 import java.util.Map;
 import javax.servlet.http.HttpSession;
 import org.springframework.http.server.ServerHttpRequest;

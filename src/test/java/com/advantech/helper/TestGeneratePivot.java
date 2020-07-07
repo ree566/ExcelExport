@@ -8,7 +8,7 @@ package com.advantech.helper;
 import com.advantech.chart.ExcelChart;
 import com.advantech.chart.ExcelChart2;
 import static com.advantech.helper.DateConversion.fromUSWeekAndYear;
-import com.advantech.model.ScrappedDetailWeekGroup;
+import com.advantech.model.db1.ScrappedDetailWeekGroup;
 import com.advantech.repo.db1.OvertimeRecordRepository;
 import com.advantech.repo.db1.ScrappedDetailRepository;
 import java.io.IOException;

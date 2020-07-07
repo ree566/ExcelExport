@@ -8,7 +8,7 @@ package com.advantech.chart;
 import com.advantech.helper.ChartUtils;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.helper.Serie;
-import com.advantech.model.ScrappedDetailWeekGroup;
+import com.advantech.model.db1.ScrappedDetailWeekGroup;
 import com.advantech.repo.db1.ScrappedDetailRepository;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;

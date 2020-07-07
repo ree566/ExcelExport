@@ -5,7 +5,7 @@
  */
 package com.advantech.webservice.unmarshallclass;
 
-import com.advantech.model.FqcKanBan;
+import com.advantech.model.db1.FqcKanBan;
 import java.io.Serializable;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;

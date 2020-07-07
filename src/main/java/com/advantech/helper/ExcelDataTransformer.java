@@ -5,7 +5,7 @@
  */
 package com.advantech.helper;
 
-import com.advantech.model.ScrappedDetail;
+import com.advantech.model.db1.ScrappedDetail;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
