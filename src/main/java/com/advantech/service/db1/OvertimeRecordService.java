@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.service;
+package com.advantech.service.db1;
 
 import com.advantech.model.db1.OvertimeRecord;
 import com.advantech.model.db1.OvertimeRecordWeekly;

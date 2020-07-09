@@ -7,7 +7,7 @@ package com.advantech.controller;
 
 import com.advantech.model.db1.ScrappedDetail;
 import com.advantech.model.db1.ScrappedDetail_;
-import com.advantech.service.ScrappedDetailService;
+import com.advantech.service.db1.ScrappedDetailService;
 import com.fasterxml.jackson.annotation.JsonView;
 import java.util.Date;
 import javax.persistence.criteria.CriteriaBuilder;

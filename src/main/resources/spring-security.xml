@@ -69,7 +69,7 @@
         </authentication-provider>
     </authentication-manager>
    
-    <beans:bean id="customUserDetailsService" class="com.advantech.service.CustomUserDetailsService" />
+    <beans:bean id="customUserDetailsService" class="com.advantech.service.db1.CustomUserDetailsService" />
   
     <global-method-security secured-annotations="enabled" />
 </beans:beans>

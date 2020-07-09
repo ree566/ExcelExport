@@ -3,12 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.service;
+package com.advantech.service.db1;
 
-import com.advantech.model.db1.Floor;
-import com.advantech.repo.db1.FloorRepository;
+import com.advantech.model.db1.RequisitionType;
+import com.advantech.repo.db1.RequisitionTypeRepository;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,17 +18,17 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional("tx1")
-public class FloorService {
+public class RequisitionTypeService {
 
     @Autowired
-    private FloorRepository repo;
+    private RequisitionTypeRepository repo;
 
-    public List<Floor> findAll() {
+    public List<RequisitionType> findAll() {
         return repo.findAll();
     }
 
-    public Optional<Floor> findById(Integer id) {
-        return repo.findById(id);
+    public RequisitionType getOne(Integer id) {
+        return repo.getOne(id);
     }
 
 }

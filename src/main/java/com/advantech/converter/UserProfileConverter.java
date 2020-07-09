@@ -6,7 +6,7 @@
 package com.advantech.converter;
 
 import com.advantech.model.db1.UserProfile;
-import com.advantech.service.UserProfileService;
+import com.advantech.service.db1.UserProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;

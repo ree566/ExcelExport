@@ -8,7 +8,8 @@ package com.advantech.controller;
 import com.advantech.helper.SecurityPropertiesUtils;
 import com.advantech.model.db1.FqcKanBan;
 import com.advantech.model.db1.User;
-import com.advantech.service.FqcKanBanService;
+import com.advantech.service.db1.FqcKanBanService;
+import com.advantech.webservice.Factory;
 import com.advantech.webservice.port.FqcKanBanQueryPort;
 import com.fasterxml.jackson.annotation.JsonView;
 import java.util.List;
@@ -76,7 +77,7 @@ public class FqcKanBanController extends CrudController<FqcKanBan> {
 
     private void reSyncFromMes() {
         try {
-            List<FqcKanBan> mesData = kanBanQueryPort.query();
+            List<FqcKanBan> mesData = kanBanQueryPort.query(Factory.DEFAULT);
             List<FqcKanBan> dbData = service.findAll();
 
             List<FqcKanBan> delData = (List<FqcKanBan>) CollectionUtils.subtract(dbData, mesData);

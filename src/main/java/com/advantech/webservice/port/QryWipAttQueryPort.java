@@ -5,10 +5,10 @@
  */
 package com.advantech.webservice.port;
 
-import com.advantech.webservice.root.FqcKanBanQueryRoot;
-import com.advantech.model.db1.FqcKanBan;
+import com.advantech.model.db2.QryWipAtt;
 import com.advantech.webservice.Factory;
-import com.advantech.webservice.unmarshallclass.FqcKanBans;
+import com.advantech.webservice.root.QryWipAttQueryRoot;
+import com.advantech.webservice.unmarshallclass.QryWipAtts;
 import java.util.List;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
@@ -20,21 +20,23 @@ import org.springframework.stereotype.Component;
  * @author Wei.Cheng
  */
 @Component
-public class FqcKanBanQueryPort extends BasicQueryPort {
+public class QryWipAttQueryPort extends BasicQueryPort {
 
-    private static final Logger logger = LoggerFactory.getLogger(FqcKanBanQueryPort.class);
+    private static final Logger logger = LoggerFactory.getLogger(QryWipAttQueryPort.class);
 
     @Override
     protected void initJaxb() {
         try {
-            super.initJaxb(FqcKanBanQueryRoot.class, FqcKanBans.class);
+            super.initJaxb(QryWipAttQueryRoot.class, QryWipAtts.class);
         } catch (JAXBException e) {
             logger.error(e.toString());
         }
     }
 
-    public List<FqcKanBan> query(Factory f) throws Exception {
-        List<FqcKanBan> l = this.query(new FqcKanBanQueryRoot(), f);
+    public List<QryWipAtt> query(String po, Factory f) throws Exception {
+        QryWipAttQueryRoot root = new QryWipAttQueryRoot();
+        root.getWIPATT().setWIPNO(po);
+        List<QryWipAtt> l = this.query(root, f);
         return l;
     }
 

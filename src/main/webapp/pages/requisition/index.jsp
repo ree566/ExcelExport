@@ -33,6 +33,9 @@
             .job-new {
                 color: red;
             }
+            .alarm {
+                color: red;
+            }
         </style>
         <link rel="stylesheet" href="<c:url value="/libs/bootstrap/bootstrap.css" />" />
         <link rel="stylesheet" href="<c:url value="/libs/datatables.net-dt/jquery.dataTables.css" />" />
@@ -252,6 +255,29 @@
                                 }
                             },
                             {
+                                "text": '轉來料缺',
+                                "attr": {
+                                },
+                                "action": function (e, dt, node, config) {
+//                                    if (isEditor) {
+//                                        $("#model-table #po, #materialNumber, #amount").attr("disabled", true);
+//                                    }
+
+                                    var cnt = table.rows('.selected').count();
+                                    if (cnt != 1) {
+                                        alert("Please select a row.");
+                                        return false;
+                                    }
+                                    $('#myModal3').modal('show');
+                                    var arr = table.rows('.selected').data();
+                                    var data = arr[0];
+                                    $("#model-table #itemses\\[0\\]\\.label1").val(data.po);
+                                    $("#model-table #itemses\\[0\\]\\.label3").val(data.materialNumber);
+                                    $("#model-table #number").val(data.amount);
+                                    $("#model-table #comment").val(data.remark);
+                                }
+                            },
+                            {
                                 "extend": 'excel',
                                 "exportOptions": {
                                     "columns": 'th:not(:first-child):not(:last-child)',
@@ -286,7 +312,7 @@
 
                 var table = $('#favourable').DataTable(dataTable_config);
 
-                $("#datepicker_from, #datepicker_to").datepicker({
+                $("#datepicker_from, #datepicker_to, #respectDate").datepicker({
                     format: "yyyy-mm-dd",
                     showOn: "button",
                     buttonImage: "images/calendar.gif",
@@ -361,6 +387,39 @@
                     }
                 });
 
+                $("#myModal3 #save").click(function () {
+                    var number = $("#myModal3 #model-table #number").val();
+                    var po = $("#myModal3 #model-table #itemses\\[0\\]\\.label1").val();
+                    var material = $("#myModal3 #model-table #itemses\\[0\\]\\.label3").val();
+                    var orderType = $("#myModal3 #model-table #orderTypes\\.id").val();
+                    var respectDate = $("#myModal3 #model-table #respectDate").val();
+                    var comment = $("#myModal3 #model-table #comment").val();
+                    
+                    if (isNaN(number) || number == "") {
+                        alert("Amount please insert a number.");
+                        return false;
+                    }
+                    if (po == "" || material == "") {
+                        alert("Po or MaterialNumber can't be empty.");
+                        return false;
+                    }
+                    if (respectDate == "" || respectDate == "") {
+                        alert("RespectDate can't be empty.");
+                        return false;
+                    }
+                    var data = {
+                        "po": po,
+                        "material": material,
+                        "number": number,
+                        "orderTypes.id": orderType,
+                        "respectDate": respectDate,
+                        "comment": comment
+                    };
+
+                    saveToOrders(data);
+                });
+
+
                 $("body").on("keyup", "#model-table #po, #model-table #materialNumber", function () {
                     $(this).val($(this).val().trim().toLocaleUpperCase());
                 });
@@ -414,7 +473,7 @@
                             });
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
-                            $("#dialog-msg").val(xhr.responseText);
+                            $("#dialog-msg").html(xhr.responseText);
                         }
                     });
                 }
@@ -437,7 +496,32 @@
                             });
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
-                            $("#dialog-msg2").val(xhr.responseText);
+                            $("#dialog-msg2").html(xhr.responseText);
+                        }
+                    });
+                }
+                
+                function saveToOrders(data) {
+                    $.ajax({
+                        type: "POST",
+                        url: "<c:url value="/OrdersController/save" />",
+                        dataType: "html",
+                        data: data,
+                        success: function (response) {
+                            alert(response);
+                            $('#myModal3').modal('toggle');
+                            refreshTable();
+                            ws.send("ADD");
+                            $.notify('資料已更新', {placement: {
+                                    from: "bottom",
+                                    align: "right"
+                                }
+                            });
+                            
+                            $('#myModal3 :text').val("");
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            $("#dialog-msg3").html(xhr.responseText);
                         }
                     });
                 }
@@ -478,6 +562,21 @@
                         url: "<c:url value="/RequisitionController/findRequisitionTypeOptions" />",
                         success: function (response) {
                             var sel = $("#model-table #requisitionType\\.id");
+                            var d = response;
+                            for (var i = 0; i < d.length; i++) {
+                                var options = d[i];
+                                sel.append("<option value='" + options.id + "'>" + options.name + "</option>");
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            alert(xhr.responseText);
+                        }
+                    });
+                    $.ajax({
+                        type: "GET",
+                        url: "<c:url value="/OrdersController/findOrderTypesOptions" />",
+                        success: function (response) {
+                            var sel = $("#model-table #orderTypes\\.id");
                             var d = response;
                             for (var i = 0; i < d.length; i++) {
                                 var options = d[i];
@@ -577,8 +676,8 @@
                 <!-- Modal content-->
                 <div class="modal-content">
                     <div class="modal-header">
+                        <h4 id="titleMessage" class="modal-title">編輯紀錄</h4>
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 id="titleMessage" class="modal-title"></h4>
                     </div>
                     <div class="modal-body">
                         <div>
@@ -753,7 +852,7 @@
 
             </div>
         </div>
-        
+
         <!-- Modal -->
         <div id="myModal3" class="modal fade" role="dialog">
             <div class="modal-dialog modal-lg">
@@ -761,58 +860,54 @@
                 <!-- Modal content-->
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 id="titleMessage3" class="modal-title">Batch update</h4>
+                        <h4 id="titleMessage3" class="modal-title">轉來料缺</h4>
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body">
                         <div>
-                            <table id="model-table3" cellspacing="10" class="table table-bordered">
-                                <tr class="hide_col">
-                                    <td class="lab">id</td>
-                                    <td>
-                                        <input type="text" id="id" value="0" disabled="true" readonly>
-                                    </td>
-                                </tr>
+                            <table id="model-table" cellspacing="10" class="table table-bordered">
                                 <tr>
                                     <td class="lab">工單</td>
                                     <td> 
-                                        <input type="text" id="po">
+                                        <input type="text" id="itemses[0].label1" readonly="readonly">
+                                    </td>
+                                </tr>
+                                <tr class="hide_col">
+                                    <td class="lab">機種</td>
+                                    <td>
+                                        <input type="text" id="itemses[0].label2" readonly="readonly" />
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="lab">詳細</td>
+                                    <td class="lab">料號</td>
                                     <td>
-                                        <table id="material-detail" class="table table-bordered">
-                                            <thead>
-                                                <tr>
-                                                    <th>料號</th>
-                                                    <th>數量</th>
-                                                    <th>備註</th>
-                                                    <th>動作</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <input type="text" id="materialNumber" />
-                                                    </td>
-                                                    <td>
-                                                        <input type="number" id="amount" />
-                                                    </td>
-                                                    <td>
-                                                        <textarea id="remark" ></textarea>
-                                                    </td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-default btn-sm remove-material btn-outline-dark" aria-label="Left Align">
-                                                            <span class="fa fa-remove" aria-hidden="true"></span>
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        <div class="material-detail-footer">
-                                            <button type="button" class="btn btn-default btn-sm btn-outline-dark" id="add-material">新增料號</button>
-                                        </div>
+                                        <input type="text" id="itemses[0].label3" readonly="readonly" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="lab">數量</td>
+                                    <td>
+                                        <input type="number" id="number">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="lab">類型</td>
+                                    <td>
+                                        <select id="orderTypes.id"></select>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="lab">期望入料日</td>
+                                    <td>
+                                        <input type="text" id="respectDate">
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="lab">不良敘述</td>
+                                    <td>
+                                        <textarea id="comment"></textarea>
                                     </td>
                                 </tr>
                             </table>

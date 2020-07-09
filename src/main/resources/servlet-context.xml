@@ -220,7 +220,7 @@
         </property>
     </bean>
     
-    <!--M3 webservice wsdl-->
+    <!--M3 WebService port-->
     <bean id="webServiceTemplate" class="org.springframework.ws.client.core.WebServiceTemplate">
         <constructor-arg ref="soapMessageFactory"/>
         <property name="marshaller" ref="marshaller" />
@@ -228,10 +228,33 @@
         <property name="defaultUri" value="http://172.20.131.245/auto_testing_service/Service.asmx?WSDL"/>
     </bean>
     
+    <!--M6 WebService port-->
+    <bean id="webServiceTemplate1" class="org.springframework.ws.client.core.WebServiceTemplate">
+        <constructor-arg ref="soapMessageFactory"/>
+        <property name="marshaller" ref="marshaller" />
+        <property name="unmarshaller" ref="marshaller" />
+        <property name="defaultUri" value="http://172.20.131.216/auto_testing_service/Service.asmx?WSDL"/>
+    </bean>
+    
+    <!--M2 WebService port-->
+    <bean id="webServiceTemplate2" class="org.springframework.ws.client.core.WebServiceTemplate">
+        <constructor-arg ref="soapMessageFactory"/>
+        <property name="marshaller" ref="marshaller" />
+        <property name="unmarshaller" ref="marshaller" />
+        <property name="defaultUri" value="http://172.19.5.204/auto_testing_service/Service.asmx?WSDL"/>
+    </bean>
+    
+    <!--Inject webservice-->
+    <bean id="multiWsClient" class="com.advantech.webservice.MultiWsClient">
+        <constructor-arg ref="webServiceTemplate" />
+        <constructor-arg ref="webServiceTemplate1" />
+        <constructor-arg ref="webServiceTemplate2" />
+    </bean>    
+    
     <!--regist for WsClient.class use, -->
     <bean id="objectFactory" class="org.tempuri.ObjectFactory" />
 
     <import resource="classpath:spring-security.xml"/>
     <import resource="classpath:spring-quartz.xml"/>
-    <!--<import resource="classpath:spring-websocket.xml"/>-->
+    <import resource="classpath:spring-websocket.xml"/>
 </beans>

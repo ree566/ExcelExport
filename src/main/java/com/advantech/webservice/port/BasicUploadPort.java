@@ -5,7 +5,9 @@
  */
 package com.advantech.webservice.port;
 
-import com.advantech.webservice.WsClient;
+import com.advantech.webservice.Factory;
+import com.advantech.webservice.MultiWsClient;
+import com.advantech.webservice.UploadType;
 import java.io.StringWriter;
 import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
@@ -23,7 +25,7 @@ public abstract class BasicUploadPort {
     private Marshaller jaxbMarshaller;
 
     @Autowired
-    private WsClient client;
+    private MultiWsClient client;
 
     @PostConstruct
     protected abstract void initJaxbMarshaller();
@@ -48,9 +50,9 @@ public abstract class BasicUploadPort {
      * @param type
      * @throws Exception
      */
-    protected void upload(Object jaxbElement, UploadType type) throws Exception {
+    protected void upload(Object jaxbElement, UploadType type, Factory f) throws Exception {
         String xmlString = this.generateXmlString(jaxbElement);
-        TxResponse response = client.simpleTxSendAndReceive(xmlString, type);
+        TxResponse response = client.simpleTxSendAndReceive(xmlString, type, f);
         if (!"OK".equals(response.getTxResult())) {
             throw new Exception(response.getTxResult());
         }

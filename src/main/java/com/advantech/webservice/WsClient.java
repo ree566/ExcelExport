@@ -5,7 +5,6 @@
  */
 package com.advantech.webservice;
 
-import com.advantech.webservice.port.UploadType;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;

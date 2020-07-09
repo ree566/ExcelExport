@@ -11,7 +11,9 @@ import com.advantech.model.db2.Users;
 import com.advantech.repo.db1.FqcKanBanRepository;
 import com.advantech.repo.db1.ScrappedDetailRepository;
 import com.advantech.repo.db1.UserRepository;
+import com.advantech.repo.db2.OrderTypesRepository;
 import com.advantech.repo.db2.UsersRepository;
+import com.advantech.webservice.Factory;
 import com.advantech.webservice.port.FqcKanBanQueryPort;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -89,24 +91,24 @@ public class TestHibernate {
         });
         userRepo.saveAll(users);
     }
-    
+
     @Autowired
     private FqcKanBanQueryPort kanbanPort;
-    
+
     @Autowired
     private FqcKanBanRepository fqcKanBanRepo;
-    
+
 //    @Test
     @Rollback(false)
     public void testFqcKanban() throws Exception {
-        List l = kanbanPort.query();
-        
+        List l = kanbanPort.query(Factory.DEFAULT);
+
         assertTrue(!l.isEmpty());
-        
+
         fqcKanBanRepo.saveAll(l);
     }
-    
-    @Test
+
+//    @Test
     @Transactional("tx1")
     @Rollback(true)
     public void testDb1() throws Exception {
@@ -114,17 +116,29 @@ public class TestHibernate {
         assertNotNull(o);
         HibernateObjectPrinter.print(o);
     }
-    
+
     @Autowired
     private UsersRepository usersRepo;
-    
-    @Test
+
+//    @Test
     @Transactional("tx2")
     @Rollback(true)
     public void testDb2() throws Exception {
         Users u = usersRepo.findById("A-0023").get();
         assertNotNull(u);
         HibernateObjectPrinter.print(u);
+    }
+    
+    @Autowired
+    private OrderTypesRepository otRepo;
+
+    @Test
+    @Transactional("tx2")
+    @Rollback(true)
+    public void testOrderType() throws Exception {
+        List l = otRepo.findAll();
+        assertTrue(!l.isEmpty());
+        HibernateObjectPrinter.print(l);
     }
 
 }

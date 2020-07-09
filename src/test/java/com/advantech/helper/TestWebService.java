@@ -5,8 +5,9 @@
  */
 package com.advantech.helper;
 
-import com.advantech.webservice.WsClient;
+import com.advantech.webservice.Factory;
 import com.advantech.webservice.port.FqcKanBanQueryPort;
+import com.advantech.webservice.port.QryWipAttQueryPort;
 import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,11 +29,24 @@ public class TestWebService {
 
     @Autowired
     private FqcKanBanQueryPort kanbanPort;
+    
+    @Autowired
+    private QryWipAttQueryPort modelNameQryPort;
 
-    @Test
+//    @Test
     public void test1() throws Exception {
 
-        List l = kanbanPort.query();
+        List l = kanbanPort.query(Factory.DEFAULT);
+        
+        HibernateObjectPrinter.print(l);
+    }
+    
+    @Test
+    public void test2() throws Exception {
+        
+        String po = "THK002854Z22A";
+
+        List l = modelNameQryPort.query(po, Factory.DEFAULT);
         
         HibernateObjectPrinter.print(l);
     }

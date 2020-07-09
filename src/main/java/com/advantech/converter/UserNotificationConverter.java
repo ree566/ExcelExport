@@ -6,7 +6,7 @@
 package com.advantech.converter;
 
 import com.advantech.model.db1.UserNotification;
-import com.advantech.service.UserNotificationService;
+import com.advantech.service.db1.UserNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;

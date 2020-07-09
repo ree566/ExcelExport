@@ -5,7 +5,8 @@
  */
 package com.advantech.webservice.port;
 
-import com.advantech.webservice.WsClient;
+import com.advantech.webservice.Factory;
+import com.advantech.webservice.MultiWsClient;
 import com.advantech.webservice.unmarshallclass.QueryResult;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public abstract class BasicQueryPort {
     private Unmarshaller jaxbUnmarshaller;
 
     @Autowired
-    private WsClient client;
+    private MultiWsClient client;
 
     @PostConstruct
     protected abstract void initJaxb();
@@ -44,9 +45,9 @@ public abstract class BasicQueryPort {
         jaxbUnmarshaller = jaxbContext2.createUnmarshaller();
     }
 
-    public List query(Object jaxbElement) throws Exception {
+    public List query(Object jaxbElement, Factory f) throws Exception {
         String xmlString = this.generateXmlString(jaxbElement);
-        RvResponse response = client.simpleRvSendAndReceive(xmlString);
+        RvResponse response = client.simpleRvSendAndReceive(xmlString, f);
         Object o = unmarshalResult(response);
         QueryResult queryResult = (QueryResult) o;
         return queryResult.getQryData();

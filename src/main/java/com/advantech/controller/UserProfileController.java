@@ -9,7 +9,7 @@ import com.advantech.helper.CustomPasswordEncoder;
 import com.advantech.model.db1.User;
 import com.advantech.model.db1.UserProfile;
 import com.advantech.security.UserProfileType;
-import com.advantech.service.UserService;
+import com.advantech.service.db1.UserService;
 import java.util.List;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
