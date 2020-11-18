@@ -5,10 +5,10 @@
  */
 package com.advantech.controller;
 
-import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.helper.RequisitionListContainer;
 import com.advantech.helper.SecurityPropertiesUtils;
 import com.advantech.model.db1.Floor;
+import com.advantech.model.db1.PoMaterialDetails;
 import com.advantech.model.db1.Requisition;
 import com.advantech.model.db1.RequisitionEvent;
 import com.advantech.model.db1.RequisitionEvent_;
@@ -25,6 +25,7 @@ import com.advantech.service.db1.RequisitionService;
 import com.advantech.service.db1.RequisitionStateService;
 import com.advantech.service.db1.RequisitionTypeService;
 import com.fasterxml.jackson.annotation.JsonView;
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.Lists.newArrayList;
 import java.util.Date;
 import java.util.List;
@@ -45,7 +46,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -127,18 +127,31 @@ public class RequisitionController {
             System.out.println(objectError.getCode());
         });
 
+        checkPoMaterial(newArrayList(requisition));
+
         service.save(requisition, remark);
         return "success";
 
     }
 
+    private void checkPoMaterial(List<Requisition> requisitions) {
+        for (Requisition r : requisitions) {
+            List<PoMaterialDetails> l = service.findPoMaterialDetails(r.getPo());
+            checkArgument(!l.isEmpty(), "Can't find material info in po " + r.getPo());
+            PoMaterialDetails details = l.stream()
+                    .filter(p -> p.getMaterial().equals(r.getMaterialNumber()))
+                    .findFirst().orElse(null);
+            checkArgument(details != null, "Can't find material info " + r.getMaterialNumber() + " in po " + r.getPo());
+        }
+    }
+
     @ResponseBody
     @RequestMapping(value = "/batchSave", method = {RequestMethod.POST})
     protected String batchSave(@ModelAttribute RequisitionListContainer container) {
-        
+        checkPoMaterial(container.getMyList());
         service.batchInsert(container.getMyList());
         return "success";
-        
+
     }
 
     @ResponseBody

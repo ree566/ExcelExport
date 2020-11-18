@@ -5,7 +5,7 @@
         
         <section startRow="0" endRow="0" />
         
-        <loop startRow="1" endRow="1" items="rows" var="scrappedDetail" varType="com.advantech.model.ScrappedDetail">
+        <loop startRow="1" endRow="1" items="rows" var="scrappedDetail" varType="com.advantech.model.db1.ScrappedDetail">
             <section startRow="1" endRow="1">
                 <mapping row="1" col="0">scrappedDetail.createDate</mapping>
                 <mapping row="1" col="1">scrappedDetail.po</mapping>

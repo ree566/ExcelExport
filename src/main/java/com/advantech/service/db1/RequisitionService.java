@@ -6,6 +6,7 @@
 package com.advantech.service.db1;
 
 import com.advantech.helper.SecurityPropertiesUtils;
+import com.advantech.model.db1.PoMaterialDetails;
 import com.advantech.model.db1.Requisition;
 import com.advantech.model.db1.RequisitionEvent;
 import com.advantech.model.db1.RequisitionReason;
@@ -47,7 +48,7 @@ public class RequisitionService {
 
     @Autowired
     private RequisitionTypeRepository typeRepo;
-    
+
     @Autowired
     private RequisitionReasonRepository reasonRepo;
 
@@ -73,6 +74,10 @@ public class RequisitionService {
 
     public Optional<Requisition> findById(Integer id) {
         return repo.findById(id);
+    }
+
+    public List<PoMaterialDetails> findPoMaterialDetails(String po) {
+        return repo.findPoMaterialDetails(po);
     }
 
     public <S extends Requisition> S save(S s, String remark) {

@@ -2,3 +2,4 @@
 /target/
 /src/main/webapp/libs/
 /bower_components/
+/node_modules/

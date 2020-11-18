@@ -5,9 +5,13 @@
  */
 package com.advantech.repo.db1;
 
+import com.advantech.model.db1.PoMaterialDetails;
 import com.advantech.model.db1.Requisition;
+import java.util.List;
 import org.springframework.data.jpa.datatables.repository.DataTablesRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -17,4 +21,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RequisitionRepository extends JpaRepository<Requisition, Integer>, DataTablesRepository<Requisition, Integer> {
 
+    @Query(value = "{CALL usp_qryPoMaterialMap(:po)}",
+            nativeQuery = true)
+    public List<PoMaterialDetails> findPoMaterialDetails(@Param("po") String po);
+    
 }

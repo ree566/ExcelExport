@@ -8,6 +8,7 @@ package com.advantech.helper;
 import com.advantech.model.db1.Achieving;
 import com.advantech.model.db1.Floor;
 import com.advantech.model.db1.OvertimeRecord;
+import com.advantech.model.db1.PoMaterialDetails;
 import com.advantech.model.db1.Requisition;
 import com.advantech.model.db1.ScrappedDetail;
 import com.advantech.model.db1.ScrappedDetailCount;
@@ -327,13 +328,27 @@ public class TestRepository {
     @Autowired
     private AchievingRepository achievingRepository;
     
-    @Test
+//    @Test
     @Transactional
     @Rollback(true)
     public void testAchievingRepository(){
         Achieving pojo = achievingRepository.getOne(1);
         assertNotNull(pojo);
         assertEquals("TWM2", pojo.getFactory());
+    }
+    
+    @Autowired
+    private RequisitionRepository requisitionRepository;
+    
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void testPoMaterialDetails(){
+        List<PoMaterialDetails> l = requisitionRepository.findPoMaterialDetails("FII1282ZA");
+        
+        assertEquals(12, l.size());
+        
+        HibernateObjectPrinter.print(l.get(0));
     }
 
 }

@@ -10,6 +10,7 @@ import com.advantech.model.db1.Floor;
 import com.advantech.model.db1.ScrappedDetail;
 import com.advantech.repo.db1.FloorRepository;
 import com.advantech.repo.db1.ScrappedDetailRepository;
+import static com.google.common.collect.Lists.newArrayList;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -47,61 +48,55 @@ public class SyncData {
 
     @Transactional
     public void execute() {
+
+        List<Floor> floors = floorRepo.findAllById(newArrayList(2));
+
         try {
-            List<Floor> floors = floorRepo.findAll();
+            for (Floor f : floors) {
 
-            Floor five = floors.stream().filter(f -> f.getName().equals("5F")).findFirst().get();
+                List<ScrappedDetail> excelData;
 
-            Floor six = floors.stream().filter(f -> f.getName().equals("6F")).findFirst().get();
+                if (f.getName().equals("5F")) {
+                    excelData = excelTran.getFloorFiveExcelData();
+                } else {
+                    excelData = excelTran.getFloorSixExcelData();
+                }
 
-            List<ScrappedDetail> excelFloorFiveData = excelTran.getFloorFiveExcelData();
-            List<ScrappedDetail> excelFloorSixData = excelTran.getFloorSixExcelData();
+                List<ScrappedDetail> dataInDb = scrappedRepo.findByFloor(f);
 
-            List<ScrappedDetail> floorFiveDataInDb = scrappedRepo.findByFloor(five);
-            List<ScrappedDetail> floorSixDataInDb = scrappedRepo.findByFloor(six);
+                excelData.forEach(s -> s.setFloor(f));
 
-            excelFloorFiveData.forEach(s -> s.setFloor(five));
-            excelFloorSixData.forEach(s -> s.setFloor(six));
+                //modelname & materialNumber are not format as string in excel
+                excelData = fixMaterialNumAndModelname(excelData);
 
-            //modelname & materialNumber are not format as string in excel
-            excelFloorFiveData = fixMaterialNumAndModelname(excelFloorFiveData);
-            excelFloorSixData = fixMaterialNumAndModelname(excelFloorSixData);
+                //Find new data
+                List<ScrappedDetail> newData = (List<ScrappedDetail>) CollectionUtils.subtract(excelData, dataInDb);
 
-            //Find new data
-            List<ScrappedDetail> newData1 = (List<ScrappedDetail>) CollectionUtils.subtract(excelFloorFiveData, floorFiveDataInDb);
-            List<ScrappedDetail> newData2 = (List<ScrappedDetail>) CollectionUtils.subtract(excelFloorSixData, floorSixDataInDb);
+                Date today = new Date();
+                newData = getFromSameYear(newData, today);
 
-            Date today = new Date();
-            newData1 = getFromSameYear(newData1, today);
-            newData2 = getFromSameYear(newData2, today);
+                logger.info("Saving floor {} data: {} \n", f.getName(), newData.size());
 
-            logger.info("Saving floor five data: {}, floor six data: {} \n", newData1.size(), newData2.size());
+                scrappedRepo.saveAll(newData);
 
-            scrappedRepo.saveAll(newData1);
-            scrappedRepo.saveAll(newData2);
+                //注意最後check兩邊size是否一致, 不一致可能是db有多的資料(使用者delete過), 必須做刪除
+                //Don't remove data a year ago
+                logger.info("Checking the data size again...");
+                dataInDb = scrappedRepo.findByFloor(f);
 
-            //注意最後check兩邊size是否一致, 不一致可能是db有多的資料(使用者delete過), 必須做刪除
-            //Don't remove data a year ago
-            logger.info("Checking the data size again...");
-            floorFiveDataInDb = scrappedRepo.findByFloor(five);
-            floorSixDataInDb = scrappedRepo.findByFloor(six);
+                if (dataInDb.size() != excelData.size()) {
+                    logger.info("Detect different data, begin remove...");
 
-            if (floorFiveDataInDb.size() + floorSixDataInDb.size() != excelFloorFiveData.size() + excelFloorSixData.size()) {
-                logger.info("Detect different data, begin remove...");
+                    List<ScrappedDetail> delData = (List<ScrappedDetail>) CollectionUtils.subtract(dataInDb, excelData);
 
-                List<ScrappedDetail> delData1 = (List<ScrappedDetail>) CollectionUtils.subtract(floorFiveDataInDb, excelFloorFiveData);
-                List<ScrappedDetail> delData2 = (List<ScrappedDetail>) CollectionUtils.subtract(floorSixDataInDb, excelFloorSixData);
+                    delData = getFromSameYear(delData, today);
+                    logger.info("Remove floor {} data: {} \n", f.getName(), delData.size());
 
-                delData1 = getFromSameYear(delData1, today);
-                delData2 = getFromSameYear(delData2, today);
-                logger.info("Remove floor five data: {}, floor six data: {} \n", delData1.size(), delData2.size());
-
-                scrappedRepo.deleteAll(delData1);
-                scrappedRepo.deleteAll(delData2);
-            } else {
-                logger.info("Nothing need to remove.");
+                    scrappedRepo.deleteAll(delData);
+                } else {
+                    logger.info("Nothing need to remove.");
+                }
             }
-
         } catch (IOException | SAXException | InvalidFormatException ex) {
             logger.error("Sync back excel's data fail.", ex);
         }
