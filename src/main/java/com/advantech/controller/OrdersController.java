@@ -5,10 +5,11 @@
  */
 package com.advantech.controller;
 
-import com.advantech.helper.HibernateObjectPrinter;
+import com.advantech.model.db1.Requisition;
 import com.advantech.model.db2.Items;
 import com.advantech.model.db2.OrderTypes;
 import com.advantech.model.db2.Orders;
+import com.advantech.service.db1.RequisitionService;
 import com.advantech.service.db2.OrderTypesService;
 import com.advantech.service.db2.OrdersService;
 import java.util.List;
@@ -37,9 +38,12 @@ public class OrdersController {
     @Autowired
     private OrderTypesService orderTypesService;
 
+    @Autowired
+    private RequisitionService requisitionService;
+
     @ResponseBody
     @RequestMapping(value = "/save", method = {RequestMethod.POST})
-    protected String save(@ModelAttribute Orders orders, @RequestParam String po, @RequestParam String material, BindingResult bindingResult) throws Exception {
+    protected String save(@ModelAttribute Orders orders, @RequestParam String po, @RequestParam String material, @RequestParam int requision_id, BindingResult bindingResult) throws Exception {
 
         bindingResult.getAllErrors().stream().map((object) -> {
             if (object instanceof FieldError) {
@@ -54,15 +58,18 @@ public class OrdersController {
 
         Items i = new Items(orders, po, null, material);
         service.save(orders, i);
+        
+        Requisition req = requisitionService.findById(requision_id).get();
+        req.setLackingFlag(1);
+        requisitionService.save(req, "Save data to lacking db");
         return "success";
 
     }
-   
+
     @ResponseBody
     @RequestMapping(value = "/findOrderTypesOptions", method = {RequestMethod.GET})
     protected List<OrderTypes> findOrderTypesOptions() {
         return orderTypesService.findAll();
     }
-    
-    
+
 }

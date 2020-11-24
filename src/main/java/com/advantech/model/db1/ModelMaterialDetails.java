@@ -9,9 +9,7 @@ package com.advantech.model.db1;
  *
  * @author MFG.ESOP
  */
-public interface PoMaterialDetails {
-
-    public String getPo();
+public interface ModelMaterialDetails {
 
     public String getModelName();
 

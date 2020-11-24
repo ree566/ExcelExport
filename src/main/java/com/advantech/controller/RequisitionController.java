@@ -8,7 +8,6 @@ package com.advantech.controller;
 import com.advantech.helper.RequisitionListContainer;
 import com.advantech.helper.SecurityPropertiesUtils;
 import com.advantech.model.db1.Floor;
-import com.advantech.model.db1.PoMaterialDetails;
 import com.advantech.model.db1.Requisition;
 import com.advantech.model.db1.RequisitionEvent;
 import com.advantech.model.db1.RequisitionEvent_;
@@ -19,6 +18,7 @@ import com.advantech.model.db1.RequisitionType;
 import com.advantech.model.db1.Requisition_;
 import com.advantech.model.db1.User;
 import com.advantech.model.db1.User_;
+import com.advantech.model.db2.QryWipAtt;
 import com.advantech.service.db1.RequisitionEventService;
 import com.advantech.service.db1.RequisitionReasonService;
 import com.advantech.service.db1.RequisitionService;
@@ -51,6 +51,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import com.advantech.model.db1.ModelMaterialDetails;
+import com.advantech.model.db2.QryWipAtt;
+import com.advantech.webservice.Factory;
+import com.advantech.webservice.port.QryWipAttQueryPort;
 
 /**
  *
@@ -74,6 +78,9 @@ public class RequisitionController {
 
     @Autowired
     private RequisitionStateService requisitionStateService;
+    
+    @Autowired
+    private QryWipAttQueryPort modelNameQueryPort;
 
     @JsonView(DataTablesOutput.View.class)
     @RequestMapping(value = "/findAll", method = {RequestMethod.POST})
@@ -114,7 +121,7 @@ public class RequisitionController {
 
     @ResponseBody
     @RequestMapping(value = "/save", method = {RequestMethod.POST})
-    protected String save(@ModelAttribute Requisition requisition, @RequestParam(required = false) String remark, BindingResult bindingResult) {
+    protected String save(@ModelAttribute Requisition requisition, @RequestParam(required = false) String remark, BindingResult bindingResult) throws Exception {
 
         bindingResult.getAllErrors().stream().map((object) -> {
             if (object instanceof FieldError) {
@@ -127,28 +134,45 @@ public class RequisitionController {
             System.out.println(objectError.getCode());
         });
 
-        checkPoMaterial(newArrayList(requisition));
+        checkModelMaterial(newArrayList(requisition));
 
         service.save(requisition, remark);
         return "success";
 
     }
 
-    private void checkPoMaterial(List<Requisition> requisitions) {
-        for (Requisition r : requisitions) {
-            List<PoMaterialDetails> l = service.findPoMaterialDetails(r.getPo());
-            checkArgument(!l.isEmpty(), "Can't find material info in po " + r.getPo());
-            PoMaterialDetails details = l.stream()
-                    .filter(p -> p.getMaterial().equals(r.getMaterialNumber()))
-                    .findFirst().orElse(null);
-            checkArgument(details != null, "Can't find material info " + r.getMaterialNumber() + " in po " + r.getPo());
+    private void checkModelMaterial(List<Requisition> requisitions) throws Exception {
+        if (!requisitions.isEmpty()) {
+            String po = requisitions.get(0).getPo();
+            String modelName = retrieveModelNameByPo(po);
+
+            List<ModelMaterialDetails> l = service.findModelMaterialDetails(modelName);
+            checkArgument(!l.isEmpty(), "Can't find material info in po " + po);
+            requisitions.forEach((r) -> {
+                ModelMaterialDetails details = l.stream()
+                        .filter(p -> p.getMaterial().equals(r.getMaterialNumber()))
+                        .findFirst().orElse(null);
+                checkArgument(details != null, "Can't find material info " + r.getMaterialNumber() + " in po " + po);
+            });
         }
+    }
+
+    private String retrieveModelNameByPo(String po) throws Exception {
+        List<QryWipAtt> l = modelNameQueryPort.query(po, Factory.DEFAULT);
+        if (l.isEmpty()) {
+            l = modelNameQueryPort.query(po, Factory.TEMP1);
+        }
+        if (l.isEmpty()) {
+            l = modelNameQueryPort.query(po, Factory.TEMP2);
+        }
+        checkArgument(!l.isEmpty(), "Can't find modelName in mes with po " + po);
+        return l.get(0).getModelName();
     }
 
     @ResponseBody
     @RequestMapping(value = "/batchSave", method = {RequestMethod.POST})
-    protected String batchSave(@ModelAttribute RequisitionListContainer container) {
-        checkPoMaterial(container.getMyList());
+    protected String batchSave(@ModelAttribute RequisitionListContainer container) throws Exception {
+        checkModelMaterial(container.getMyList());
         service.batchInsert(container.getMyList());
         return "success";
 

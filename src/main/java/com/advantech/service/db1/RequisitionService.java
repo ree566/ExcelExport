@@ -6,7 +6,6 @@
 package com.advantech.service.db1;
 
 import com.advantech.helper.SecurityPropertiesUtils;
-import com.advantech.model.db1.PoMaterialDetails;
 import com.advantech.model.db1.Requisition;
 import com.advantech.model.db1.RequisitionEvent;
 import com.advantech.model.db1.RequisitionReason;
@@ -28,6 +27,7 @@ import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.advantech.model.db1.ModelMaterialDetails;
 
 /**
  *
@@ -76,8 +76,8 @@ public class RequisitionService {
         return repo.findById(id);
     }
 
-    public List<PoMaterialDetails> findPoMaterialDetails(String po) {
-        return repo.findPoMaterialDetails(po);
+    public List<ModelMaterialDetails> findModelMaterialDetails(String modelName) {
+        return repo.findModelMaterialDetails(modelName);
     }
 
     public <S extends Requisition> S save(S s, String remark) {

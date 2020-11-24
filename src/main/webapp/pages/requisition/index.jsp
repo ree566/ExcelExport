@@ -93,6 +93,7 @@
                         {data: "requisitionReason.name", "defaultContent": "n/a", title: "原因"},
                         {data: "user.username", "defaultContent": "n/a", title: "申請人"},
                         {data: "user.floor.name", "defaultContent": "n/a", title: "樓層"},
+                        {data: "user.unit.name", "defaultContent": "n/a", title: "單位", visible: false},
                         {data: "requisitionState.name", "defaultContent": "n/a", title: "申請狀態"},
                         {data: "createDate", title: "申請日期"},
                         {data: "receiveDate", title: "領料日期"},
@@ -100,31 +101,39 @@
                         {data: "requisitionType.name", "defaultContent": "n/a", title: "料號狀態"},
                         {data: "materialType", "defaultContent": "n/a", title: "分類"},
                         {data: "remark", "defaultContent": "n/a", title: "備註"},
-                        {data: "id", "defaultContent": "n/a", title: "紀錄"}
+                        {data: "id", "defaultContent": "n/a", title: "紀錄"},
+                        {data: "lackingFlag", "defaultContent": "N", title: "已掛缺"}
                     ],
                     "columnDefs": [
                         {
-                            "targets": [0, 8],
+                            "targets": [0, 9],
                             "visible": false,
                             "searchable": false
                         },
                         {
-                            "targets": [12, 13],
+                            "targets": [13, 14],
                             "visible": isEditor,
                             "searchable": false
                         },
                         {
-                            "targets": [8, 9, 10],
+                            "targets": [9, 10, 11],
                             "searchable": false,
                             'render': function (data, type, full, meta) {
                                 return data == null ? "n/a" : formatDate(data);
                             }
                         },
                         {
-                            "targets": [14],
+                            "targets": [15],
                             "searchable": false,
                             'render': function (data, type, full, meta) {
                                 return "<a href='event.jsp?requisition_id=" + data + "' target='_blank'>紀錄</a>";
+                            }
+                        },
+                        {
+                            "targets": [16],
+                            "searchable": false,
+                            'render': function (data, type, full, meta) {
+                                return data == 1 ? "Y" : "N";
                             }
                         }
                     ],
@@ -143,7 +152,7 @@
                     "bAutoWidth": false,
                     "displayLength": 10,
                     "lengthChange": true,
-                    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
                     "filter": true,
                     "info": true,
                     "paginate": true,
@@ -263,6 +272,7 @@
 //                                        $("#model-table #po, #materialNumber, #amount").attr("disabled", true);
 //                                    }
 
+
                                     var cnt = table.rows('.selected').count();
                                     if (cnt != 1) {
                                         alert("Please select a row.");
@@ -271,6 +281,8 @@
                                     $('#myModal3').modal('show');
                                     var arr = table.rows('.selected').data();
                                     var data = arr[0];
+            
+                                    $("#myModal3 #model-table #requision_id").val(data.id);
                                     $("#model-table #itemses\\[0\\]\\.label1").val(data.po);
                                     $("#model-table #itemses\\[0\\]\\.label3").val(data.materialNumber);
                                     $("#model-table #number").val(data.amount);
@@ -388,13 +400,14 @@
                 });
 
                 $("#myModal3 #save").click(function () {
+                    var requision_id = $("#myModal3 #model-table #requision_id").val();
                     var number = $("#myModal3 #model-table #number").val();
                     var po = $("#myModal3 #model-table #itemses\\[0\\]\\.label1").val();
                     var material = $("#myModal3 #model-table #itemses\\[0\\]\\.label3").val();
                     var orderType = $("#myModal3 #model-table #orderTypes\\.id").val();
                     var respectDate = $("#myModal3 #model-table #respectDate").val();
                     var comment = $("#myModal3 #model-table #comment").val();
-                    
+
                     if (isNaN(number) || number == "") {
                         alert("Amount please insert a number.");
                         return false;
@@ -408,6 +421,7 @@
                         return false;
                     }
                     var data = {
+                        "requision_id": requision_id,
                         "po": po,
                         "material": material,
                         "number": number,
@@ -500,7 +514,7 @@
                         }
                     });
                 }
-                
+
                 function saveToOrders(data) {
                     $.ajax({
                         type: "POST",
@@ -517,7 +531,7 @@
                                     align: "right"
                                 }
                             });
-                            
+
                             $('#myModal3 :text').val("");
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
@@ -866,6 +880,12 @@
                     <div class="modal-body">
                         <div>
                             <table id="model-table" cellspacing="10" class="table table-bordered">
+                                <tr class="hide_col">
+                                    <td class="lab">id</td>
+                                    <td>
+                                        <input type="text" id="requision_id" disabled="true" readonly="readonly">
+                                    </td>
+                                </tr>
                                 <tr>
                                     <td class="lab">工單</td>
                                     <td> 

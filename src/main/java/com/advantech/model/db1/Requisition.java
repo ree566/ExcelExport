@@ -57,6 +57,8 @@ public class Requisition implements Serializable {
     @JsonIgnore
     private Set<RequisitionEvent> requisitionEvents = new HashSet(0);
 
+    private int lackingFlag = 0;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", unique = true, nullable = false)
@@ -161,7 +163,7 @@ public class Requisition implements Serializable {
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    @DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", iso = DateTimeFormat.ISO.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "receiveDate", length = 23)
@@ -173,7 +175,7 @@ public class Requisition implements Serializable {
         this.receiveDate = receiveDate;
     }
 
-    @DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", iso = DateTimeFormat.ISO.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "GMT+8")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "returnDate", length = 23)
@@ -210,6 +212,15 @@ public class Requisition implements Serializable {
 
     public void setRequisitionEvents(Set<RequisitionEvent> requisitionEvents) {
         this.requisitionEvents = requisitionEvents;
+    }
+
+    @Column(name = "lackingFlag")
+    public int getLackingFlag() {
+        return lackingFlag;
+    }
+
+    public void setLackingFlag(int lackingFlag) {
+        this.lackingFlag = lackingFlag;
     }
 
 }

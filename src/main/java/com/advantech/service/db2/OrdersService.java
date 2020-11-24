@@ -5,7 +5,6 @@
  */
 package com.advantech.service.db2;
 
-import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.model.db1.User;
 import com.advantech.model.db2.Items;
 import com.advantech.model.db2.Orders;
@@ -79,12 +78,10 @@ public class OrdersService {
         s.setUsers(remoteUser);
         s.setTeams(remoteUser.getTeams());
 
-        S result = repo.save(s);
+        repo.save(s);
         i.setOrders(s);
         itemRepo.save(i);
 
-        HibernateObjectPrinter.print(l);
-        HibernateObjectPrinter.print(i);
         repo.updateTimeStampToZero(s.getId());
         return null;
     }

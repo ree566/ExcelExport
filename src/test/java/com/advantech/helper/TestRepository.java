@@ -8,7 +8,6 @@ package com.advantech.helper;
 import com.advantech.model.db1.Achieving;
 import com.advantech.model.db1.Floor;
 import com.advantech.model.db1.OvertimeRecord;
-import com.advantech.model.db1.PoMaterialDetails;
 import com.advantech.model.db1.Requisition;
 import com.advantech.model.db1.ScrappedDetail;
 import com.advantech.model.db1.ScrappedDetailCount;
@@ -41,6 +40,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import com.advantech.model.db1.ModelMaterialDetails;
 
 /**
  *
@@ -344,7 +344,7 @@ public class TestRepository {
     @Transactional
     @Rollback(true)
     public void testPoMaterialDetails(){
-        List<PoMaterialDetails> l = requisitionRepository.findPoMaterialDetails("FII1282ZA");
+        List<ModelMaterialDetails> l = requisitionRepository.findModelMaterialDetails("FII1282ZA");
         
         assertEquals(12, l.size());
         
