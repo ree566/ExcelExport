@@ -132,14 +132,14 @@ public class TestClass {
         System.out.println(LocalDate.now().compareTo(new LocalDate(lastDateOfWeek)) == 0);
     }
     
-//    @Test
+    @Test
     public void testDateTime3(){
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy/M/d");
         DateTime firstDateOfWeek = new DateTime().withDayOfMonth(14).withTime(0, 0, 0, 0).dayOfWeek().withMinimumValue();
         System.out.println(fmt.print(firstDateOfWeek));
     }
     
-    @Test
+//    @Test
     public void testDate(){
         Date d = new Date("2019-10-15T10:45:39+08:00");
         HibernateObjectPrinter.print(d);

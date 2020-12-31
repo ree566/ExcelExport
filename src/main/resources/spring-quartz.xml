@@ -80,12 +80,12 @@
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
-                <ref bean="SendReport-Trig"/>
+<!--                <ref bean="SendReport-Trig"/>
                 <ref bean="SyncData-Trig"/>
                 <ref bean="SyncDataBeforeSendMail-Trig"/>
                 <ref bean="SendWhReports-Trig"/>
-                <!--<ref bean="SendOvertimeReport-Trig"/>-->
-                <ref bean="SendWhReportsM8-Trig"/>
+                <ref bean="SendOvertimeReport-Trig"/>
+                <ref bean="SendWhReportsM8-Trig"/>-->
             </list>
         </property>
         <property name="schedulerName">

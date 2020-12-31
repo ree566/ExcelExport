@@ -41,6 +41,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import com.advantech.model.db1.ModelMaterialDetails;
+import com.advantech.model.db2.OrderTypes;
+import com.advantech.model.db2.Orders;
+import com.advantech.model.db2.Teams;
+import com.advantech.model.db2.Users;
+import com.advantech.repo.db2.OrderTypesRepository;
+import com.advantech.repo.db2.OrdersRepository;
+import com.advantech.repo.db2.TeamsRepository;
+import com.advantech.repo.db2.UsersRepository;
 
 /**
  *
@@ -302,7 +310,7 @@ public class TestRepository {
     public void testOvertimeRecordRepository() {
         DateTime sD = new DateTime("2019-06-01");
         DateTime eD = new DateTime("2019-06-20");
-        
+
 //        List<OvertimeRecordWeekly> l2 = overtimeRecordRepository.findWeeklyOvertimeRecord(sD.toDate(), eD.toDate());
         List<OvertimeRecord> l2 = overtimeRecordRepository.findOvertimeRecord(sD.toDate(), eD.toDate());
 //        List<Map> l3 = overtimeRecordRepository.findOvertimeRecord2(sD.toDate(), eD.toDate());
@@ -318,37 +326,69 @@ public class TestRepository {
 //                .filter(o -> o.getSitefloor().equals("6") && Objects.equals(o.getWeekOfMonth(), eD.getWeekOfWeekyear()))
 //                .limit(5)
 //                .collect(toList());
-        
+
         HibernateObjectPrinter.print(l2);
 //        HibernateObjectPrinter.print(l3.get(1));
 //        HibernateObjectPrinter.print(floorFiveTopN);
 //        HibernateObjectPrinter.print(floorSixTopN);
     }
-    
+
     @Autowired
     private AchievingRepository achievingRepository;
-    
+
 //    @Test
     @Transactional
     @Rollback(true)
-    public void testAchievingRepository(){
+    public void testAchievingRepository() {
         Achieving pojo = achievingRepository.getOne(1);
         assertNotNull(pojo);
         assertEquals("TWM2", pojo.getFactory());
     }
-    
+
     @Autowired
     private RequisitionRepository requisitionRepository;
-    
-    @Test
+
+//    @Test
     @Transactional
     @Rollback(true)
-    public void testPoMaterialDetails(){
+    public void testPoMaterialDetails() {
         List<ModelMaterialDetails> l = requisitionRepository.findModelMaterialDetails("FII1282ZA");
-        
+
         assertEquals(12, l.size());
-        
+
         HibernateObjectPrinter.print(l.get(0));
+    }
+
+    @Autowired
+    private OrdersRepository ordersRepo;
+
+    @Autowired
+    private OrderTypesRepository orderTypesRepo;
+
+    @Autowired
+    private UsersRepository usersRepo;
+
+    @Autowired
+    private TeamsRepository teamsRepo;
+
+    @Test
+    @Transactional("tx2")
+    @Rollback(false)
+    public void testOrder() {
+        System.out.println("testOrder");
+
+        OrderTypes od = orderTypesRepo.getOne(1);
+        Users u = usersRepo.getOne("A-0023");
+        Teams t = teamsRepo.getOne(1);
+        
+        Orders o = new Orders(od, t, u, 1, "1", new DateTime().toDate(), null, new DateTime().toDate(), null);
+        
+        ordersRepo.save(o);
+//        Orders o = ordersRepo.getOne(10732);
+
+        ordersRepo.updateTimeStampToZero(o.getId());
+
+        System.out.println("testOrder complete");
     }
 
 }

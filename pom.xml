@@ -31,6 +31,11 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        
+        <repository>
+            <id>local-maven-repo</id>
+            <url>file://${project.basedir}/my-repo</url>
+        </repository>
     </repositories>
 
     <name>ExcelReport</name>
@@ -349,7 +354,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.20</version>
+            <version>8.0.22</version>
         </dependency>
 
         <!-- http://mvnrepository.com/artifact/org.apache.poi/poi -->
@@ -467,11 +472,32 @@
             <version>1.5.0</version>
         </dependency>
         
-        <!--https://github.com/darrachequesne/spring-data-jpa-datatables-->
+        <!--https://github.com/darrachequesne/spring-data-jpa-datatables -->
         <dependency>
             <groupId>com.github.darrachequesne</groupId>
             <artifactId>spring-data-jpa-datatables</artifactId>
             <version>5.0.0</version>
+        </dependency>
+        
+        <!--         https://mvnrepository.com/artifact/com.sap.cloud.s4hana/connectivity 
+        <dependency>
+            <groupId>com.sap.cloud.s4hana</groupId>
+            <artifactId>connectivity</artifactId>
+            <version>2.28.0</version>
+        </dependency>-->
+        
+        <!--         https://mvnrepository.com/artifact/com.sap.conn.jco/sapjco3 
+        <dependency>
+            <groupId>com.sap.conn.jco</groupId>
+            <artifactId>sapjco3</artifactId>
+            <version>3.0.14</version>
+        </dependency>-->
+        
+        <!-- https://mvnrepository.com/artifact/com.sap.conn.jco/sapjco3 -->
+        <dependency>
+            <groupId>com.sap.conn.jco</groupId>
+            <artifactId>sapjco3</artifactId>
+            <version>3.0.14</version>
         </dependency>
         
     </dependencies>

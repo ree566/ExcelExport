@@ -53,8 +53,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.advantech.model.db1.ModelMaterialDetails;
 import com.advantech.model.db2.QryWipAtt;
+import com.advantech.sap.SapQueryPort;
 import com.advantech.webservice.Factory;
 import com.advantech.webservice.port.QryWipAttQueryPort;
+import com.sap.conn.jco.JCoTable;
 
 /**
  *
@@ -78,9 +80,12 @@ public class RequisitionController {
 
     @Autowired
     private RequisitionStateService requisitionStateService;
-    
+
     @Autowired
     private QryWipAttQueryPort modelNameQueryPort;
+
+    @Autowired
+    private SapQueryPort port;
 
     @JsonView(DataTablesOutput.View.class)
     @RequestMapping(value = "/findAll", method = {RequestMethod.POST})
@@ -146,13 +151,24 @@ public class RequisitionController {
             String po = requisitions.get(0).getPo();
             String modelName = retrieveModelNameByPo(po);
 
+            JCoTable table = port.getMaterialInfo(po);
+
             List<ModelMaterialDetails> l = service.findModelMaterialDetails(modelName);
             checkArgument(!l.isEmpty(), "Can't find material info in po " + po);
+            
             requisitions.forEach((r) -> {
-                ModelMaterialDetails details = l.stream()
-                        .filter(p -> p.getMaterial().equals(r.getMaterialNumber()))
-                        .findFirst().orElse(null);
-                checkArgument(details != null, "Can't find material info " + r.getMaterialNumber() + " in po " + po);
+                boolean checkFlag = false;
+                String checkMt = r.getMaterialNumber();
+                for (int i = 0; i < table.getNumRows(); i++) {
+                    table.setRow(i);
+                    String material = table.getString("MATNR");
+                    if (material.contains(checkMt)) {
+                        checkFlag = true;
+                        break;
+                    }
+                }
+                
+                checkArgument(checkFlag == true, "Can't find material info " + checkMt + " in po " + po);
             });
         }
     }
