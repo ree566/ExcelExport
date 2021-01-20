@@ -13,9 +13,12 @@ import com.advantech.model.db2.Users;
 import com.advantech.repo.db2.ItemsRepository;
 import com.advantech.repo.db2.OrdersRepository;
 import com.advantech.repo.db2.UsersRepository;
+import com.advantech.sap.SapQueryPort;
 import com.advantech.webservice.Factory;
 import com.advantech.webservice.port.QryWipAttQueryPort;
 import static com.google.common.base.Preconditions.checkState;
+import com.sap.conn.jco.JCoFunction;
+import com.sap.conn.jco.JCoTable;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +45,7 @@ public class OrdersService {
     private UsersRepository usersRepo;
 
     @Autowired
-    private QryWipAttQueryPort modelNameQueryPort;
+    private SapQueryPort port;
 
     public List<Orders> findAll() {
         return repo.findAll();
@@ -55,15 +58,16 @@ public class OrdersService {
     public <S extends Orders> S save(S s, Items i) throws Exception {
         //Retrive modelName from MES port(M3, M2, M6)
         String po = i.getLabel1();
-        List<QryWipAtt> l = modelNameQueryPort.query(po, Factory.DEFAULT);
-        if (l.isEmpty()) {
-            l = modelNameQueryPort.query(po, Factory.TEMP1);
+        JCoFunction function = port.getMaterialInfo(po);
+        JCoTable master = function.getTableParameterList().getTable("ZWOMASTER");//工單機種對應明細
+
+        for (int r = 0; r < master.getNumRows(); r++) {
+            master.setRow(r);
+            i.setLabel2(master.getString("MATNR"));
+            break;
         }
-        if (l.isEmpty()) {
-            l = modelNameQueryPort.query(po, Factory.TEMP2);
-        }
-        checkState(!l.isEmpty(), "Can't find modelName in current po");
-        i.setLabel2(l.get(0).getModelName());
+
+        checkState(i.getLabel2() != null && !"".equals(i.getLabel2()), "Can't find modelName in current po");
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User userInSession = (User) auth.getPrincipal();

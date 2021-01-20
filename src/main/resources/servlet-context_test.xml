@@ -93,7 +93,7 @@
     <bean id="dataSource2" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="connectionTestQuery" value="SELECT 1" />
         <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
-        <property name="jdbcUrl" value="jdbc:mysql://172.20.131.52:3306/lacking?zeroDateTimeBehavior=convertToNull" />
+        <property name="jdbcUrl" value="jdbc:mysql://172.20.131.241:3306/lacking?zeroDateTimeBehavior=convertToNull" />
         <property name="username" value="lacking" />
         <property name="password" value="QQwRQmFQYFwDPSqY" />
     </bean>
@@ -149,7 +149,8 @@
             com.advantech.controller, 
             com.advantech.job,
             com.advantech.webservice,
-            com.advantech.helper
+            com.advantech.helper,
+            com.advantech.sap
     " />
 
     <!--要使用 @Transactional 時需要--> 
@@ -197,7 +198,7 @@
     <!--Email setting-->
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
         <property name="host" value="Relay.advantech.com.tw" />
-        <property name="port" value="25" />
+        <property name="port" value="2526" />
 
         <property name="javaMailProperties">
             <props>

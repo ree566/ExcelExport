@@ -6,6 +6,7 @@
 package com.advantech.helper;
 
 import static com.advantech.helper.DateConversion.*;
+import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableMap;
 import static com.google.common.collect.Lists.newArrayList;
 import java.math.BigDecimal;
@@ -119,32 +120,40 @@ public class TestClass {
 //    @Test
     public void testDateTime2() {
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy/M/d");
-        
+
         DateTime lastDateOfWeek = new DateTime().withTime(0, 0, 0, 0).dayOfWeek().withMaximumValue();
         lastDateOfWeek = lastDateOfWeek.minusDays(2);
         System.out.println(fmt.print(lastDateOfWeek));
-        
+
         DateTime lastDateOfMonth = new DateTime().withTime(0, 0, 0, 0).dayOfMonth().withMaximumValue();
         int lastDateMonthOfWeek = lastDateOfMonth.getDayOfWeek();
         lastDateOfMonth = lastDateOfMonth.minusDays(lastDateMonthOfWeek == 7 ? 2 : (lastDateMonthOfWeek == 6 ? 1 : 0));
         System.out.println(fmt.print(lastDateOfMonth));
-        
+
         System.out.println(LocalDate.now().compareTo(new LocalDate(lastDateOfWeek)) == 0);
     }
-    
+
 //    @Test
-    public void testDateTime3(){
+    public void testDateTime3() {
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy/M/d");
         DateTime firstDateOfWeek = new DateTime().withDayOfMonth(14).withTime(0, 0, 0, 0).dayOfWeek().withMinimumValue();
         System.out.println(fmt.print(firstDateOfWeek));
     }
-    
-    @Test
-    public void testDate(){
+
+//    @Test
+    public void testDate() {
         Date d = new Date("2019-10-15T10:45:39+08:00");
         HibernateObjectPrinter.print(d);
         DateTime dt = new DateTime(d);
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy/M/d H:m:s");
         System.out.println(fmt.print(dt));
+    }
+
+    @Test
+    public void testString() {
+        String str = "000000001700014718";
+        
+        System.out.println(str.replaceAll("\\s+$", "0"));
+        System.out.println(CharMatcher.is('0').trimLeadingFrom(str));
     }
 }

@@ -18,7 +18,6 @@ import com.advantech.model.db1.RequisitionType;
 import com.advantech.model.db1.Requisition_;
 import com.advantech.model.db1.User;
 import com.advantech.model.db1.User_;
-import com.advantech.model.db2.QryWipAtt;
 import com.advantech.service.db1.RequisitionEventService;
 import com.advantech.service.db1.RequisitionReasonService;
 import com.advantech.service.db1.RequisitionService;
@@ -51,10 +50,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import com.advantech.model.db1.ModelMaterialDetails;
-import com.advantech.model.db2.QryWipAtt;
-import com.advantech.webservice.Factory;
+import com.advantech.sap.SapQueryPort;
 import com.advantech.webservice.port.QryWipAttQueryPort;
+import com.google.common.base.CharMatcher;
+import com.sap.conn.jco.JCoFunction;
+import com.sap.conn.jco.JCoTable;
 
 /**
  *
@@ -78,9 +78,9 @@ public class RequisitionController {
 
     @Autowired
     private RequisitionStateService requisitionStateService;
-    
+
     @Autowired
-    private QryWipAttQueryPort modelNameQueryPort;
+    private SapQueryPort port;
 
     @JsonView(DataTablesOutput.View.class)
     @RequestMapping(value = "/findAll", method = {RequestMethod.POST})
@@ -144,29 +144,25 @@ public class RequisitionController {
     private void checkModelMaterial(List<Requisition> requisitions) throws Exception {
         if (!requisitions.isEmpty()) {
             String po = requisitions.get(0).getPo();
-            String modelName = retrieveModelNameByPo(po);
+            JCoFunction function = port.getMaterialInfo(po);
+            JCoTable table = function.getTableParameterList().getTable("ZWODETAIL");//调用接口返回结果
 
-            List<ModelMaterialDetails> l = service.findModelMaterialDetails(modelName);
-            checkArgument(!l.isEmpty(), "Can't find material info in po " + po);
             requisitions.forEach((r) -> {
-                ModelMaterialDetails details = l.stream()
-                        .filter(p -> p.getMaterial().equals(r.getMaterialNumber()))
-                        .findFirst().orElse(null);
-                checkArgument(details != null, "Can't find material info " + r.getMaterialNumber() + " in po " + po);
+                boolean checkFlag = false;
+                String checkMt = r.getMaterialNumber();
+                for (int i = 0; i < table.getNumRows(); i++) {
+                    table.setRow(i);
+                    String material = table.getString("MATNR");
+                    material = CharMatcher.is('0').trimLeadingFrom(material);
+                    if (material.equals(checkMt)) {
+                        checkFlag = true;
+                        break;
+                    }
+                }
+
+                checkArgument(checkFlag == true, "Can't find material info " + checkMt + " in po " + po);
             });
         }
-    }
-
-    private String retrieveModelNameByPo(String po) throws Exception {
-        List<QryWipAtt> l = modelNameQueryPort.query(po, Factory.DEFAULT);
-        if (l.isEmpty()) {
-            l = modelNameQueryPort.query(po, Factory.TEMP1);
-        }
-        if (l.isEmpty()) {
-            l = modelNameQueryPort.query(po, Factory.TEMP2);
-        }
-        checkArgument(!l.isEmpty(), "Can't find modelName in mes with po " + po);
-        return l.get(0).getModelName();
     }
 
     @ResponseBody

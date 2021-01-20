@@ -134,7 +134,7 @@ public class TestHibernate {
 
     @Test
     @Transactional("tx2")
-    @Rollback(true)
+    @Rollback(false)
     public void testOrderType() throws Exception {
         List l = otRepo.findAll();
         assertTrue(!l.isEmpty());
