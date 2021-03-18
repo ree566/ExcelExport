@@ -285,7 +285,7 @@ public class SendWhReports {
         sb.append(df.format(totalEstimated));
         sb.append("</td>");
         sb.append("<td class='rightAlign'>");
-        sb.append(df2.format(totalSapOutputValue.divide(totalEstimated, 4, BigDecimal.ROUND_HALF_EVEN)));
+        sb.append(df2.format(totalSapOutputValue.equals(BigDecimal.ZERO) ? BigDecimal.ZERO : totalSapOutputValue.divide(totalEstimated, 4, BigDecimal.ROUND_HALF_EVEN)));
         sb.append("</td>");
         sb.append("<td>");
         sb.append("");
