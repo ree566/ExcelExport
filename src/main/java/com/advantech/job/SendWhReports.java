@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.List;
-import javax.mail.MessagingException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -39,49 +38,45 @@ public class SendWhReports {
     private static final Logger logger = LoggerFactory.getLogger(SendReport.class);
 
     @Autowired
-    private MailManager manager;
+    protected MailManager manager;
 
     @Autowired
-    private UserNotificationService notificationService;
+    protected UserNotificationService notificationService;
 
     @Autowired
-    private WorkingHoursService whService;
+    protected WorkingHoursService whService;
 
     @Autowired
-    private UserService userService;
+    protected UserService userService;
 
-    private final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy/M/d");
+    protected final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy/M/d");
 
-    private final DecimalFormat df = new DecimalFormat("$#,##0");
+    protected final DecimalFormat df = new DecimalFormat("$#,##0");
 
-    private final DecimalFormat df2 = new DecimalFormat("#.##%");
+    protected final DecimalFormat df2 = new DecimalFormat("#.##%");
 
     public void execute() {
-        sendMail();
+//        sendMail();
     }
 
-    public void sendMail() {
-        try {
-            UserNotification notifi = notificationService.findById(6).get();
-            UserNotification notifiCc = notificationService.findById(7).get();
+    protected void sendMail() throws Exception {
 
-            String[] mailTarget = findUsersMail(notifi);
-            String[] mailCcTarget = findUsersMail(notifiCc);
+        UserNotification notifi = notificationService.findById(6).get();
+        UserNotification notifiCc = notificationService.findById(7).get();
 
-            if (mailTarget.length == 0) {
-                logger.info("Job sendReport can't find mail target in database table.");
-                return;
-            }
+        String[] mailTarget = findUsersMail(notifi);
+        String[] mailCcTarget = findUsersMail(notifiCc);
 
-            DateTime now = new DateTime();
-            String mailBody = generateMailBody(now);
-            String mailTitle = fmt.print(now) + " - SAP產值/工時資料";
-
-            manager.sendMail(mailTarget, mailCcTarget, mailTitle, mailBody);
-
-        } catch (SAXException | InvalidFormatException | IOException | MessagingException ex) {
-            logger.error("Send mail fail.", ex);
+        if (mailTarget.length == 0) {
+            logger.info("Job sendReport can't find mail target in database table.");
+            return;
         }
+
+        DateTime now = new DateTime();
+        String mailBody = generateMailBody(now);
+        String mailTitle = fmt.print(now) + " - SAP產值/工時資料";
+
+        manager.sendMail(mailTarget, mailCcTarget, mailTitle, mailBody);
 
     }
 
@@ -103,7 +98,7 @@ public class SendWhReports {
 
     }
 
-    private String[] findUsersMail(UserNotification notifi) {
+    protected String[] findUsersMail(UserNotification notifi) {
         List<User> l = userService.findByUserNotifications(notifi);
         return l.stream().map(u -> u.getEmail()).toArray(size -> new String[size]);
     }
@@ -146,14 +141,14 @@ public class SendWhReports {
 
         //Generate monthly table
         List monthlyList = whService.findMonthlyWhReport(dt);
-        sb.append("<h5>Monthly report(當月累積)</h5>");
-        addTable2("月份", monthlyList, sb);
+        sb.append("<h5>Monthly report(當月累計)</h5>");
+        addTable2("月份", dt, monthlyList, sb);
 
         return sb.toString();
 
     }
 
-    private void addTable(String dateTitleName, List<WorkingHoursReport> l, StringBuilder sb) {
+    protected void addTable(String dateTitleName, List<WorkingHoursReport> l, StringBuilder sb) {
         sb.append("<table>");
         sb.append("<tr>");
         sb.append("<th>");
@@ -175,7 +170,11 @@ public class SendWhReports {
             BigDecimal outputValue = cutOutDigits(whr.getSapOutputValue());
             totalSapOutputValue = totalSapOutputValue.add(outputValue);
 
-            sb.append("<tr>");
+            if ("TWM3".equals(whr.getPlant())) {
+                sb.append("<tr class='m3'>");
+            } else {
+                sb.append("<tr>");
+            }
             sb.append("<td>");
             sb.append(whr.getDateField());
             sb.append("</td>");
@@ -216,7 +215,7 @@ public class SendWhReports {
         sb.append("<hr />");
     }
 
-    private void addTable2(String dateTitleName, List<WorkingHoursReport> l, StringBuilder sb) {
+    protected void addTable2(String dateTitleName, DateTime dt, List<WorkingHoursReport> l, StringBuilder sb) {
         sb.append("<table>");
         sb.append("<tr>");
         sb.append("<th>");
@@ -225,20 +224,28 @@ public class SendWhReports {
         sb.append("<th>Quantity</th>");
         sb.append("<th>SAP工時</th>");
         sb.append("<th>SAP產值</th>");
+        sb.append("<th>本月工時預估</th>");
         sb.append("<th>本月產值預估</th>");
-        sb.append("<th>累積達成率</th>");
+        sb.append("<th>工時累計達成率</th>");
+        sb.append("<th>產值累計達成率</th>");
+        sb.append("<th>累計天數比例</th>");
         sb.append("<th>廠別</th>");
         sb.append("</tr>");
 
         int totalQuantity = 0;
         BigDecimal totalSapWorktime = BigDecimal.ZERO,
                 totalSapOutputValue = BigDecimal.ZERO,
-                totalEstimated = BigDecimal.ZERO;
+                totalWorktimeEstimated = BigDecimal.ZERO,
+                totalOutputValueEstimated = BigDecimal.ZERO;
+        
+        DateTime prevDate = dt.minusDays(1);
+        double datePercentage = prevDate.dayOfMonth().get() * 1.0 / prevDate.dayOfMonth().getMaximumValue();
 
         for (WorkingHoursReport whr : l) {
             totalQuantity = totalQuantity + whr.getQuantity();
             totalSapWorktime = totalSapWorktime.add(whr.getSapWorktime());
-            totalEstimated = totalEstimated.add(whr.getEstimated());
+            totalWorktimeEstimated = totalWorktimeEstimated.add(whr.getWorktimeEstimated());
+            totalOutputValueEstimated = totalOutputValueEstimated.add(whr.getOutputValueEstimated());
 
             BigDecimal outputValue = cutOutDigits(whr.getSapOutputValue());
             totalSapOutputValue = totalSapOutputValue.add(outputValue);
@@ -257,10 +264,19 @@ public class SendWhReports {
             sb.append(df.format(outputValue));
             sb.append("</td>");
             sb.append("<td class='rightAlign'>");
-            sb.append(df.format(whr.getEstimated()));
+            sb.append(whr.getWorktimeEstimated());
             sb.append("</td>");
             sb.append("<td class='rightAlign'>");
-            sb.append(df2.format(whr.getPercentage()));
+            sb.append(df.format(whr.getOutputValueEstimated()));
+            sb.append("</td>");
+            sb.append("<td class='rightAlign'>");
+            sb.append(df2.format(whr.getSapWorktime().divide(whr.getWorktimeEstimated(), 4, BigDecimal.ROUND_HALF_EVEN)));
+            sb.append("</td>");
+            sb.append("<td class='rightAlign'>");
+            sb.append(df2.format(whr.getSapOutputValue().divide(whr.getOutputValueEstimated(), 4, BigDecimal.ROUND_HALF_EVEN)));
+            sb.append("</td>");
+            sb.append("<td class='rightAlign'>");
+            sb.append(df2.format(datePercentage));
             sb.append("</td>");
             sb.append("<td>");
             sb.append(whr.getPlant());
@@ -282,10 +298,19 @@ public class SendWhReports {
         sb.append(df.format(totalSapOutputValue));
         sb.append("</td>");
         sb.append("<td class='rightAlign'>");
-        sb.append(df.format(totalEstimated));
+        sb.append(totalWorktimeEstimated);
         sb.append("</td>");
         sb.append("<td class='rightAlign'>");
-        sb.append(df2.format(totalSapOutputValue.equals(BigDecimal.ZERO) ? BigDecimal.ZERO : totalSapOutputValue.divide(totalEstimated, 4, BigDecimal.ROUND_HALF_EVEN)));
+        sb.append(df.format(totalOutputValueEstimated));
+        sb.append("</td>");
+        sb.append("<td class='rightAlign'>");
+        sb.append(df2.format(totalSapWorktime.equals(BigDecimal.ZERO) ? BigDecimal.ZERO : totalSapWorktime.divide(totalWorktimeEstimated, 4, BigDecimal.ROUND_HALF_EVEN)));
+        sb.append("</td>");
+        sb.append("<td class='rightAlign'>");
+        sb.append(df2.format(totalSapOutputValue.equals(BigDecimal.ZERO) ? BigDecimal.ZERO : totalSapOutputValue.divide(totalOutputValueEstimated, 4, BigDecimal.ROUND_HALF_EVEN)));
+        sb.append("</td>");
+        sb.append("<td class='rightAlign'>");
+        sb.append(df2.format(datePercentage));
         sb.append("</td>");
         sb.append("<td>");
         sb.append("");

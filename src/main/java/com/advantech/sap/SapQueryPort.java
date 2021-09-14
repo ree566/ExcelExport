@@ -9,7 +9,6 @@ import com.sap.conn.jco.JCoDestination;
 import com.sap.conn.jco.JCoException;
 import com.sap.conn.jco.JCoFunction;
 import com.sap.conn.jco.JCoParameterList;
-import com.sap.conn.jco.JCoTable;
 import java.net.URISyntaxException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,7 +21,7 @@ import org.springframework.stereotype.Component;
 public class SapQueryPort {
 
     @Autowired
-    private SAPConn sapConn;
+    private SAPConn1 sapConn;
 
     public JCoFunction getMaterialInfo(String po) throws JCoException, URISyntaxException {
         JCoFunction function;

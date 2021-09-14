@@ -19,11 +19,13 @@ public interface WorkingHoursReport {
 
     public BigDecimal getSapWorktime();
 
+    public BigDecimal getWorktimeEstimated();
+    
     public BigDecimal getSapOutputValue();
 
+    public BigDecimal getOutputValueEstimated();
+    
     public String getPlant();
     
-    public BigDecimal getEstimated();
-    
-    public BigDecimal getPercentage();
+
 }

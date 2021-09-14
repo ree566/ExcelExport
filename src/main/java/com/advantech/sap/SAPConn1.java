@@ -23,9 +23,9 @@ import org.springframework.stereotype.Component;
  * @author Wei.Cheng
  */
 @Component
-public class SAPConn {
+public class SAPConn1 {
 
-    private static final Logger log = LoggerFactory.getLogger(SAPConn.class);
+    private static final Logger log = LoggerFactory.getLogger(SAPConn1.class);
 
     private final String configFileName = "SAPMES";
 
@@ -40,21 +40,17 @@ public class SAPConn {
     public JCoDestination getConn() throws JCoException, URISyntaxException {
 
         if (repository == null) {
-            synchronized (SAPConn.class) {
-                String path = getClass().getResource("/").toURI().getPath();
-                path = path.substring(1, path.length());
-                System.setProperty("jco.destinations.dir", path);
-
-                File configFile = new File(System.getProperty("jco.destinations.dir") + configFileName + ".jcoDestination");
+            synchronized (SAPConn1.class) {
+                File configFile = new File(configFileName + ".jcoDestination");
                 if (configFile.exists()) {
-                    log.info("找到設定檔 " + configFileName + " 於 " + System.getProperty("jco.destinations.dir"));
+                    log.info("找到設定檔 " + configFileName);
                 } else {
                     try {
                         log.info("Can't find destinations file in file path " + configFile.getCanonicalPath());
                         createDestinationPropertiesFile(configFileName, getDefaultPropertiesSettings());
                         log.info("Create default destinations setting file success.");
                     } catch (IOException e) {
-                        log.error("Can't find destinations file and create new file job fail in path " + System.getProperty("jco.destinations.dir"));
+                        log.error("Can't find destinations file and create new file job fail in path ");
                         log.error(e.getMessage(), e);
                     }
                 }
@@ -83,7 +79,7 @@ public class SAPConn {
 
     private void createDestinationPropertiesFile(String destinationName, Properties connectProperties) {
 
-        String fileName = System.getProperty("jco.destinations.dir") + "/" + destinationName + ".jcoDestination";
+        String fileName = destinationName + ".jcoDestination";
         File destCfg = new File(fileName);
         try {
             try (FileOutputStream fos = new FileOutputStream(destCfg, false)) {

@@ -79,7 +79,8 @@
                     },
                     "columns": [
                         {data: "id", title: "id"},
-                        {data: "estimated", title: "預估產值"},
+                        {data: "worktimeEstimated", title: "預估工時"},
+                        {data: "outputValueEstimated", title: "預估產值"},
                         {data: "factory", title: "廠別"}
                     ],
                     "columnDefs": [
@@ -151,7 +152,8 @@
                                 var arr = table.rows('.selected').data();
                                 var data = arr[0];
                                 $("#model-table #id").val(data.id);
-                                $("#model-table #estimated").val(data.estimated);
+                                $("#model-table #worktimeEstimated").val(data.worktimeEstimated);
+                                $("#model-table #outputValueEstimated").val(data.outputValueEstimated);
                                 $("#model-table #factory").val(data.factory);
                             }
                         },
@@ -182,7 +184,8 @@
                     if (confirm("Confirm save?")) {
                         var data = {
                             id: $("#model-table #id").val(),
-                            estimated: $("#model-table #estimated").val(),
+                            worktimeEstimated: $("#model-table #worktimeEstimated").val(),
+                            outputValueEstimated: $("#model-table #outputValueEstimated").val(),
                             factory: $("#model-table #factory").val()
                         };
                         save(data);
@@ -263,9 +266,15 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="lab">estimated</td>
+                                    <td class="lab">工時預估</td>
                                     <td> 
-                                        <input type="number" id="estimated">
+                                        <input type="number" id="worktimeEstimated">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="lab">產值預估</td>
+                                    <td> 
+                                        <input type="number" id="outputValueEstimated">
                                     </td>
                                 </tr>
                                 <tr>

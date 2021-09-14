@@ -8,13 +8,15 @@ package com.advantech.controller;
 import com.advantech.helper.HibernateObjectPrinter;
 import com.advantech.job.SendOvertimeReport;
 import com.advantech.job.SendReport;
-import com.advantech.job.SendWhReports;
+import com.advantech.job.SendWhReportsDonghu;
+import com.advantech.job.SendWhReportsLinkou;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -46,7 +48,10 @@ public class TestController {
     }
 
     @Autowired
-    private SendWhReports job;
+    private SendWhReportsDonghu job;
+    
+    @Autowired
+    private SendWhReportsLinkou job1;
 
     @ResponseBody
     @RequestMapping(value = "/testSendWhReport", method = {RequestMethod.GET})
@@ -56,6 +61,39 @@ public class TestController {
         job.testSendMail(targetUserId, dt);
         return "success";
     }
+    
+    @ResponseBody
+    @RequestMapping(value = "/testGenerateMailBody", method = {RequestMethod.GET})
+    public String testGenerateMailBody(@RequestParam int year,
+            @RequestParam int month, @RequestParam int day) throws Exception {
+        DateTime dt = new DateTime(year, month, day, 0, 0, 0);
+        
+        return job.generateMailBody(dt);
+    }
+    
+    @ResponseBody
+    @RequestMapping(value = "/testGenerateMailBody1", method = {RequestMethod.GET})
+    public String testGenerateMailBody1(@RequestParam int year,
+            @RequestParam int month, @RequestParam int day) throws Exception {
+        DateTime dt = new DateTime(year, month, day, 0, 0, 0);
+        
+        return job1.generateMailBody(dt);
+    }
+    
+    @ResponseBody
+    @RequestMapping(value = "/testReSendWhReports", method = {RequestMethod.GET})
+    public String testReSendWhReports() throws Exception {
+        job.execute();
+        return "success";
+    }
+    
+    @ResponseBody
+    @RequestMapping(value = "/testReSendWhReports1", method = {RequestMethod.GET})
+    public String testReSendWhReports1() throws Exception {
+        job1.execute();
+        return "success";
+    }
+
 
     @Autowired
     private SendOvertimeReport job3;

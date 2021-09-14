@@ -281,7 +281,7 @@
                                     $('#myModal3').modal('show');
                                     var arr = table.rows('.selected').data();
                                     var data = arr[0];
-            
+
                                     $("#myModal3 #model-table #requision_id").val(data.id);
                                     $("#model-table #itemses\\[0\\]\\.label1").val(data.po);
                                     $("#model-table #itemses\\[0\\]\\.label3").val(data.materialNumber);
@@ -400,37 +400,39 @@
                 });
 
                 $("#myModal3 #save").click(function () {
-                    var requision_id = $("#myModal3 #model-table #requision_id").val();
-                    var number = $("#myModal3 #model-table #number").val();
-                    var po = $("#myModal3 #model-table #itemses\\[0\\]\\.label1").val();
-                    var material = $("#myModal3 #model-table #itemses\\[0\\]\\.label3").val();
-                    var orderType = $("#myModal3 #model-table #orderTypes\\.id").val();
-                    var respectDate = $("#myModal3 #model-table #respectDate").val();
-                    var comment = $("#myModal3 #model-table #comment").val();
+                    if (confirm("資料轉來料缺?")) {
+                        var requision_id = $("#myModal3 #model-table #requision_id").val();
+                        var number = $("#myModal3 #model-table #number").val();
+                        var po = $("#myModal3 #model-table #itemses\\[0\\]\\.label1").val();
+                        var material = $("#myModal3 #model-table #itemses\\[0\\]\\.label3").val();
+                        var orderType = $("#myModal3 #model-table #orderTypes\\.id").val();
+                        var respectDate = $("#myModal3 #model-table #respectDate").val();
+                        var comment = $("#myModal3 #model-table #comment").val();
 
-                    if (isNaN(number) || number == "") {
-                        alert("Amount please insert a number.");
-                        return false;
-                    }
-                    if (po == "" || material == "") {
-                        alert("Po or MaterialNumber can't be empty.");
-                        return false;
-                    }
-                    if (respectDate == "" || respectDate == "") {
-                        alert("RespectDate can't be empty.");
-                        return false;
-                    }
-                    var data = {
-                        "requision_id": requision_id,
-                        "po": po,
-                        "material": material,
-                        "number": number,
-                        "orderTypes.id": orderType,
-                        "respectDate": respectDate,
-                        "comment": comment
-                    };
+                        if (isNaN(number) || number == "") {
+                            alert("Amount please insert a number.");
+                            return false;
+                        }
+                        if (po == "" || material == "") {
+                            alert("Po or MaterialNumber can't be empty.");
+                            return false;
+                        }
+                        if (respectDate == "" || respectDate == "") {
+                            alert("RespectDate can't be empty.");
+                            return false;
+                        }
+                        var data = {
+                            "requision_id": requision_id,
+                            "po": po,
+                            "material": material,
+                            "number": number,
+                            "orderTypes.id": orderType,
+                            "respectDate": respectDate,
+                            "comment": comment
+                        };
 
-                    saveToOrders(data);
+                        saveToOrders(data);
+                    }
                 });
 
 
@@ -476,7 +478,6 @@
                         url: "<c:url value="/RequisitionController/save" />",
                         data: data,
                         success: function (response) {
-                            alert(response);
                             $('#myModal').modal('toggle');
                             refreshTable();
                             ws.send("ADD");
@@ -499,7 +500,6 @@
                         dataType: "json",
                         data: data,
                         success: function (response) {
-                            alert(response);
                             $('#myModal2').modal('toggle');
                             refreshTable();
                             ws.send("ADD");
@@ -522,7 +522,6 @@
                         dataType: "html",
                         data: data,
                         success: function (response) {
-                            alert(response);
                             $('#myModal3').modal('toggle');
                             refreshTable();
                             ws.send("ADD");
@@ -604,7 +603,7 @@
                 }
 
                 function refreshTable() {
-                    table.ajax.reload();
+                    table.ajax.reload(null, false);
                 }
 
                 //auto uppercase the textbox value(PO, ModelName)

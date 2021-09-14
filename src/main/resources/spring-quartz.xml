@@ -42,7 +42,7 @@
     
     <!--job4 setting-->
     <bean name="SendWhReports-Job" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-        <property name="targetObject" ref="sendWhReports" />
+        <property name="targetObject" ref="sendWhReportsDonghu" />
         <property name="targetMethod" value="execute"/>  
         <property name="concurrent" value="false"/>
     </bean>
@@ -66,7 +66,7 @@
     
     <!--job6 setting-->
     <bean name="SendWhReportsM8-Job" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-        <property name="targetObject" ref="sendWhReports1" />
+        <property name="targetObject" ref="sendWhReportsLinkou" />
         <property name="targetMethod" value="execute"/>  
         <property name="concurrent" value="false"/>
     </bean>

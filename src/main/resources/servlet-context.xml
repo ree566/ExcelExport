@@ -197,8 +197,8 @@
     <mvc:resources mapping="/webjars/**" location="/webjars/"/>
     <!--Email setting-->
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-        <property name="host" value="Relay.advantech.com.tw" />
-        <property name="port" value="2526" />
+        <property name="host" value="Relay.advantech.com" />
+        <property name="port" value="25" />
 
         <property name="javaMailProperties">
             <props>

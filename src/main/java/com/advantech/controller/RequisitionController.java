@@ -99,7 +99,7 @@ public class RequisitionController {
 
             return service.findAll(input, (Root<Requisition> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
                 Path<Date> dateEntryPath = root.get(Requisition_.createDate);
-                if (request.isUserInRole("ROLE_ADMIN")) {
+                if (request.isUserInRole("ROLE_ADMIN") || request.isUserInRole("ROLE_OPER")) {
                     return cb.between(dateEntryPath, sD, eD);
                 } else {
                     Join<Requisition, User> userJoin = root.join(Requisition_.user, JoinType.INNER);
@@ -107,7 +107,7 @@ public class RequisitionController {
                 }
             });
         } else {
-            if (request.isUserInRole("ROLE_ADMIN")) {
+            if (request.isUserInRole("ROLE_ADMIN") || request.isUserInRole("ROLE_OPER")) {
                 return service.findAll(input);
             } else {
                 return service.findAll(input, (Root<Requisition> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {

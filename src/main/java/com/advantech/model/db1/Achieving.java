@@ -26,7 +26,8 @@ import javax.persistence.Table;
 public class Achieving implements Serializable {
 
     private int id;
-    private BigDecimal estimated;
+    private BigDecimal outputValueEstimated;
+    private BigDecimal worktimeEstimated;
     private String factory;
 
     @Id
@@ -40,13 +41,22 @@ public class Achieving implements Serializable {
         this.id = id;
     }
 
-    @Column(name = "estimated", precision = 10, scale = 1)
-    public BigDecimal getEstimated() {
-        return estimated;
+    @Column(name = "outputValue_estimated", precision = 10, scale = 1)
+    public BigDecimal getOutputValueEstimated() {
+        return outputValueEstimated;
     }
 
-    public void setEstimated(BigDecimal estimated) {
-        this.estimated = estimated;
+    public void setOutputValueEstimated(BigDecimal outputValueEstimated) {
+        this.outputValueEstimated = outputValueEstimated;
+    }
+
+    @Column(name = "worktime_estimated", precision = 10, scale = 1)
+    public BigDecimal getWorktimeEstimated() {
+        return worktimeEstimated;
+    }
+
+    public void setWorktimeEstimated(BigDecimal worktimeEstimated) {
+        this.worktimeEstimated = worktimeEstimated;
     }
 
     @Column(name = "factory")
