@@ -28,6 +28,7 @@ public class Floor implements java.io.Serializable {
     private String name;
     private Set<User> users = new HashSet<>(0);
     private Set<ScrappedDetail> scrappedDetails = new HashSet<>(0);
+    private Set<Requisition> requisitions = new HashSet<>(0);
 
     public Floor() {
     }
@@ -83,6 +84,17 @@ public class Floor implements java.io.Serializable {
 
     public void setScrappedDetails(Set<ScrappedDetail> scrappedDetails) {
         this.scrappedDetails = scrappedDetails;
+    }
+
+    @JsonIgnore
+    @JsonIgnoreProperties
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "floor")
+    public Set<Requisition> getRequisitions() {
+        return requisitions;
+    }
+
+    public void setRequisitions(Set<Requisition> requisitions) {
+        this.requisitions = requisitions;
     }
 
     @Override

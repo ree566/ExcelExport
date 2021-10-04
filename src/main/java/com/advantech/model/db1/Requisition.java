@@ -50,6 +50,7 @@ public class Requisition implements Serializable {
     private Date lastUpdateDate;
     private String materialType;
     private String remark;
+    private Floor floor;
 
     private Date receiveDate;
     private Date returnDate;
@@ -203,6 +204,16 @@ public class Requisition implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "floor_id")
+    public Floor getFloor() {
+        return floor;
+    }
+
+    public void setFloor(Floor floor) {
+        this.floor = floor;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "requisition")

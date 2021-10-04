@@ -92,7 +92,7 @@
                         {data: "amount", title: "數量"},
                         {data: "requisitionReason.name", "defaultContent": "n/a", title: "原因"},
                         {data: "user.username", "defaultContent": "n/a", title: "申請人"},
-                        {data: "user.floor.name", "defaultContent": "n/a", title: "樓層"},
+                        {data: "floor.name", "defaultContent": "n/a", title: "樓層"},
                         {data: "user.unit.name", "defaultContent": "n/a", title: "單位", visible: false},
                         {data: "requisitionState.name", "defaultContent": "n/a", title: "申請狀態"},
                         {data: "createDate", title: "申請日期"},
@@ -106,7 +106,7 @@
                     ],
                     "columnDefs": [
                         {
-                            "targets": [0, 9],
+                            "targets": [0],
                             "visible": false,
                             "searchable": false
                         },
@@ -253,6 +253,7 @@
                                     $("#model-table #po").val(data.po);
                                     $("#model-table #materialNumber").val(data.materialNumber);
                                     $("#model-table #amount").val(data.amount);
+                                    $("#model-table #floor\\.id").val(data.floor.id);
                                     $("#model-table #requisitionReason\\.id").val(data.requisitionReason.id);
                                     $("#model-table #requisitionState\\.id").val(data.requisitionState.id);
                                     $("#model-table #requisitionType\\.id").val('requisitionType' in data && data.requisitionType != null ? data.requisitionType.id : 1);
@@ -368,6 +369,7 @@
                             "requisitionType.id": $("#model-table #requisitionType\\.id").val(),
                             "user.id": $("#model-table #user\\.id").val(),
                             "materialType": $("#model-table #materialType").val(),
+                            "floor.id": $("#model-table #floor\\.id").val(),
                             remark: $("#model-table #remark").val(),
                             receiveDate: $("#model-table #receiveDate").val(),
                             returnDate: $("#model-table #returnDate").val()
@@ -383,12 +385,14 @@
                     if (confirm("Confirm save?")) {
                         var tb = $("#material-detail tbody tr");
                         var po = $("#model-table2 #po").val();
+                        var floor = $("#model-table2 #floor\\.id").val()
                         var myArray = tb.map(function () {
                             var o = {
                                 po: po,
                                 materialNumber: $(this).find("input").eq(0).val(),
                                 amount: $(this).find("input").eq(1).val(),
-                                remark: $(this).find("#remark").val()
+                                remark: $(this).find("#remark").val(),
+                                "floor.id": floor
                             };
                             return o;
                         }).get();
@@ -600,6 +604,21 @@
                             alert(xhr.responseText);
                         }
                     });
+                    $.ajax({
+                        type: "GET",
+                        url: "<c:url value="/RequisitionController/findFloorOptions" />",
+                        success: function (response) {
+                            var sel = $("#model-table  #floor\\.id, #model-table2 #floor\\.id");
+                            var d = response;
+                            for (var i = 0; i < d.length; i++) {
+                                var options = d[i];
+                                sel.append("<option value='" + options.id + "'>" + options.name + "</option>");
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            alert(xhr.responseText);
+                        }
+                    });
                 }
 
                 function refreshTable() {
@@ -717,6 +736,12 @@
                                     <td class="lab">數量</td>
                                     <td>
                                         <input type="number" id="amount">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="lab">樓層</td>
+                                    <td>
+                                        <select id="floor.id"></select>
                                     </td>
                                 </tr>
 
@@ -851,6 +876,12 @@
                                         <div class="material-detail-footer">
                                             <button type="button" class="btn btn-default btn-sm btn-outline-dark" id="add-material">新增料號</button>
                                         </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="lab">樓層</td>
+                                    <td> 
+                                        <select id="floor.id"></select>
                                     </td>
                                 </tr>
                             </table>

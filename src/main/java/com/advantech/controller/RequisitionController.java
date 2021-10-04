@@ -6,7 +6,6 @@
 package com.advantech.controller;
 
 import com.advantech.helper.RequisitionListContainer;
-import com.advantech.helper.SecurityPropertiesUtils;
 import com.advantech.model.db1.Floor;
 import com.advantech.model.db1.Requisition;
 import com.advantech.model.db1.RequisitionEvent;
@@ -16,8 +15,6 @@ import com.advantech.model.db1.RequisitionState;
 import com.advantech.model.db1.RequisitionState_;
 import com.advantech.model.db1.RequisitionType;
 import com.advantech.model.db1.Requisition_;
-import com.advantech.model.db1.User;
-import com.advantech.model.db1.User_;
 import com.advantech.service.db1.RequisitionEventService;
 import com.advantech.service.db1.RequisitionReasonService;
 import com.advantech.service.db1.RequisitionService;
@@ -30,8 +27,6 @@ import java.util.Date;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletRequest;
@@ -51,7 +46,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.advantech.sap.SapQueryPort;
-import com.advantech.webservice.port.QryWipAttQueryPort;
+import com.advantech.service.db1.FloorService;
 import com.google.common.base.CharMatcher;
 import com.sap.conn.jco.JCoFunction;
 import com.sap.conn.jco.JCoTable;
@@ -78,6 +73,9 @@ public class RequisitionController {
 
     @Autowired
     private RequisitionStateService requisitionStateService;
+    
+    @Autowired
+    private FloorService floorService;
 
     @Autowired
     private SapQueryPort port;
@@ -90,8 +88,8 @@ public class RequisitionController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime startDate,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate) {
 
-        User user = SecurityPropertiesUtils.retrieveAndCheckUserInSession();
-        Floor floor = user.getFloor();
+//        User user = SecurityPropertiesUtils.retrieveAndCheckUserInSession();
+//        Floor floor = user.getFloor();
 
         if (startDate != null && endDate != null) {
             final Date sD = startDate.toDate();
@@ -99,22 +97,22 @@ public class RequisitionController {
 
             return service.findAll(input, (Root<Requisition> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
                 Path<Date> dateEntryPath = root.get(Requisition_.createDate);
-                if (request.isUserInRole("ROLE_ADMIN") || request.isUserInRole("ROLE_OPER")) {
-                    return cb.between(dateEntryPath, sD, eD);
-                } else {
-                    Join<Requisition, User> userJoin = root.join(Requisition_.user, JoinType.INNER);
-                    return cq.where(cb.and(cb.between(dateEntryPath, sD, eD), cb.equal(userJoin.get(User_.FLOOR), floor))).getRestriction();
-                }
+//                if (request.isUserInRole("ROLE_ADMIN") || request.isUserInRole("ROLE_OPER")) {
+                return cb.between(dateEntryPath, sD, eD);
+//                } else {
+//                    Join<Requisition, User> userJoin = root.join(Requisition_.user, JoinType.INNER);
+//                    return cq.where(cb.and(cb.between(dateEntryPath, sD, eD), cb.equal(userJoin.get(User_.FLOOR), floor))).getRestriction();
+//                }
             });
         } else {
-            if (request.isUserInRole("ROLE_ADMIN") || request.isUserInRole("ROLE_OPER")) {
-                return service.findAll(input);
-            } else {
-                return service.findAll(input, (Root<Requisition> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
-                    Join<Requisition, User> userJoin = root.join(Requisition_.user, JoinType.INNER);
-                    return cb.equal(userJoin.get(User_.FLOOR), floor);
-                });
-            }
+//            if (request.isUserInRole("ROLE_ADMIN") || request.isUserInRole("ROLE_OPER")) {
+            return service.findAll(input);
+//            } else {
+//                return service.findAll(input, (Root<Requisition> root, CriteriaQuery<?> cq, CriteriaBuilder cb) -> {
+//                    Join<Requisition, User> userJoin = root.join(Requisition_.user, JoinType.INNER);
+//                    return cb.equal(userJoin.get(User_.FLOOR), floor);
+//                });
+//            }
         }
 
     }
@@ -213,5 +211,11 @@ public class RequisitionController {
     @RequestMapping(value = "/findRequisitionTypeOptions", method = {RequestMethod.GET})
     protected List<RequisitionType> findRequisitionTypeOptions() {
         return requisitionTypeService.findAll();
+    }
+    
+    @ResponseBody
+    @RequestMapping(value = "/findFloorOptions", method = {RequestMethod.GET})
+    protected List<Floor> findFloorOptions() {
+        return floorService.findAll();
     }
 }
