@@ -4,7 +4,7 @@
 
     <groupId>com.advantech</groupId>
     <artifactId>ExcelReport</artifactId>
-    <version>1.5.1</version>
+    <version>1.6.0</version>
     <packaging>war</packaging>
 
     <pluginRepositories>
@@ -44,10 +44,10 @@
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <poi.version>3.17</poi.version>
-        <spring.version>5.3.1</spring.version>
-        <spring-security.version>5.2.10.RELEASE</spring-security.version>
+        <spring.version>5.2.19.RELEASE</spring.version>
+        <spring-security.version>5.1.13.RELEASE</spring-security.version>
         <hibernate.version>5.3.7.Final</hibernate.version>
-        <jackson.version>2.9.10.8</jackson.version>
+        <jackson.version>2.13.1</jackson.version>
         <quartz.version>2.3.2</quartz.version>
     </properties>
     
@@ -478,21 +478,7 @@
             <artifactId>spring-data-jpa-datatables</artifactId>
             <version>5.0.0</version>
         </dependency>
-        
-        <!--         https://mvnrepository.com/artifact/com.sap.cloud.s4hana/connectivity 
-        <dependency>
-            <groupId>com.sap.cloud.s4hana</groupId>
-            <artifactId>connectivity</artifactId>
-            <version>2.28.0</version>
-        </dependency>-->
-        
-        <!--         https://mvnrepository.com/artifact/com.sap.conn.jco/sapjco3 
-        <dependency>
-            <groupId>com.sap.conn.jco</groupId>
-            <artifactId>sapjco3</artifactId>
-            <version>3.0.14</version>
-        </dependency>-->
-        
+ 
         <!-- https://mvnrepository.com/artifact/com.sap.conn.jco/sapjco3 -->
         <dependency>
             <groupId>com.sap.conn.jco</groupId>

@@ -58,7 +58,7 @@ public class OrdersService {
     public <S extends Orders> S save(S s, Items i) throws Exception {
         //Retrive modelName from MES port(M3, M2, M6)
         String po = i.getLabel1();
-        JCoFunction function = port.getMaterialInfo(po);
+        JCoFunction function = port.getMaterialInfo(po, null);
         JCoTable master = function.getTableParameterList().getTable("ZWOMASTER");//工單機種對應明細
 
         for (int r = 0; r < master.getNumRows(); r++) {

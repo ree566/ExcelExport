@@ -101,7 +101,7 @@ public class TestHibernate {
 //    @Test
     @Rollback(false)
     public void testFqcKanban() throws Exception {
-        List l = kanbanPort.query(Factory.DEFAULT);
+        List l = kanbanPort.query(Factory.TWM3);
 
         assertTrue(!l.isEmpty());
 

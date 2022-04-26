@@ -77,7 +77,7 @@ public class FqcKanBanController extends CrudController<FqcKanBan> {
 
     private void reSyncFromMes() {
         try {
-            List<FqcKanBan> mesData = kanBanQueryPort.query(Factory.DEFAULT);
+            List<FqcKanBan> mesData = kanBanQueryPort.query(Factory.TWM3);
             List<FqcKanBan> dbData = service.findAll();
 
             List<FqcKanBan> delData = (List<FqcKanBan>) CollectionUtils.subtract(dbData, mesData);

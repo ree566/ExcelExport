@@ -47,9 +47,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.advantech.sap.SapQueryPort;
 import com.advantech.service.db1.FloorService;
+import com.advantech.webservice.Factory;
 import com.google.common.base.CharMatcher;
+import com.sap.conn.jco.JCoException;
 import com.sap.conn.jco.JCoFunction;
 import com.sap.conn.jco.JCoTable;
+import java.math.BigDecimal;
+import java.net.URISyntaxException;
 
 /**
  *
@@ -73,7 +77,7 @@ public class RequisitionController {
 
     @Autowired
     private RequisitionStateService requisitionStateService;
-    
+
     @Autowired
     private FloorService floorService;
 
@@ -90,7 +94,6 @@ public class RequisitionController {
 
 //        User user = SecurityPropertiesUtils.retrieveAndCheckUserInSession();
 //        Floor floor = user.getFloor();
-
         if (startDate != null && endDate != null) {
             final Date sD = startDate.toDate();
             final Date eD = endDate.withHourOfDay(23).toDate();
@@ -132,7 +135,8 @@ public class RequisitionController {
             System.out.println(objectError.getCode());
         });
 
-        checkModelMaterial(newArrayList(requisition));
+        this.retrieveSapInfos(newArrayList(requisition));
+        this.checkModelMaterial(newArrayList(requisition));
 
         service.save(requisition, remark);
         return "success";
@@ -140,34 +144,58 @@ public class RequisitionController {
     }
 
     private void checkModelMaterial(List<Requisition> requisitions) throws Exception {
+        for (Requisition r : requisitions) {
+            //Fail when sap info not retrieve from retrieveSapInfos() function
+            checkArgument(r.getModelName() != null, "Can't find material info " + r.getMaterialNumber() + " in po " + r.getPo());
+        }
+    }
+
+    private List<Requisition> retrieveSapInfos(List<Requisition> requisitions) throws JCoException, URISyntaxException {
         if (!requisitions.isEmpty()) {
             String po = requisitions.get(0).getPo();
-            JCoFunction function = port.getMaterialInfo(po);
+            JCoFunction function = port.getMaterialInfo(po, null);
             JCoTable table = function.getTableParameterList().getTable("ZWODETAIL");//调用接口返回结果
 
-            requisitions.forEach((r) -> {
-                boolean checkFlag = false;
-                String checkMt = r.getMaterialNumber();
+            for (Requisition r : requisitions) {
+
+                String materialNumber = r.getMaterialNumber();
                 for (int i = 0; i < table.getNumRows(); i++) {
                     table.setRow(i);
                     String material = table.getString("MATNR");
                     material = CharMatcher.is('0').trimLeadingFrom(material);
-                    if (material.equals(checkMt)) {
-                        checkFlag = true;
+                    if (material.equals(materialNumber)) {
+                        r.setModelName(table.getString("BAUGR").trim());
                         break;
                     }
                 }
 
-                checkArgument(checkFlag == true, "Can't find material info " + checkMt + " in po " + po);
-            });
+                JCoFunction function2 = port.getMaterialPrice(r.getMaterialNumber(), Factory.TWM3);
+                BigDecimal unitPrice = this.retrievePriceFromTable(function2.getTableParameterList().getTable("LE_ZSD_COST"));
+                if (unitPrice.equals(BigDecimal.ZERO)) {
+                    JCoFunction function3 = port.getMaterialPrice(r.getMaterialNumber(), Factory.TWM6);
+                    unitPrice = this.retrievePriceFromTable(function3.getTableParameterList().getTable("LE_ZSD_COST"));
+                }
+                r.setUnitPrice(unitPrice);
+            }
         }
+        return requisitions;
+    }
+
+    private BigDecimal retrievePriceFromTable(JCoTable table) {
+        for (int i = 0; i < table.getNumRows(); i++) {
+            table.setRow(i);
+            return new BigDecimal(table.getString("PE_STPRS"));
+        }
+        return BigDecimal.ZERO;
     }
 
     @ResponseBody
     @RequestMapping(value = "/batchSave", method = {RequestMethod.POST})
     protected String batchSave(@ModelAttribute RequisitionListContainer container) throws Exception {
-        checkModelMaterial(container.getMyList());
-        service.batchInsert(container.getMyList());
+        List<Requisition> l = container.getMyList();
+        l = this.retrieveSapInfos(l);
+        this.checkModelMaterial(l);
+        service.batchInsert(l);
         return "success";
 
     }
@@ -212,7 +240,7 @@ public class RequisitionController {
     protected List<RequisitionType> findRequisitionTypeOptions() {
         return requisitionTypeService.findAll();
     }
-    
+
     @ResponseBody
     @RequestMapping(value = "/findFloorOptions", method = {RequestMethod.GET})
     protected List<Floor> findFloorOptions() {

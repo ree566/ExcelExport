@@ -36,7 +36,7 @@ public class TestWebService {
 //    @Test
     public void test1() throws Exception {
 
-        List l = kanbanPort.query(Factory.DEFAULT);
+        List l = kanbanPort.query(Factory.TWM3);
         
         HibernateObjectPrinter.print(l);
     }
@@ -46,7 +46,7 @@ public class TestWebService {
         
         String po = "THK002854Z22A";
 
-        List l = modelNameQryPort.query(po, Factory.DEFAULT);
+        List l = modelNameQryPort.query(po, Factory.TWM3);
         
         HibernateObjectPrinter.print(l);
     }

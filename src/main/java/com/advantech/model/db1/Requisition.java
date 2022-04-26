@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.voodoodyne.jackson.jsog.JSOGGenerator;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -41,6 +42,8 @@ public class Requisition implements Serializable {
     private int id;
     private String po;
     private String materialNumber;
+    private String modelName;
+    private BigDecimal unitPrice;
     private int amount;
     private RequisitionState requisitionState;
     private RequisitionReason requisitionReason;
@@ -87,6 +90,24 @@ public class Requisition implements Serializable {
 
     public void setMaterialNumber(String materialNumber) {
         this.materialNumber = materialNumber;
+    }
+
+    @Column(name = "modelName")
+    public String getModelName() {
+        return modelName;
+    }
+
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
+    }
+
+    @Column(name = "unitPrice")
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
     }
 
     @Column(name = "amount")

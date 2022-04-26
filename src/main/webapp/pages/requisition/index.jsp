@@ -87,22 +87,24 @@
                     },
                     "columns": [
                         {data: "id", title: "id"},
-                        {data: "po", title: "工單"},
-                        {data: "materialNumber", title: "料號"},
-                        {data: "amount", title: "數量"},
-                        {data: "requisitionReason.name", "defaultContent": "n/a", title: "原因"},
-                        {data: "user.username", "defaultContent": "n/a", title: "申請人"},
-                        {data: "floor.name", "defaultContent": "n/a", title: "樓層"},
+                        {data: "po", title: "工單", className: "excel_export"},
+                        {data: "modelName", title: "機種", className: "excel_export"},
+                        {data: "materialNumber", title: "料號", className: "excel_export"},
+                        {data: "amount", title: "數量", className: "excel_export"},
+                        {data: "unitPrice", title: "單價", className: "excel_export"},
+                        {data: "requisitionReason.name", "defaultContent": "n/a", title: "原因", className: "excel_export"},
+                        {data: "user.username", "defaultContent": "n/a", title: "申請人", className: "excel_export"},
+                        {data: "floor.name", "defaultContent": "n/a", title: "樓層", className: "excel_export"},
                         {data: "user.unit.name", "defaultContent": "n/a", title: "單位", visible: false},
-                        {data: "requisitionState.name", "defaultContent": "n/a", title: "申請狀態"},
-                        {data: "createDate", title: "申請日期"},
-                        {data: "receiveDate", title: "領料日期"},
-                        {data: "returnDate", title: "退料日期"},
-                        {data: "requisitionType.name", "defaultContent": "n/a", title: "料號狀態"},
-                        {data: "materialType", "defaultContent": "n/a", title: "分類"},
-                        {data: "remark", "defaultContent": "n/a", title: "備註"},
+                        {data: "requisitionState.name", "defaultContent": "n/a", title: "申請狀態", className: "excel_export"},
+                        {data: "createDate", title: "申請日期", className: "excel_export"},
+                        {data: "receiveDate", title: "領料日期", className: "excel_export"},
+                        {data: "returnDate", title: "退料日期", className: "excel_export"},
+                        {data: "requisitionType.name", "defaultContent": "n/a", title: "料號狀態", className: "excel_export"},
+                        {data: "materialType", "defaultContent": "n/a", title: "分類", className: "excel_export"},
+                        {data: "remark", "defaultContent": "n/a", title: "備註", className: "excel_export"},
                         {data: "id", "defaultContent": "n/a", title: "紀錄"},
-                        {data: "lackingFlag", "defaultContent": "N", title: "已掛缺"}
+                        {data: "lackingFlag", "defaultContent": "N", title: "已掛缺", className: "excel_export"}
                     ],
                     "columnDefs": [
                         {
@@ -111,26 +113,26 @@
                             "searchable": false
                         },
                         {
-                            "targets": [13, 14],
+                            "targets": [15, 16],
                             "visible": isEditor,
                             "searchable": false
                         },
                         {
-                            "targets": [9, 10, 11],
+                            "targets": [11, 12, 13],
                             "searchable": false,
                             'render': function (data, type, full, meta) {
                                 return data == null ? "n/a" : formatDate(data);
                             }
                         },
                         {
-                            "targets": [15],
+                            "targets": [17],
                             "searchable": false,
                             'render': function (data, type, full, meta) {
                                 return "<a href='event.jsp?requisition_id=" + data + "' target='_blank'>紀錄</a>";
                             }
                         },
                         {
-                            "targets": [16],
+                            "targets": [18],
                             "searchable": false,
                             'render': function (data, type, full, meta) {
                                 return data == 1 ? "Y" : "N";
@@ -152,7 +154,7 @@
                     "bAutoWidth": false,
                     "displayLength": 10,
                     "lengthChange": true,
-                    "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+                    "lengthMenu": [[10, 25, 50, 100, 250], [10, 25, 50, 100, 250]],
                     "filter": true,
                     "info": true,
                     "paginate": true,
@@ -293,7 +295,8 @@
                             {
                                 "extend": 'excel',
                                 "exportOptions": {
-                                    "columns": 'th:not(:first-child):not(:last-child)',
+//                                    "columns": 'th:not(:first-child):not(:last-child)',
+                                    "columns": 'th.excel_export',
                                     modifier: {
                                         // DataTables core
                                         search: 'applied',

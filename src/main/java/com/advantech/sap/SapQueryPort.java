@@ -5,6 +5,7 @@
  */
 package com.advantech.sap;
 
+import com.advantech.webservice.Factory;
 import com.sap.conn.jco.JCoDestination;
 import com.sap.conn.jco.JCoException;
 import com.sap.conn.jco.JCoFunction;
@@ -23,7 +24,7 @@ public class SapQueryPort {
     @Autowired
     private SAPConn1 sapConn;
 
-    public JCoFunction getMaterialInfo(String po) throws JCoException, URISyntaxException {
+    public JCoFunction getMaterialInfo(String po, Factory factory) throws JCoException, URISyntaxException {
         JCoFunction function;
         JCoDestination destination = sapConn.getConn();
 
@@ -36,7 +37,25 @@ public class SapQueryPort {
         input.setValue("SDATE", "");
         input.setValue("EDATE", "");
         input.setValue("SPFLG", "");
-        input.setValue("PLANT", "TWM3");
+        input.setValue("PLANT", factory == null ? "" : "TW" + factory.token());
+
+        function.execute(destination);
+
+        return function;
+
+    }
+
+    public JCoFunction getMaterialPrice(String material, Factory factory) throws JCoException, URISyntaxException{
+        JCoFunction function;
+        JCoDestination destination = sapConn.getConn();
+
+        //调用ZCHENH001函数
+        function = destination.getRepository().getFunction("Z_SD_SEARCH_COST_PRICE");
+
+        JCoParameterList input = function.getImportParameterList();
+
+        input.setValue("MATNR", material);
+        input.setValue("WERKS", "TW" + factory.token());
 
         function.execute(destination);
 

@@ -60,13 +60,13 @@ public class MultiWsClient extends WebServiceGatewaySupport {
 
     private Object marshalSendAndReceive(Object request, final Factory f) {
         switch (f) {
-            case DEFAULT:
+            case TWM3:
                 checkState(webServiceTemplate != null, "Default webService template is not inject");
                 return webServiceTemplate.marshalSendAndReceive(request);
-            case TEMP1:
+            case TWM6:
                 checkState(webServiceTemplate1 != null, "WebService template1 is not inject");
                 return webServiceTemplate1.marshalSendAndReceive(request);
-            case TEMP2:
+            case TWM2:
                 checkState(webServiceTemplate2 != null, "WebService template2 is not inject");
                 return webServiceTemplate2.marshalSendAndReceive(request);
             default:

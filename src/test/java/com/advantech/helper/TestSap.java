@@ -7,6 +7,7 @@ package com.advantech.helper;
 
 import com.advantech.sap.SAPConn;
 import com.advantech.sap.SapQueryPort;
+import com.advantech.webservice.Factory;
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.Streams;
 import com.sap.conn.jco.JCoDestination;
@@ -41,7 +42,7 @@ public class TestSap {
     @Test
     public void testWarehouse() throws JCoException, URISyntaxException {
 
-        JCoFunction function = port.getMaterialInfo("PNH1102ZA");
+        JCoFunction function = port.getMaterialInfo("PNH1102ZA", null);
 
         JCoTable master = function.getTableParameterList().getTable("ZWOMASTER");//调用接口返回结果
         JCoTable detail = function.getTableParameterList().getTable("ZWODETAIL");//调用接口返回结果
@@ -55,6 +56,19 @@ public class TestSap {
             detail.setRow(i);
             System.out.println(detail.getString("AUFNR") + '\t' + CharMatcher.is('0').trimLeadingFrom(detail.getString("MATNR")));
             break;
+        }
+
+    }
+    
+//    @Test
+    public void testUnitPrice() throws JCoException, URISyntaxException{
+        JCoFunction function = port.getMaterialPrice("1700027469-01", Factory.TWM3);
+
+        JCoTable master = function.getTableParameterList().getTable("LE_ZSD_COST");
+
+        for (int i = 0; i < master.getNumRows(); i++) {
+            master.setRow(i);
+            System.out.println(master.getString("PE_STPRS"));
         }
 
     }
