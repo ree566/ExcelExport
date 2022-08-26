@@ -6,6 +6,7 @@
 package com.advantech.job;
 
 import com.advantech.helper.MailManager;
+import com.advantech.helper.WorkingDayUtils;
 import com.advantech.model.db1.User;
 import com.advantech.model.db1.UserNotification;
 import com.advantech.model.db1.WorkingHoursReport;
@@ -239,7 +240,7 @@ public class SendWhReports {
                 totalOutputValueEstimated = BigDecimal.ZERO;
         
         DateTime prevDate = dt.minusDays(1);
-        double datePercentage = prevDate.dayOfMonth().get() * 1.0 / prevDate.dayOfMonth().getMaximumValue();
+        double datePercentage = WorkingDayUtils.findBusinessDayPercentage(prevDate);
 
         for (WorkingHoursReport whr : l) {
             totalQuantity = totalQuantity + whr.getQuantity();
