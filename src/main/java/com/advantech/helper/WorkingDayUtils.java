@@ -21,15 +21,25 @@ import org.joda.time.LocalDate;
  */
 public class WorkingDayUtils {
 
+    private final static Set<LocalDate> holidays = new HashSet(0);
+
+    private final static Set<Integer> businessDays = newHashSet(
+            MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY
+    );
+
+    public static DateTime findLastBusinessDay(DateTime dt) {
+        DateTime d = new DateTime(dt);
+            while (!businessDays.contains(d.dayOfWeek().get())) {
+            d = d.minusDays(1);
+        }
+        return d;
+    }
+
     public static double findBusinessDayPercentage(DateTime dt) {
         // I've hardcoded the holidays as LocalDates
         // and put them in a Set
-        final Set<LocalDate> holidays = new HashSet(0);
         // For the sake of efficiency, I also put the business days into a Set.
         // In general, a Set has a better lookup speed than a List.
-        final Set<Integer> businessDays = newHashSet(
-                MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY
-        );
 
         if (!businessDays.contains(dt.dayOfWeek().get())) {
             return -1d;
@@ -41,7 +51,7 @@ public class WorkingDayUtils {
 
         dt = new DateTime(dt).withTime(0, 0, 0, 0);
         DateTime d = new DateTime(dt).dayOfMonth().withMinimumValue().withTime(0, 0, 0, 0);
-        
+
         for (int i = 1; i <= period; i++) {
             if (businessDays.contains(d.dayOfWeek().get())) {
                 total++;

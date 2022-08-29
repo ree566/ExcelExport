@@ -138,11 +138,19 @@ public class TestClass {
 
     @Test
     public void testDateTime3() {
-//        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy/M/d");
-//        DateTime firstDateOfWeek = new DateTime().withDayOfMonth(14).withTime(0, 0, 0, 0).dayOfWeek().withMinimumValue();
-//        System.out.println(fmt.print(firstDateOfWeek));
-        double result = firstBusinessDayOfMonth(new DateTime("2022-06-13"));
-        System.out.println(result);
+        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy/M/d");
+//        DateTime d = new DateTime("2022-08-01");
+//        int days = d.dayOfMonth().getMaximumValue();
+//        for (int i = 0; i < days; i++) {
+//            double result = WorkingDayUtils.findBusinessDayPercentage(d);            
+//            System.out.println(fmt.print(d));
+//            System.out.println("\t" + result);
+//            System.out.println("--------------------");
+//            d = d.plusDays(1);
+//        }
+        DateTime dt = new DateTime("2022-08-29");
+        DateTime lastBusinessDay = WorkingDayUtils.findLastBusinessDay(dt.minusDays(1));
+        System.out.println(fmt.print(lastBusinessDay));
     }
 
 //    @Test
@@ -172,7 +180,7 @@ public class TestClass {
         int period = new DateTime(dt).dayOfMonth().getMaximumValue();
 
         int curr = 0, total = 0;
-        
+
         dt = new DateTime(dt).withTime(0, 0, 0, 0);
         DateTime d = new DateTime(dt).dayOfMonth().withMinimumValue().withTime(0, 0, 0, 0);
         System.out.println(period);

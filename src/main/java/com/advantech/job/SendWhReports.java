@@ -239,8 +239,8 @@ public class SendWhReports {
                 totalWorktimeEstimated = BigDecimal.ZERO,
                 totalOutputValueEstimated = BigDecimal.ZERO;
         
-        DateTime prevDate = dt.minusDays(1);
-        double datePercentage = WorkingDayUtils.findBusinessDayPercentage(prevDate);
+        DateTime prevBusinessDay = WorkingDayUtils.findLastBusinessDay(dt.minusDays(1));
+        double datePercentage = WorkingDayUtils.findBusinessDayPercentage(prevBusinessDay);
 
         for (WorkingHoursReport whr : l) {
             totalQuantity = totalQuantity + whr.getQuantity();
