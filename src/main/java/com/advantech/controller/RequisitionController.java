@@ -6,6 +6,7 @@
 package com.advantech.controller;
 
 import com.advantech.helper.RequisitionListContainer;
+import com.advantech.sap.SapMaterialInfo;
 import com.advantech.model.db1.Floor;
 import com.advantech.model.db1.Requisition;
 import com.advantech.model.db1.RequisitionEvent;
@@ -45,14 +46,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import com.advantech.sap.SapQueryPort;
+import com.advantech.sap.SapService;
 import com.advantech.service.db1.FloorService;
-import com.advantech.webservice.Factory;
-import com.google.common.base.CharMatcher;
 import com.sap.conn.jco.JCoException;
-import com.sap.conn.jco.JCoFunction;
-import com.sap.conn.jco.JCoTable;
-import java.math.BigDecimal;
 import java.net.URISyntaxException;
 
 /**
@@ -82,7 +78,7 @@ public class RequisitionController {
     private FloorService floorService;
 
     @Autowired
-    private SapQueryPort port;
+    private SapService sapService;
 
     @JsonView(DataTablesOutput.View.class)
     @RequestMapping(value = "/findAll", method = {RequestMethod.POST})
@@ -153,40 +149,28 @@ public class RequisitionController {
     private List<Requisition> retrieveSapInfos(List<Requisition> requisitions) throws JCoException, URISyntaxException {
         if (!requisitions.isEmpty()) {
             String po = requisitions.get(0).getPo();
-            JCoFunction function = port.getMaterialInfo(po, null);
-            JCoTable table = function.getTableParameterList().getTable("ZWODETAIL");//调用接口返回结果
+
+            String[] materialNumbers = requisitions.stream().map(Requisition::getMaterialNumber).toArray(String[]::new);
+            List<SapMaterialInfo> sapInfos = sapService.retrieveSapMaterialInfos(po, materialNumbers);
 
             for (Requisition r : requisitions) {
-
-                String materialNumber = r.getMaterialNumber();
-                for (int i = 0; i < table.getNumRows(); i++) {
-                    table.setRow(i);
-                    String material = table.getString("MATNR");
-                    material = CharMatcher.is('0').trimLeadingFrom(material);
-                    if (material.equals(materialNumber)) {
-                        r.setModelName(table.getString("BAUGR").trim());
-                        break;
-                    }
+                SapMaterialInfo info = sapInfos.stream()
+                        .filter(s -> s.getMaterialNumber() == r.getMaterialNumber())
+                        .findFirst().orElse(null);
+                if (info == null) {
+                    continue;
                 }
-
-                JCoFunction function2 = port.getMaterialPrice(r.getMaterialNumber(), Factory.TWM3);
-                BigDecimal unitPrice = this.retrievePriceFromTable(function2.getTableParameterList().getTable("LE_ZSD_COST"));
-                if (unitPrice.equals(BigDecimal.ZERO)) {
-                    JCoFunction function3 = port.getMaterialPrice(r.getMaterialNumber(), Factory.TWM6);
-                    unitPrice = this.retrievePriceFromTable(function3.getTableParameterList().getTable("LE_ZSD_COST"));
-                }
-                r.setUnitPrice(unitPrice);
+                r.setModelName(info.getModelName());
+                r.setUnitPrice(info.getUnitPrice());
             }
         }
         return requisitions;
     }
 
-    private BigDecimal retrievePriceFromTable(JCoTable table) {
-        for (int i = 0; i < table.getNumRows(); i++) {
-            table.setRow(i);
-            return new BigDecimal(table.getString("PE_STPRS"));
-        }
-        return BigDecimal.ZERO;
+    @ResponseBody
+    @RequestMapping(value = "/retrieveSapInfos", method = {RequestMethod.GET, RequestMethod.POST})
+    protected List<SapMaterialInfo> retrieveSapInfos(@RequestParam String po, @RequestParam(value = "materialNumbers[]") String[] materialNumbers) throws Exception {
+        return this.sapService.retrieveSapMaterialInfos(po, materialNumbers);
     }
 
     @ResponseBody

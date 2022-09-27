@@ -24,8 +24,12 @@
                 border-radius:5px;
                 margin-top:25px;
             }
-            th { font-size: 12px; }
-            td { font-size: 11px; }
+            th {
+                font-size: 12px;
+            }
+            td {
+                font-size: 11px;
+            }
             .job-close {
                 color: grey;
                 opacity: 0.8;
@@ -303,6 +307,28 @@
                                         order: 'applied'
                                     }
                                 }
+                            },
+                            {
+                                "text": 'SAP資訊',
+                                "attr": {
+                                },
+                                "action": function (e, dt, node, config) {
+                                    const cnt = table.rows('.selected').count();
+                                    if (cnt != 1) {
+                                        alert("Please select a row.");
+                                        return false;
+                                    }
+
+                                    const arr = table.rows('.selected').data();
+                                    const data = arr[0];
+
+                                    const materialNumbers = [data.materialNumber, data.materialNumber];
+
+                                    retrieveSapInfo({
+                                        "po": data.po,
+                                        "materialNumbers": materialNumbers
+                                    });
+                                }
                             }
                         ]
                     };
@@ -547,81 +573,48 @@
                 }
 
                 function initDropDownOptions() {
-                    $.ajax({
-                        type: "GET",
-                        url: "<c:url value="/RequisitionController/findRequisitionReasonOptions" />",
-                        success: function (response) {
-                            var sel = $("#model-table #requisitionReason\\.id");
-                            var d = response;
-                            for (var i = 0; i < d.length; i++) {
-                                var options = d[i];
-                                sel.append("<option value='" + options.id + "'>" + options.name + "</option>");
-                            }
+
+                    const requestParams = [
+                        {
+                            url: "<c:url value="/RequisitionController/findRequisitionReasonOptions" />",
+                            target: $("#model-table #requisitionReason\\.id")
                         },
-                        error: function (xhr, ajaxOptions, thrownError) {
-                            alert(xhr.responseText);
-                        }
-                    });
-                    $.ajax({
-                        type: "GET",
-                        url: "<c:url value="/RequisitionController/findRequisitionStateOptions" />",
-                        success: function (response) {
-                            var sel = $("#model-table #requisitionState\\.id");
-                            var d = response;
-                            for (var i = 0; i < d.length; i++) {
-                                var options = d[i];
-                                sel.append("<option value='" + options.id + "'>" + options.name + "</option>");
-                            }
+                        {
+                            url: "<c:url value="/RequisitionController/findRequisitionStateOptions" />",
+                            target: $("#model-table #requisitionState\\.id")
                         },
-                        error: function (xhr, ajaxOptions, thrownError) {
-                            alert(xhr.responseText);
-                        }
-                    });
-                    $.ajax({
-                        type: "GET",
-                        url: "<c:url value="/RequisitionController/findRequisitionTypeOptions" />",
-                        success: function (response) {
-                            var sel = $("#model-table #requisitionType\\.id");
-                            var d = response;
-                            for (var i = 0; i < d.length; i++) {
-                                var options = d[i];
-                                sel.append("<option value='" + options.id + "'>" + options.name + "</option>");
-                            }
+                        {
+                            url: "<c:url value="/RequisitionController/findRequisitionTypeOptions" />",
+                            target: $("#model-table #requisitionType\\.id")
                         },
-                        error: function (xhr, ajaxOptions, thrownError) {
-                            alert(xhr.responseText);
-                        }
-                    });
-                    $.ajax({
-                        type: "GET",
-                        url: "<c:url value="/OrdersController/findOrderTypesOptions" />",
-                        success: function (response) {
-                            var sel = $("#model-table #orderTypes\\.id");
-                            var d = response;
-                            for (var i = 0; i < d.length; i++) {
-                                var options = d[i];
-                                sel.append("<option value='" + options.id + "'>" + options.name + "</option>");
-                            }
+                        {
+                            url: "<c:url value="/OrdersController/findOrderTypesOptions" />",
+                            target: $("#model-table #orderTypes\\.id")
                         },
-                        error: function (xhr, ajaxOptions, thrownError) {
-                            alert(xhr.responseText);
+                        {
+                            url: "<c:url value="/RequisitionController/findFloorOptions" />",
+                            target: $("#model-table  #floor\\.id, #model-table2 #floor\\.id")
                         }
-                    });
-                    $.ajax({
-                        type: "GET",
-                        url: "<c:url value="/RequisitionController/findFloorOptions" />",
-                        success: function (response) {
-                            var sel = $("#model-table  #floor\\.id, #model-table2 #floor\\.id");
-                            var d = response;
-                            for (var i = 0; i < d.length; i++) {
-                                var options = d[i];
-                                sel.append("<option value='" + options.id + "'>" + options.name + "</option>");
+                    ];
+
+                    requestParams.map(params => {
+                        $.ajax({
+                            type: "GET",
+                            url: params.url,
+                            success: function (response) {
+                                var sel = params.target;
+                                var d = response;
+                                for (var i = 0; i < d.length; i++) {
+                                    var options = d[i];
+                                    sel.append("<option value='" + options.id + "'>" + options.name + "</option>");
+                                }
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                                alert(xhr.responseText);
                             }
-                        },
-                        error: function (xhr, ajaxOptions, thrownError) {
-                            alert(xhr.responseText);
-                        }
+                        });
                     });
+
                 }
 
                 function refreshTable() {
@@ -650,6 +643,29 @@
                                 inputs[idx + 1].select();
                             }
                             return false;
+                        }
+                    });
+                }
+
+                function retrieveSapInfo(data) {
+                    $.ajax({
+                        type: "POST",
+                        url: "<c:url value="/RequisitionController/retrieveSapInfos" />",
+                        dataType: "json",
+                        data: data,
+                        success: function (response) {
+                            const target = $("#sap-material-info");
+                            const arr = response;
+                            if (arr.length > 0) {
+                                const {materialNumber, amount, unitPrice, storageSpaces} = arr[0];
+                                target.html('<h5>料號: ' + materialNumber +
+                                        ' 數量: ' + amount +
+                                        ' 單價: ' + unitPrice +
+                                        ' 儲區: ' + storageSpaces + '</h5>');
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            $("#dialog-msg3").html(xhr.responseText);
                         }
                     });
                 }
@@ -992,10 +1008,13 @@
                     <div class="row">
                         <div id="date_filter" class="input-daterange form-inline">
                             <div class="col-md-12">
-                                <span id="date-label-from" class="date-label">From: </span><input class="date_range_filter date form-control" type="text" id="datepicker_from" placeholder="請選擇起始時間" />
-                                <span id="date-label-to" class="date-label">To:<input class="date_range_filter date form-control" type="text" id="datepicker_to"  placeholder="請選擇結束時間"/>
-                                    <input type="button" id="search" class="form-control" value="搜尋" />
-                                    <input type="button" id="clear" class="form-control" value="清除搜尋" />
+                                <span id="date-label-from" class="date-label">From: </span>
+                                <input class="date_range_filter date form-control" type="text" id="datepicker_from" placeholder="請選擇起始時間" />
+                                <span id="date-label-to" class="date-label">To: </span>
+                                <input class="date_range_filter date form-control" type="text" id="datepicker_to"  placeholder="請選擇結束時間"/>
+                                <input type="button" id="search" class="form-control" value="搜尋" />
+                                <input type="button" id="clear" class="form-control" value="清除搜尋" />
+                                <div id="sap-material-info"></div>
                             </div>
                         </div>
                     </div>
