@@ -43,6 +43,8 @@
         <intercept-url pattern="/pages/requisition/**" access="isAuthenticated()" />
         <intercept-url pattern="/pages/report/**" access="hasAnyRole('OPER_IE', 'ADMIN')" />
         <intercept-url pattern="/pages/fqcKanBan/**" access="hasAnyRole('OPER_FQC', 'ADMIN')" />
+        <intercept-url pattern="/swagger-ui/**" access="isAuthenticated()" />
+        <intercept-url pattern="/api/**" access="isAuthenticated()" />
         
         <!--Controller security role setting-->
         

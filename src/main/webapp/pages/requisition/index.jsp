@@ -648,13 +648,14 @@
                 }
 
                 function retrieveSapInfo(data) {
+                    const target = $("#sap-material-info");
+                    target.html("<h5>Please wait...</h5>");
                     $.ajax({
                         type: "POST",
                         url: "<c:url value="/RequisitionController/retrieveSapInfos" />",
                         dataType: "json",
                         data: data,
                         success: function (response) {
-                            const target = $("#sap-material-info");
                             const arr = response;
                             if (arr.length > 0) {
                                 const {materialNumber, amount, unitPrice, storageSpaces} = arr[0];

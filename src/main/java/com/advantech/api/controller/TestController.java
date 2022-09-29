@@ -8,8 +8,8 @@ package com.advantech.api.controller;
 import com.advantech.helper.HibernateObjectPrinter;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,11 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Api(tags = "Controller API")
 @Tag(name = "Controller API", description = "This controller performs API operations")
-@RestController
+@RestController("TestApiController")
+@RequestMapping("api/TestApi")
 public class TestController {
 
     @ResponseBody
-    @RequestMapping(value = "/testGetUtf8", method = {RequestMethod.GET})
+    @GetMapping(value = "/testGetUtf8")
     public String testGetUtf8(@RequestParam String testString) {
         HibernateObjectPrinter.print(testString);
         return testString;

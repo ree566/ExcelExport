@@ -51,15 +51,15 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(metaData())
+                .enable(true)
                 .select()
                 .apis(
                         withClassAnnotation(RestController.class)
                                 .and(basePackage("com.advantech.api.controller"))
                 )
                 .paths(PathSelectors.any())
-                .build()
-                .apiInfo(metaData())
-                .enable(true);
+                .build();
     }
 
     protected ApiInfo metaData() {
