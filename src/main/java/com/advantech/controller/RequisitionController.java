@@ -155,7 +155,7 @@ public class RequisitionController {
 
             for (Requisition r : requisitions) {
                 SapMaterialInfo info = sapInfos.stream()
-                        .filter(s -> s.getMaterialNumber() == r.getMaterialNumber())
+                        .filter(s -> s.getMaterialNumber().equals(r.getMaterialNumber()))
                         .findFirst().orElse(null);
                 if (info == null) {
                     continue;
