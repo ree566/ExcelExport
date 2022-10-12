@@ -251,13 +251,16 @@
         <property name="unmarshaller" ref="marshaller" />
         <property name="defaultUri" value="http://172.20.128.100/auto_testing_service/Service.asmx?WSDL"/>
     </bean>
-    
+
     <!--Inject webservice-->
-    <bean id="multiWsClient" class="com.advantech.webservice.MultiWsClient">
-        <constructor-arg ref="webServiceTemplate" />
-        <constructor-arg ref="webServiceTemplate1" />
-        <constructor-arg ref="webServiceTemplate2" />
-    </bean>    
+    <util:map id="resourceMap" key-type="com.advantech.webservice.Factory" 
+                      value-type="org.springframework.ws.client.core.WebServiceTemplate">
+        <!-- Map between String key and List -->
+        <entry key="TWM3" value-ref="webServiceTemplate" />
+        <entry key="TWM6" value-ref="webServiceTemplate1" />
+        <entry key="TWM2" value-ref="webServiceTemplate2" />
+    </util:map>
+       
     
     <!--regist for WsClient.class use, -->
     <bean id="objectFactory" class="org.tempuri.ObjectFactory" />

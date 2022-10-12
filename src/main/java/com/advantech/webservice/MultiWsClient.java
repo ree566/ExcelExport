@@ -7,6 +7,9 @@ package com.advantech.webservice;
 
 import static com.google.common.base.Preconditions.checkState;
 import java.io.IOException;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
@@ -20,28 +23,12 @@ import org.tempuri.TxResponse;
  *
  * @author Wei.Cheng
  */
-public class MultiWsClient extends WebServiceGatewaySupport {
+@Component
+public class MultiWsClient {
 
-    private WebServiceTemplate webServiceTemplate = null;
-
-    private WebServiceTemplate webServiceTemplate1 = null;
-
-    private WebServiceTemplate webServiceTemplate2 = null;
-
-    public MultiWsClient(WebServiceTemplate webServiceTemplate) {
-        this.webServiceTemplate = webServiceTemplate;
-    }
-
-    public MultiWsClient(WebServiceTemplate webServiceTemplate, WebServiceTemplate webServiceTemplate1) {
-        this.webServiceTemplate = webServiceTemplate;
-        this.webServiceTemplate1 = webServiceTemplate1;
-    }
-
-    public MultiWsClient(WebServiceTemplate webServiceTemplate, WebServiceTemplate webServiceTemplate1, WebServiceTemplate webServiceTemplate2) {
-        this.webServiceTemplate = webServiceTemplate;
-        this.webServiceTemplate1 = webServiceTemplate1;
-        this.webServiceTemplate2 = webServiceTemplate2;
-    }
+    @Autowired
+    @Qualifier("resourceMap")
+    private Map<Factory, WebServiceTemplate> resourceMap;
 
     public TxResponse simpleTxSendAndReceive(String v, UploadType type, final Factory f) throws IOException {
         ObjectFactory factory = new ObjectFactory();
@@ -59,19 +46,13 @@ public class MultiWsClient extends WebServiceGatewaySupport {
     }
 
     private Object marshalSendAndReceive(Object request, final Factory f) {
-        switch (f) {
-            case TWM3:
-                checkState(webServiceTemplate != null, "Default webService template is not inject");
-                return webServiceTemplate.marshalSendAndReceive(request);
-            case TWM6:
-                checkState(webServiceTemplate1 != null, "WebService template1 is not inject");
-                return webServiceTemplate1.marshalSendAndReceive(request);
-            case TWM2:
-                checkState(webServiceTemplate2 != null, "WebService template2 is not inject");
-                return webServiceTemplate2.marshalSendAndReceive(request);
-            default:
-                throw new UnsupportedOperationException();
-        }
+        WebServiceTemplate t = this.getWebServiceTemplate(f);
+        checkState(t != null, f.token() + " webService template is not inject");
+        return t.marshalSendAndReceive(request);
     }
 
+    private WebServiceTemplate getWebServiceTemplate(Factory f) {
+        WebServiceTemplate t = resourceMap.get(f);
+        return t;
+    }
 }

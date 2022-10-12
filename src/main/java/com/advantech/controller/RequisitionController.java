@@ -142,7 +142,8 @@ public class RequisitionController {
     private void checkModelMaterial(List<Requisition> requisitions) throws Exception {
         for (Requisition r : requisitions) {
             //Fail when sap info not retrieve from retrieveSapInfos() function
-            checkArgument(r.getModelName() != null, "Can't find material info " + r.getMaterialNumber() + " in po " + r.getPo());
+            checkArgument(r.getModelName() != null && !"".equals(r.getModelName()), 
+                    "Can't find material info " + r.getMaterialNumber() + " in po " + r.getPo());
         }
     }
 
@@ -152,6 +153,10 @@ public class RequisitionController {
 
             String[] materialNumbers = requisitions.stream().map(Requisition::getMaterialNumber).toArray(String[]::new);
             List<SapMaterialInfo> sapInfos = sapService.retrieveSapMaterialInfos(po, materialNumbers);
+
+            if (sapInfos.isEmpty()) {
+                return requisitions;
+            }
 
             for (Requisition r : requisitions) {
                 SapMaterialInfo info = sapInfos.stream()

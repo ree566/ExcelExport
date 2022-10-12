@@ -412,11 +412,12 @@
 
                 $("#myModal2 #save").click(function () {
                     if (confirm("Confirm save?")) {
-                        var tb = $("#material-detail tbody tr");
-                        var po = $("#model-table2 #po").val();
-                        var floor = $("#model-table2 #floor\\.id").val()
-                        var myArray = tb.map(function () {
-                            var o = {
+                        const tb = $("#material-detail tbody tr");
+                        const po = $("#model-table2 #po").val();
+                        const floor = $("#model-table2 #floor\\.id").val();
+                        
+                        const myArray = tb.map(function () {
+                            const o = {
                                 po: po,
                                 materialNumber: $(this).find("input").eq(0).val(),
                                 amount: $(this).find("input").eq(1).val(),
@@ -425,10 +426,14 @@
                             };
                             return o;
                         }).get();
-                        var data = {
+                        const data = {
                             "myList": myArray
                         };
-                        batchSave(data);
+                        batchSave(data, function() {
+                            $("#myModal2 input, textarea").val("");
+                            $("#myModal2 select").prop('selectedIndex',0);
+                            $("#myModal2 #material-detail").find("tbody>tr").not(":eq(0)").detach();
+                        });
                     }
                 });
 
@@ -526,7 +531,7 @@
                     });
                 }
 
-                function batchSave(data) {
+                function batchSave(data, fn) {
                     $.ajax({
                         type: "POST",
                         url: "<c:url value="/RequisitionController/batchSave" />",
@@ -541,6 +546,10 @@
                                     align: "right"
                                 }
                             });
+                            
+                            if (fn != null) {
+                                fn();
+                            }
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
                             $("#dialog-msg2").html(xhr.responseText);
@@ -657,13 +666,16 @@
                         data: data,
                         success: function (response) {
                             const arr = response;
-                            if (arr.length > 0) {
-                                const {materialNumber, amount, unitPrice, storageSpaces} = arr[0];
-                                target.html('<h5>料號: ' + materialNumber +
-                                        ' 數量: ' + amount +
-                                        ' 單價: ' + unitPrice +
-                                        ' 儲區: ' + storageSpaces + '</h5>');
+                            if (arr.length <= 0) {
+                                target.html("<h5>No data</h5>");
+                                return;
                             }
+                            const {materialNumber, amount, unitPrice, storageSpaces} = arr[0];
+                            target.html('<h5>料號: ' + materialNumber +
+                                    ' 數量: ' + amount +
+                                    ' 單價: ' + unitPrice +
+                                    ' 儲區: ' + storageSpaces + '</h5>');
+
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
                             $("#dialog-msg3").html(xhr.responseText);

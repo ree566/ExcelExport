@@ -15,18 +15,11 @@ import java.util.Map;
  */
 public enum Factory implements Encodeable {
 
-    /**
-     * Default useing M3's webService
-     */
+    TWM2("M2"),
     TWM3("M3"),
-    /**
-     * Temp1: M6
-     */
     TWM6("M6"),
-    /**
-     * Temp2: M2
-     */
-    TWM2("M2");
+    TWM8("M8"),
+    TWM9("M9");
 
     private final String s;
     private static final Map<String, Factory> map = new HashMap<>();

@@ -30,12 +30,16 @@ public class SapService {
 
     public List<SapMaterialInfo> retrieveSapMaterialInfos(String po, String... materialNumbers) throws JCoException, URISyntaxException {
 
-        JCoFunction function = port.getMaterialInfo(po, null);
-
-        JCoTable detailTable = function.getTableParameterList().getTable("ZWODETAIL");//调用接口返回结果
-        String modelName = detailTable.getString("BAUGR").trim();
-
         List<SapMaterialInfo> result = new ArrayList();
+        
+        JCoFunction function = port.getMaterialInfo(po, null);
+        JCoTable detailTable = function.getTableParameterList().getTable("ZWODETAIL");//调用接口返回结果
+
+        if (detailTable.getNumRows() == 0) {
+            return result;
+        }
+
+        String modelName = detailTable.getString("BAUGR").trim();
 
         //Retrieve model name info
         for (int i = 0; i < detailTable.getNumRows(); i++) {
