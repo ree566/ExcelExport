@@ -50,9 +50,9 @@
     <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="connectionTestQuery" value="SELECT 1" />
         <property name="driverClassName" value="net.sourceforge.jtds.jdbc.Driver" />
-        <property name="jdbcUrl" value="jdbc:jtds:sqlserver://172.20.131.241/ExcelExport" />
-        <property name="username" value="waychien" />
-        <property name="password" value="m3server" />
+        <property name="jdbcUrl" value="jdbc:jtds:sqlserver://172.22.250.151/ATMC" />
+        <property name="username" value="ATMCSa" />
+        <property name="password" value="@tmc$a392" />
     </bean>
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" destroy-method="destroy"> 
@@ -76,6 +76,8 @@
                 <prop key="hibernate.query.factory_class">org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory</prop>
                 <prop key="hibernate.jdbc.batch_size">${HIBERNATE.JDBC.BATCHSIZE}</prop>
                 <prop key="hibernate.id.new_generator_mappings" >false</prop>
+                <prop key="hibernate.default_schema">M9_Picking</prop>
+                <prop key="hibernate.dialect">com.advantech.helper.SqlServerDialectWithNvarchar</prop>
                 <!--                <prop key="hibernate.show_sql">true</prop>
                 <prop key="hibernate.format_sql">true</prop>-->
                 <!--<prop key="hibernate.hbm2ddl.auto">update</prop>-->
