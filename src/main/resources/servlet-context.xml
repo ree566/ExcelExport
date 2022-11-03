@@ -39,6 +39,10 @@
         <property name="location" value="classpath:spring-views.xml"/>
     </bean>-->
     
+    <bean id="webapiclient" class="com.advantech.helper.WebApiClient">
+        <property name="baseUrl" value="http://172.22.250.120:7878/v1/Employee/"></property>
+    </bean>
+
     <bean id="viewResolver2"
           class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="order" value="2"/>
@@ -76,7 +80,7 @@
                 <prop key="hibernate.query.factory_class">org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory</prop>
                 <prop key="hibernate.jdbc.batch_size">${HIBERNATE.JDBC.BATCHSIZE}</prop>
                 <prop key="hibernate.id.new_generator_mappings" >false</prop>
-<!--                <prop key="hibernate.show_sql">true</prop>
+                <!--                <prop key="hibernate.show_sql">true</prop>
                 <prop key="hibernate.format_sql">true</prop>-->
                 <!--<prop key="hibernate.hbm2ddl.auto">update</prop>-->
             </props> 
@@ -119,7 +123,7 @@
                 <prop key="hibernate.query.factory_class">org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory</prop>
                 <prop key="hibernate.jdbc.batch_size">${HIBERNATE.JDBC.BATCHSIZE}</prop>
                 <prop key="hibernate.id.new_generator_mappings" >false</prop>
-<!--                <prop key="hibernate.show_sql">true</prop>
+                <!--                <prop key="hibernate.show_sql">true</prop>
                 <prop key="hibernate.format_sql">true</prop>-->
                 <!--<prop key="hibernate.hbm2ddl.auto">update</prop>-->
             </props> 
@@ -133,8 +137,8 @@
     </bean>
     
     <jpa:repositories base-package="com.advantech.repo.db1" 
-                          factory-class="org.springframework.data.jpa.datatables.repository.DataTablesRepositoryFactoryBean"       
-                          entity-manager-factory-ref="entityManagerFactory" transaction-manager-ref="transactionManager"  
+                      factory-class="org.springframework.data.jpa.datatables.repository.DataTablesRepositoryFactoryBean"       
+                      entity-manager-factory-ref="entityManagerFactory" transaction-manager-ref="transactionManager"  
     />
  
     <jpa:repositories base-package="com.advantech.repo.db2" entity-manager-factory-ref="entityManagerFactory2" transaction-manager-ref="transactionManager2" />
@@ -153,6 +157,7 @@
             com.advantech.sap
     " />
 
+ 
     <!--要使用 @Transactional 時需要--> 
     <tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager"/>
 
