@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import com.advantech.helper.WebApiClient;
 
 /**
  *
@@ -31,8 +32,14 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String jobnumber) throws UsernameNotFoundException {
         User user = userService.findByJobnumber(jobnumber);
         if (user == null) {
-            System.out.println("User not found");
-            throw new UsernameNotFoundException("Username not found");
+            WebApiClient wc = new WebApiClient();
+            if (wc.IsUserInAtmc(jobnumber)) {
+                userService.insertNewUser(jobnumber);
+                user = userService.findByJobnumber(jobnumber);
+            } else {
+                System.out.println("User not found");
+                throw new UsernameNotFoundException("Username not found");
+            }
         }
 
         user.addSecurityInfo(true, true, true, true, getGrantedAuthorities(user));

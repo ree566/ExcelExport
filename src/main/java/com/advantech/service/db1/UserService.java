@@ -28,6 +28,10 @@ public class UserService {
     @Autowired
     private UserRepository repo;
 
+    public void insertNewUser(String JobNo) {
+        repo.insertNewUser(JobNo);
+    }
+
     public List<User> findAll() {
         return repo.findAll();
     }

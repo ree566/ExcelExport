@@ -9,8 +9,12 @@ import com.advantech.model.db1.User;
 import com.advantech.model.db1.UserNotification;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -23,4 +27,8 @@ public interface UserRepository extends JpaRepository<User, Integer>, CrudReposi
 
     public List<User> findByUserNotifications(UserNotification notifi);
 
+    @Modifying
+    @Query(value = "{CALL usp_QuickInsertUser(:JobNo)}",
+            nativeQuery = true)
+    public void insertNewUser(@Param("JobNo") String JobNo);
 }

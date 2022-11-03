@@ -201,7 +201,7 @@ public class TestClass {
         return curr * 1.0 / total;
     }
 
-//    @Test
+    @Test
     public void testString() {
         String str = "000000001700014718";
 

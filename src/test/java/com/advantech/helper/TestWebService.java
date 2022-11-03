@@ -29,7 +29,7 @@ public class TestWebService {
 
     @Autowired
     private FqcKanBanQueryPort kanbanPort;
-    
+
     @Autowired
     private QryWipAttQueryPort modelNameQryPort;
 
@@ -37,18 +37,21 @@ public class TestWebService {
     public void test1() throws Exception {
 
         List l = kanbanPort.query(Factory.TWM3);
-        
+
         HibernateObjectPrinter.print(l);
     }
-    
+
     @Test
     public void test2() throws Exception {
-        
+
         String po = "THK002854Z22A";
 
         List l = modelNameQryPort.query(po, Factory.TWM3);
-        
+
         HibernateObjectPrinter.print(l);
     }
 
+
 }
+
+
