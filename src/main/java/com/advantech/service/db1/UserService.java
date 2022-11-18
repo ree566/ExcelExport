@@ -28,9 +28,6 @@ public class UserService {
     @Autowired
     private UserRepository repo;
 
-    public void insertNewUser(String JobNo) {
-        repo.insertNewUser(JobNo);
-    }
 
     public List<User> findAll() {
         return repo.findAll();
@@ -60,6 +57,10 @@ public class UserService {
         Hibernate.initialize(i.getFloor());
         Hibernate.initialize(i.getUserProfiles());
         return i;
+    }
+    
+    public void saveUserByProc(String JobNo) {
+        repo.saveUserByProc(JobNo);
     }
 
     public <S extends User> S save(S s) {

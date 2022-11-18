@@ -8,9 +8,7 @@ import com.advantech.repo.db1.UserRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -40,7 +37,7 @@ public class TestWebClient {
 //    @Rollback(false)
     public void testQuickInsert() {
         String jobnumber = "A-7060";
-        userRepo.insertNewUser(jobnumber);
+        userRepo.saveUserByProc(jobnumber);
         System.out.println("testQuickInsert ");
     }
 
@@ -52,14 +49,12 @@ public class TestWebClient {
     public void GetUserInAtmc2() {
         String jobNo = "A-10376";//A-10376 sysop
         System.out.println("wc.baseUrl= " + wc.baseUrl);
-        System.out.println(" wc.isUserInAtmc= " + wc.isUserInAtmc(jobNo));
-        List<WebApiUser> l = wc.geUserInAtmc(jobNo);
-        if (l != null) {
-            for (WebApiUser item : l) {
-                System.out.println(" item.getEmplr_Id()= " + item.Emplr_Id);
-                System.out.println(" item.getLocal_Name()= " + item.Local_Name);
-                System.out.println(" item.dep2= " + item.Dep2);
-            }
+        System.out.println(" wc.isUserInAtmc= " + wc.getUserInAtmc(jobNo));
+        WebApiUser item = wc.getUserInAtmc(jobNo);
+        if (item != null) {
+            System.out.println(" item.getEmplr_Id()= " + item.Emplr_Id);
+            System.out.println(" item.getLocal_Name()= " + item.Local_Name);
+            System.out.println(" item.dep2= " + item.Dep2);
         }
     }
 

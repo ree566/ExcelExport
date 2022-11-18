@@ -37,8 +37,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String jobnumber) throws UsernameNotFoundException {
         User user = userService.findByJobnumber(jobnumber);
         if (user == null) {
-            if (wc.isUserInAtmc(jobnumber)) {
-                userService.insertNewUser(jobnumber);
+            if (wc.getUserInAtmc(jobnumber) != null) {
+                userService.saveUserByProc(jobnumber);
                 user = userService.findByJobnumber(jobnumber);
             } else {
                 System.out.println("User not found");

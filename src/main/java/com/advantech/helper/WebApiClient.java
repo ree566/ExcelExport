@@ -27,9 +27,6 @@ public class WebApiClient {
 
     public String baseUrl;
     private WebClient webClient;
-    private List<WebApiUser> l = null;
-    private boolean userInAtmcChecked = false;
-    private Object[] bodyObject;
 
     public WebApiClient() {
     }
@@ -67,38 +64,32 @@ public class WebApiClient {
         //webClient = WebClient.create(); // use default setting
     }
 
-    public boolean isUserInAtmc(String jobNo) {
-        userInAtmcChecked = true;
+    public WebApiUser getUserInAtmc(String jobnumber) {
         Mono<Object[]> body = webClient
                 .get()
-                .uri(baseUrl + jobNo)
+                .uri(baseUrl + jobnumber)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(Object[].class);
         try {
-            bodyObject = body.block();
-            return true;
+            Object[] bodyObject = body.block();
+            List<WebApiUser> users = objectToUser(bodyObject);
+            return users.isEmpty() ? null : users.get(0);
         } catch (Exception e) { //WebClientException
             System.out.println("Exception e: " + e);
+            return null;
         }
-        return false;
     }
 
-    public List<WebApiUser> geUserInAtmc(String jobNo) {
-        if (!userInAtmcChecked) {
-            isUserInAtmc(jobNo);
+    private List<WebApiUser> objectToUser(Object[] bodyObject) {
+        if (bodyObject == null) {
+            return new ArrayList<>();
         }
-        return objectToUser();
-    }
 
-    private List<WebApiUser> objectToUser() {
-        if (bodyObject != null) {
-            ObjectMapper mapper = new ObjectMapper();
-            l = mapper.convertValue(bodyObject, new TypeReference<List<WebApiUser>>() {
-            });
-        } else {
-            l = new ArrayList<>();
-        }
+        ObjectMapper mapper = new ObjectMapper();
+        List<WebApiUser> l = mapper.convertValue(bodyObject, new TypeReference<List<WebApiUser>>() {
+        });
+
         return l;
     }
 }

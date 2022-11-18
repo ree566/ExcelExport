@@ -28,5 +28,5 @@ public interface UserRepository extends JpaRepository<User, Integer>, CrudReposi
 
     @Modifying
     @Query(value = "{CALL usp_QuickInsertUser(:JobNo)}", nativeQuery = true)
-    public void insertNewUser(@Param("JobNo") String JobNo);
+    public void saveUserByProc(@Param("JobNo") String JobNo);
 }
