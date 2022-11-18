@@ -5,7 +5,7 @@
  */
 package com.advantech.service.db1;
 
-import com.advantech.helper.SecurityPropertiesUtils;
+import com.advantech.security.SecurityPropertiesUtils;
 import com.advantech.model.db1.Requisition;
 import com.advantech.model.db1.RequisitionEvent;
 import com.advantech.model.db1.RequisitionReason;

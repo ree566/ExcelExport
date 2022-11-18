@@ -4,6 +4,8 @@
  */
 package com.advantech.helper;
 
+import com.advantech.api.WebApiUser;
+import com.advantech.api.WebApiClient;
 import com.advantech.repo.db1.UserRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
