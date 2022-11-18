@@ -39,6 +39,10 @@
         <property name="location" value="classpath:spring-views.xml"/>
     </bean>-->
     
+    <bean id="webapiclient" class="com.advantech.helper.WebApiClient">
+        <property name="baseUrl" value="http://172.22.250.120:7878/v1/Employee/"></property>
+    </bean>
+
     <bean id="viewResolver2"
           class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="order" value="2"/>
@@ -160,6 +164,7 @@
             com.advantech.sap
     " />
 
+ 
     <!--要使用 @Transactional 時需要--> 
     <tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager"/>
 
