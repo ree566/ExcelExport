@@ -5,7 +5,7 @@
  */
 package com.advantech.controller;
 
-import com.advantech.helper.SecurityPropertiesUtils;
+import com.advantech.security.SecurityPropertiesUtils;
 import com.advantech.model.db1.FqcKanBan;
 import com.advantech.model.db1.User;
 import com.advantech.service.db1.FqcKanBanService;

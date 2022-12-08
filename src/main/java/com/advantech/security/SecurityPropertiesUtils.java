@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.advantech.helper;
+package com.advantech.security;
 
 import com.advantech.model.db1.User;
 import static com.google.common.base.Preconditions.checkState;

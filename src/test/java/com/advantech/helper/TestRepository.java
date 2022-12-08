@@ -348,7 +348,7 @@ public class TestRepository {
     @Autowired
     private RequisitionRepository requisitionRepository;
 
-//    @Test
+    @Test
     @Transactional
     @Rollback(true)
     public void testPoMaterialDetails() {
@@ -371,7 +371,7 @@ public class TestRepository {
     @Autowired
     private TeamsRepository teamsRepo;
 
-    @Test
+  //  @Test
     @Transactional("tx2")
     @Rollback(false)
     public void testOrder() {

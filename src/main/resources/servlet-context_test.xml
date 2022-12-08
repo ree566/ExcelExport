@@ -153,6 +153,10 @@
             com.advantech.sap
     " />
 
+    <bean id="webapiclient" class="com.advantech.helper.WebApiClient">
+        <property name="baseUrl" value="http://172.22.250.120:7878/v1/Employee/"></property>
+    </bean>
+    
     <!--要使用 @Transactional 時需要--> 
     <tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager"/>
 

@@ -38,7 +38,7 @@
         <property name="order" value="1"/>
         <property name="location" value="classpath:spring-views.xml"/>
     </bean>-->
-    
+
     <bean id="viewResolver2"
           class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="order" value="2"/>
@@ -140,12 +140,10 @@
     />
  
     <jpa:repositories base-package="com.advantech.repo.db2" entity-manager-factory-ref="entityManagerFactory2" transaction-manager-ref="transactionManager2" />
- 
-    <bean id="swagger2Config"
-          class="springfox.documentation.swagger2.configuration.Swagger2DocumentationConfiguration">
-    </bean>
     
-    <bean class="com.advantech.api.SwaggerConfig" />
+    <bean id="webApiClient" class="com.advantech.api.WebApiClient">
+        <property name="baseUrl" value="http://172.22.250.120:7878/v1/Employee/"></property>
+    </bean>
     
     <context:annotation-config/>
  
@@ -263,7 +261,6 @@
         <entry key="TWM2" value-ref="webServiceTemplate2" />
     </util:map>
        
-    
     <!--regist for WsClient.class use, -->
     <bean id="objectFactory" class="org.tempuri.ObjectFactory" />
 
